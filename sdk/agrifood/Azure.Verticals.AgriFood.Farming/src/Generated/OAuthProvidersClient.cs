@@ -41,19 +41,19 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <param name="endpoint"> The endpoint of your FarmBeats resource (protocol and hostname, for example: https://{resourceName}.farmbeats.azure.net). </param>
         /// <param name="credential"> A credential used to authenticate to an Azure Service. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="endpoint"/> or <paramref name="credential"/> is null. </exception>
-        public OAuthProvidersClient(Uri endpoint, TokenCredential credential) : this(endpoint, credential, new FarmBeatsClientOptions())
+        public OAuthProvidersClient(TokenCredential credential, Uri endpoint) : this(credential, endpoint, new FarmBeatsClientOptions())
         {
         }
 
         /// <summary> Initializes a new instance of OAuthProvidersClient. </summary>
-        /// <param name="endpoint"> The endpoint of your FarmBeats resource (protocol and hostname, for example: https://{resourceName}.farmbeats.azure.net). </param>
         /// <param name="credential"> A credential used to authenticate to an Azure Service. </param>
+        /// <param name="endpoint"> server parameter. </param>
         /// <param name="options"> The options for configuring the client. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="endpoint"/> or <paramref name="credential"/> is null. </exception>
-        public OAuthProvidersClient(Uri endpoint, TokenCredential credential, FarmBeatsClientOptions options)
+        /// <exception cref="ArgumentNullException"> <paramref name="credential"/> or <paramref name="endpoint"/> is null. </exception>
+        public OAuthProvidersClient(TokenCredential credential, Uri endpoint, FarmBeatsClientOptions options)
         {
-            Argument.AssertNotNull(endpoint, nameof(endpoint));
             Argument.AssertNotNull(credential, nameof(credential));
+            Argument.AssertNotNull(endpoint, nameof(endpoint));
             options ??= new FarmBeatsClientOptions();
 
             ClientDiagnostics = new ClientDiagnostics(options, true);
@@ -74,8 +74,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call GetOAuthProviderAsync with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new OAuthProvidersClient(endpoint, credential);
+        /// var client = new OAuthProvidersClient(credential);
         /// 
         /// Response response = await client.GetOAuthProviderAsync("<oauthProviderId>");
         /// 
@@ -100,7 +99,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Schema for <c>OAuthProvider</c>:
         /// <code>{
-        ///   appId: string, # Optional. OAuth App ID for given OAuth Provider.
+        ///   appId: string, # Optional. OAuth App Id for given OAuth Provider.
         ///   appSecret: string, # Optional. OAuth App secret for given Provider.
         /// Note: Won&apos;t be sent in response.
         ///   apiKey: string, # Optional. OAuth Api key for given Provider.
@@ -113,10 +112,11 @@ namespace Azure.Verticals.AgriFood.Farming
         ///   modifiedDateTime: string (ISO 8601 Format), # Optional. Date-time when resource was last modified, sample format: yyyy-MM-ddTHH:mm:ssZ.
         ///   name: string, # Optional. Name to identify resource.
         ///   description: string, # Optional. Textual description of the resource.
-        ///   properties: Dictionary&lt;string, AnyObject&gt;, # Optional. A collection of key value pairs that belongs to the resource.
+        ///   properties: Dictionary&lt;string, any&gt;, # Optional. A collection of key value pairs that belongs to the resource.
         /// Each pair must not have a key greater than 50 characters
         /// and must not have a value greater than 150 characters.
-        /// Note: A maximum of 25 key value pairs can be provided for a resource and only string and numeral values are supported.
+        /// Note: A maximum of 25 key value pairs can be provided for a resource and
+        /// only string, numeral and datetime (yyyy-MM-ddTHH:mm:ssZ) values are supported.
         /// }
         /// </code>
         /// 
@@ -150,8 +150,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call GetOAuthProvider with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new OAuthProvidersClient(endpoint, credential);
+        /// var client = new OAuthProvidersClient(credential);
         /// 
         /// Response response = client.GetOAuthProvider("<oauthProviderId>");
         /// 
@@ -176,7 +175,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Schema for <c>OAuthProvider</c>:
         /// <code>{
-        ///   appId: string, # Optional. OAuth App ID for given OAuth Provider.
+        ///   appId: string, # Optional. OAuth App Id for given OAuth Provider.
         ///   appSecret: string, # Optional. OAuth App secret for given Provider.
         /// Note: Won&apos;t be sent in response.
         ///   apiKey: string, # Optional. OAuth Api key for given Provider.
@@ -189,10 +188,11 @@ namespace Azure.Verticals.AgriFood.Farming
         ///   modifiedDateTime: string (ISO 8601 Format), # Optional. Date-time when resource was last modified, sample format: yyyy-MM-ddTHH:mm:ssZ.
         ///   name: string, # Optional. Name to identify resource.
         ///   description: string, # Optional. Textual description of the resource.
-        ///   properties: Dictionary&lt;string, AnyObject&gt;, # Optional. A collection of key value pairs that belongs to the resource.
+        ///   properties: Dictionary&lt;string, any&gt;, # Optional. A collection of key value pairs that belongs to the resource.
         /// Each pair must not have a key greater than 50 characters
         /// and must not have a value greater than 150 characters.
-        /// Note: A maximum of 25 key value pairs can be provided for a resource and only string and numeral values are supported.
+        /// Note: A maximum of 25 key value pairs can be provided for a resource and
+        /// only string, numeral and datetime (yyyy-MM-ddTHH:mm:ssZ) values are supported.
         /// }
         /// </code>
         /// 
@@ -219,7 +219,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <param name="oauthProviderId"> ID of oauthProvider resource. </param>
         /// <param name="content"> The content to send as the body of the request. Details of the request body schema are in the Remarks section below. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="oauthProviderId"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="oauthProviderId"/> or <paramref name="content"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="oauthProviderId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
@@ -227,8 +227,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call CreateOrUpdateAsync with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new OAuthProvidersClient(endpoint, credential);
+        /// var client = new OAuthProvidersClient(credential);
         /// 
         /// var data = new {};
         /// 
@@ -240,8 +239,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call CreateOrUpdateAsync with all parameters and request content, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new OAuthProvidersClient(endpoint, credential);
+        /// var client = new OAuthProvidersClient(credential);
         /// 
         /// var data = new {
         ///     appId = "<appId>",
@@ -278,7 +276,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Schema for <c>OAuthProvider</c>:
         /// <code>{
-        ///   appId: string, # Optional. OAuth App ID for given OAuth Provider.
+        ///   appId: string, # Optional. OAuth App Id for given OAuth Provider.
         ///   appSecret: string, # Optional. OAuth App secret for given Provider.
         /// Note: Won&apos;t be sent in response.
         ///   apiKey: string, # Optional. OAuth Api key for given Provider.
@@ -291,10 +289,11 @@ namespace Azure.Verticals.AgriFood.Farming
         ///   modifiedDateTime: string (ISO 8601 Format), # Optional. Date-time when resource was last modified, sample format: yyyy-MM-ddTHH:mm:ssZ.
         ///   name: string, # Optional. Name to identify resource.
         ///   description: string, # Optional. Textual description of the resource.
-        ///   properties: Dictionary&lt;string, AnyObject&gt;, # Optional. A collection of key value pairs that belongs to the resource.
+        ///   properties: Dictionary&lt;string, any&gt;, # Optional. A collection of key value pairs that belongs to the resource.
         /// Each pair must not have a key greater than 50 characters
         /// and must not have a value greater than 150 characters.
-        /// Note: A maximum of 25 key value pairs can be provided for a resource and only string and numeral values are supported.
+        /// Note: A maximum of 25 key value pairs can be provided for a resource and
+        /// only string, numeral and datetime (yyyy-MM-ddTHH:mm:ssZ) values are supported.
         /// }
         /// </code>
         /// 
@@ -302,7 +301,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Schema for <c>OAuthProvider</c>:
         /// <code>{
-        ///   appId: string, # Optional. OAuth App ID for given OAuth Provider.
+        ///   appId: string, # Optional. OAuth App Id for given OAuth Provider.
         ///   appSecret: string, # Optional. OAuth App secret for given Provider.
         /// Note: Won&apos;t be sent in response.
         ///   apiKey: string, # Optional. OAuth Api key for given Provider.
@@ -315,10 +314,11 @@ namespace Azure.Verticals.AgriFood.Farming
         ///   modifiedDateTime: string (ISO 8601 Format), # Optional. Date-time when resource was last modified, sample format: yyyy-MM-ddTHH:mm:ssZ.
         ///   name: string, # Optional. Name to identify resource.
         ///   description: string, # Optional. Textual description of the resource.
-        ///   properties: Dictionary&lt;string, AnyObject&gt;, # Optional. A collection of key value pairs that belongs to the resource.
+        ///   properties: Dictionary&lt;string, any&gt;, # Optional. A collection of key value pairs that belongs to the resource.
         /// Each pair must not have a key greater than 50 characters
         /// and must not have a value greater than 150 characters.
-        /// Note: A maximum of 25 key value pairs can be provided for a resource and only string and numeral values are supported.
+        /// Note: A maximum of 25 key value pairs can be provided for a resource and
+        /// only string, numeral and datetime (yyyy-MM-ddTHH:mm:ssZ) values are supported.
         /// }
         /// </code>
         /// 
@@ -326,6 +326,7 @@ namespace Azure.Verticals.AgriFood.Farming
         public virtual async Task<Response> CreateOrUpdateAsync(string oauthProviderId, RequestContent content, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(oauthProviderId, nameof(oauthProviderId));
+            Argument.AssertNotNull(content, nameof(content));
 
             using var scope = ClientDiagnostics.CreateScope("OAuthProvidersClient.CreateOrUpdate");
             scope.Start();
@@ -345,7 +346,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <param name="oauthProviderId"> ID of oauthProvider resource. </param>
         /// <param name="content"> The content to send as the body of the request. Details of the request body schema are in the Remarks section below. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="oauthProviderId"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="oauthProviderId"/> or <paramref name="content"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="oauthProviderId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
@@ -353,8 +354,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call CreateOrUpdate with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new OAuthProvidersClient(endpoint, credential);
+        /// var client = new OAuthProvidersClient(credential);
         /// 
         /// var data = new {};
         /// 
@@ -366,8 +366,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call CreateOrUpdate with all parameters and request content, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new OAuthProvidersClient(endpoint, credential);
+        /// var client = new OAuthProvidersClient(credential);
         /// 
         /// var data = new {
         ///     appId = "<appId>",
@@ -404,7 +403,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Schema for <c>OAuthProvider</c>:
         /// <code>{
-        ///   appId: string, # Optional. OAuth App ID for given OAuth Provider.
+        ///   appId: string, # Optional. OAuth App Id for given OAuth Provider.
         ///   appSecret: string, # Optional. OAuth App secret for given Provider.
         /// Note: Won&apos;t be sent in response.
         ///   apiKey: string, # Optional. OAuth Api key for given Provider.
@@ -417,10 +416,11 @@ namespace Azure.Verticals.AgriFood.Farming
         ///   modifiedDateTime: string (ISO 8601 Format), # Optional. Date-time when resource was last modified, sample format: yyyy-MM-ddTHH:mm:ssZ.
         ///   name: string, # Optional. Name to identify resource.
         ///   description: string, # Optional. Textual description of the resource.
-        ///   properties: Dictionary&lt;string, AnyObject&gt;, # Optional. A collection of key value pairs that belongs to the resource.
+        ///   properties: Dictionary&lt;string, any&gt;, # Optional. A collection of key value pairs that belongs to the resource.
         /// Each pair must not have a key greater than 50 characters
         /// and must not have a value greater than 150 characters.
-        /// Note: A maximum of 25 key value pairs can be provided for a resource and only string and numeral values are supported.
+        /// Note: A maximum of 25 key value pairs can be provided for a resource and
+        /// only string, numeral and datetime (yyyy-MM-ddTHH:mm:ssZ) values are supported.
         /// }
         /// </code>
         /// 
@@ -428,7 +428,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Schema for <c>OAuthProvider</c>:
         /// <code>{
-        ///   appId: string, # Optional. OAuth App ID for given OAuth Provider.
+        ///   appId: string, # Optional. OAuth App Id for given OAuth Provider.
         ///   appSecret: string, # Optional. OAuth App secret for given Provider.
         /// Note: Won&apos;t be sent in response.
         ///   apiKey: string, # Optional. OAuth Api key for given Provider.
@@ -441,10 +441,11 @@ namespace Azure.Verticals.AgriFood.Farming
         ///   modifiedDateTime: string (ISO 8601 Format), # Optional. Date-time when resource was last modified, sample format: yyyy-MM-ddTHH:mm:ssZ.
         ///   name: string, # Optional. Name to identify resource.
         ///   description: string, # Optional. Textual description of the resource.
-        ///   properties: Dictionary&lt;string, AnyObject&gt;, # Optional. A collection of key value pairs that belongs to the resource.
+        ///   properties: Dictionary&lt;string, any&gt;, # Optional. A collection of key value pairs that belongs to the resource.
         /// Each pair must not have a key greater than 50 characters
         /// and must not have a value greater than 150 characters.
-        /// Note: A maximum of 25 key value pairs can be provided for a resource and only string and numeral values are supported.
+        /// Note: A maximum of 25 key value pairs can be provided for a resource and
+        /// only string, numeral and datetime (yyyy-MM-ddTHH:mm:ssZ) values are supported.
         /// }
         /// </code>
         /// 
@@ -452,6 +453,7 @@ namespace Azure.Verticals.AgriFood.Farming
         public virtual Response CreateOrUpdate(string oauthProviderId, RequestContent content, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(oauthProviderId, nameof(oauthProviderId));
+            Argument.AssertNotNull(content, nameof(content));
 
             using var scope = ClientDiagnostics.CreateScope("OAuthProvidersClient.CreateOrUpdate");
             scope.Start();
@@ -478,8 +480,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call DeleteAsync with required parameters.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new OAuthProvidersClient(endpoint, credential);
+        /// var client = new OAuthProvidersClient(credential);
         /// 
         /// Response response = await client.DeleteAsync("<oauthProviderId>");
         /// Console.WriteLine(response.Status);
@@ -514,8 +515,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call Delete with required parameters.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new OAuthProvidersClient(endpoint, credential);
+        /// var client = new OAuthProvidersClient(credential);
         /// 
         /// Response response = client.Delete("<oauthProviderId>");
         /// Console.WriteLine(response.Status);
@@ -530,6 +530,158 @@ namespace Azure.Verticals.AgriFood.Farming
             try
             {
                 using HttpMessage message = CreateDeleteRequest(oauthProviderId, context);
+                return _pipeline.ProcessMessage(message, context);
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary> Get cascade delete job for oauthProvider resource. </summary>
+        /// <param name="jobId"> Id of the job. </param>
+        /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="jobId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="jobId"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
+        /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
+        /// <example>
+        /// This sample shows how to call GetCascadeDeleteJobDetailsAsync with required parameters and parse the result.
+        /// <code><![CDATA[
+        /// var credential = new DefaultAzureCredential();
+        /// var client = new OAuthProvidersClient(credential);
+        /// 
+        /// Response response = await client.GetCascadeDeleteJobDetailsAsync("<jobId>");
+        /// 
+        /// JsonElement result = JsonDocument.Parse(response.ContentStream).RootElement;
+        /// Console.WriteLine(result.GetProperty("oauthProviderId").ToString());
+        /// Console.WriteLine(result.GetProperty("id").ToString());
+        /// Console.WriteLine(result.GetProperty("status").ToString());
+        /// Console.WriteLine(result.GetProperty("durationInSeconds").ToString());
+        /// Console.WriteLine(result.GetProperty("message").ToString());
+        /// Console.WriteLine(result.GetProperty("createdDateTime").ToString());
+        /// Console.WriteLine(result.GetProperty("lastActionDateTime").ToString());
+        /// Console.WriteLine(result.GetProperty("startTime").ToString());
+        /// Console.WriteLine(result.GetProperty("endTime").ToString());
+        /// Console.WriteLine(result.GetProperty("name").ToString());
+        /// Console.WriteLine(result.GetProperty("description").ToString());
+        /// Console.WriteLine(result.GetProperty("properties").GetProperty("<test>").ToString());
+        /// ]]></code>
+        /// </example>
+        /// <remarks>
+        /// Below is the JSON schema for the response payload.
+        /// 
+        /// Response Body:
+        /// 
+        /// Schema for <c>OAuthProviderCascadeDeleteJob</c>:
+        /// <code>{
+        ///   oauthProviderId: string, # Required. The id of the oauth provider.
+        ///   id: string, # Optional. Unique job id.
+        ///   status: string, # Optional. Status of the job.
+        /// Possible values: &apos;Waiting&apos;, &apos;Running&apos;, &apos;Succeeded&apos;, &apos;Failed&apos;, &apos;Cancelled&apos;.
+        ///   durationInSeconds: number, # Optional. Duration of the job in seconds.
+        ///   message: string, # Optional. Status message to capture more details of the job.
+        ///   createdDateTime: string (ISO 8601 Format), # Optional. Job created at dateTime. Sample format: yyyy-MM-ddTHH:mm:ssZ.
+        ///   lastActionDateTime: string (ISO 8601 Format), # Optional. Job was last acted upon at dateTime. Sample format: yyyy-MM-ddTHH:mm:ssZ.
+        ///   startTime: string (ISO 8601 Format), # Optional. Job start time when available. Sample format: yyyy-MM-ddTHH:mm:ssZ.
+        ///   endTime: string (ISO 8601 Format), # Optional. Job end time when available. Sample format: yyyy-MM-ddTHH:mm:ssZ.
+        ///   name: string, # Optional. Name to identify resource.
+        ///   description: string, # Optional. Textual description of the resource.
+        ///   properties: Dictionary&lt;string, any&gt;, # Optional. A collection of key value pairs that belongs to the resource.
+        /// Each pair must not have a key greater than 50 characters
+        /// and must not have a value greater than 150 characters.
+        /// Note: A maximum of 25 key value pairs can be provided for a resource and only string,
+        /// numeral and datetime (yyyy-MM-ddTHH:mm:ssZ) values are supported.
+        /// }
+        /// </code>
+        /// 
+        /// </remarks>
+        public virtual async Task<Response> GetCascadeDeleteJobDetailsAsync(string jobId, RequestContext context = null)
+        {
+            Argument.AssertNotNullOrEmpty(jobId, nameof(jobId));
+
+            using var scope = ClientDiagnostics.CreateScope("OAuthProvidersClient.GetCascadeDeleteJobDetails");
+            scope.Start();
+            try
+            {
+                using HttpMessage message = CreateGetCascadeDeleteJobDetailsRequest(jobId, context);
+                return await _pipeline.ProcessMessageAsync(message, context).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary> Get cascade delete job for oauthProvider resource. </summary>
+        /// <param name="jobId"> Id of the job. </param>
+        /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="jobId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="jobId"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
+        /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
+        /// <example>
+        /// This sample shows how to call GetCascadeDeleteJobDetails with required parameters and parse the result.
+        /// <code><![CDATA[
+        /// var credential = new DefaultAzureCredential();
+        /// var client = new OAuthProvidersClient(credential);
+        /// 
+        /// Response response = client.GetCascadeDeleteJobDetails("<jobId>");
+        /// 
+        /// JsonElement result = JsonDocument.Parse(response.ContentStream).RootElement;
+        /// Console.WriteLine(result.GetProperty("oauthProviderId").ToString());
+        /// Console.WriteLine(result.GetProperty("id").ToString());
+        /// Console.WriteLine(result.GetProperty("status").ToString());
+        /// Console.WriteLine(result.GetProperty("durationInSeconds").ToString());
+        /// Console.WriteLine(result.GetProperty("message").ToString());
+        /// Console.WriteLine(result.GetProperty("createdDateTime").ToString());
+        /// Console.WriteLine(result.GetProperty("lastActionDateTime").ToString());
+        /// Console.WriteLine(result.GetProperty("startTime").ToString());
+        /// Console.WriteLine(result.GetProperty("endTime").ToString());
+        /// Console.WriteLine(result.GetProperty("name").ToString());
+        /// Console.WriteLine(result.GetProperty("description").ToString());
+        /// Console.WriteLine(result.GetProperty("properties").GetProperty("<test>").ToString());
+        /// ]]></code>
+        /// </example>
+        /// <remarks>
+        /// Below is the JSON schema for the response payload.
+        /// 
+        /// Response Body:
+        /// 
+        /// Schema for <c>OAuthProviderCascadeDeleteJob</c>:
+        /// <code>{
+        ///   oauthProviderId: string, # Required. The id of the oauth provider.
+        ///   id: string, # Optional. Unique job id.
+        ///   status: string, # Optional. Status of the job.
+        /// Possible values: &apos;Waiting&apos;, &apos;Running&apos;, &apos;Succeeded&apos;, &apos;Failed&apos;, &apos;Cancelled&apos;.
+        ///   durationInSeconds: number, # Optional. Duration of the job in seconds.
+        ///   message: string, # Optional. Status message to capture more details of the job.
+        ///   createdDateTime: string (ISO 8601 Format), # Optional. Job created at dateTime. Sample format: yyyy-MM-ddTHH:mm:ssZ.
+        ///   lastActionDateTime: string (ISO 8601 Format), # Optional. Job was last acted upon at dateTime. Sample format: yyyy-MM-ddTHH:mm:ssZ.
+        ///   startTime: string (ISO 8601 Format), # Optional. Job start time when available. Sample format: yyyy-MM-ddTHH:mm:ssZ.
+        ///   endTime: string (ISO 8601 Format), # Optional. Job end time when available. Sample format: yyyy-MM-ddTHH:mm:ssZ.
+        ///   name: string, # Optional. Name to identify resource.
+        ///   description: string, # Optional. Textual description of the resource.
+        ///   properties: Dictionary&lt;string, any&gt;, # Optional. A collection of key value pairs that belongs to the resource.
+        /// Each pair must not have a key greater than 50 characters
+        /// and must not have a value greater than 150 characters.
+        /// Note: A maximum of 25 key value pairs can be provided for a resource and only string,
+        /// numeral and datetime (yyyy-MM-ddTHH:mm:ssZ) values are supported.
+        /// }
+        /// </code>
+        /// 
+        /// </remarks>
+        public virtual Response GetCascadeDeleteJobDetails(string jobId, RequestContext context = null)
+        {
+            Argument.AssertNotNullOrEmpty(jobId, nameof(jobId));
+
+            using var scope = ClientDiagnostics.CreateScope("OAuthProvidersClient.GetCascadeDeleteJobDetails");
+            scope.Start();
+            try
+            {
+                using HttpMessage message = CreateGetCascadeDeleteJobDetailsRequest(jobId, context);
                 return _pipeline.ProcessMessage(message, context);
             }
             catch (Exception e)
@@ -563,8 +715,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call GetOAuthProvidersAsync and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new OAuthProvidersClient(endpoint, credential);
+        /// var client = new OAuthProvidersClient(credential);
         /// 
         /// await foreach (var data in client.GetOAuthProvidersAsync())
         /// {
@@ -575,8 +726,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call GetOAuthProvidersAsync with all parameters, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new OAuthProvidersClient(endpoint, credential);
+        /// var client = new OAuthProvidersClient(credential);
         /// 
         /// await foreach (var data in client.GetOAuthProvidersAsync(new String[]{"<ids>"}, new String[]{"<names>"}, new String[]{"<propertyFilters>"}, new String[]{"<statuses>"}, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1234, "<skipToken>"))
         /// {
@@ -602,7 +752,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Schema for <c>OAuthProviderListResponseValue</c>:
         /// <code>{
-        ///   appId: string, # Optional. OAuth App ID for given OAuth Provider.
+        ///   appId: string, # Optional. OAuth App Id for given OAuth Provider.
         ///   appSecret: string, # Optional. OAuth App secret for given Provider.
         /// Note: Won&apos;t be sent in response.
         ///   apiKey: string, # Optional. OAuth Api key for given Provider.
@@ -615,10 +765,11 @@ namespace Azure.Verticals.AgriFood.Farming
         ///   modifiedDateTime: string (ISO 8601 Format), # Optional. Date-time when resource was last modified, sample format: yyyy-MM-ddTHH:mm:ssZ.
         ///   name: string, # Optional. Name to identify resource.
         ///   description: string, # Optional. Textual description of the resource.
-        ///   properties: Dictionary&lt;string, AnyObject&gt;, # Optional. A collection of key value pairs that belongs to the resource.
+        ///   properties: Dictionary&lt;string, any&gt;, # Optional. A collection of key value pairs that belongs to the resource.
         /// Each pair must not have a key greater than 50 characters
         /// and must not have a value greater than 150 characters.
-        /// Note: A maximum of 25 key value pairs can be provided for a resource and only string and numeral values are supported.
+        /// Note: A maximum of 25 key value pairs can be provided for a resource and
+        /// only string, numeral and datetime (yyyy-MM-ddTHH:mm:ssZ) values are supported.
         /// }
         /// </code>
         /// 
@@ -669,8 +820,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call GetOAuthProviders and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new OAuthProvidersClient(endpoint, credential);
+        /// var client = new OAuthProvidersClient(credential);
         /// 
         /// foreach (var data in client.GetOAuthProviders())
         /// {
@@ -681,8 +831,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call GetOAuthProviders with all parameters, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new OAuthProvidersClient(endpoint, credential);
+        /// var client = new OAuthProvidersClient(credential);
         /// 
         /// foreach (var data in client.GetOAuthProviders(new String[]{"<ids>"}, new String[]{"<names>"}, new String[]{"<propertyFilters>"}, new String[]{"<statuses>"}, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1234, "<skipToken>"))
         /// {
@@ -708,7 +857,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Schema for <c>OAuthProviderListResponseValue</c>:
         /// <code>{
-        ///   appId: string, # Optional. OAuth App ID for given OAuth Provider.
+        ///   appId: string, # Optional. OAuth App Id for given OAuth Provider.
         ///   appSecret: string, # Optional. OAuth App secret for given Provider.
         /// Note: Won&apos;t be sent in response.
         ///   apiKey: string, # Optional. OAuth Api key for given Provider.
@@ -721,10 +870,11 @@ namespace Azure.Verticals.AgriFood.Farming
         ///   modifiedDateTime: string (ISO 8601 Format), # Optional. Date-time when resource was last modified, sample format: yyyy-MM-ddTHH:mm:ssZ.
         ///   name: string, # Optional. Name to identify resource.
         ///   description: string, # Optional. Textual description of the resource.
-        ///   properties: Dictionary&lt;string, AnyObject&gt;, # Optional. A collection of key value pairs that belongs to the resource.
+        ///   properties: Dictionary&lt;string, any&gt;, # Optional. A collection of key value pairs that belongs to the resource.
         /// Each pair must not have a key greater than 50 characters
         /// and must not have a value greater than 150 characters.
-        /// Note: A maximum of 25 key value pairs can be provided for a resource and only string and numeral values are supported.
+        /// Note: A maximum of 25 key value pairs can be provided for a resource and
+        /// only string, numeral and datetime (yyyy-MM-ddTHH:mm:ssZ) values are supported.
         /// }
         /// </code>
         /// 
@@ -748,6 +898,166 @@ namespace Azure.Verticals.AgriFood.Farming
                     nextLink = page.ContinuationToken;
                     yield return page;
                 } while (!string.IsNullOrEmpty(nextLink));
+            }
+        }
+
+        /// <summary> Create cascade delete job for oauthProvider resource. </summary>
+        /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
+        /// <param name="jobId"> Job Id supplied by end user. </param>
+        /// <param name="oauthProviderId"> Id of the application data. </param>
+        /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="jobId"/> or <paramref name="oauthProviderId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="jobId"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
+        /// <returns> The <see cref="Operation{T}"/> from the service that will contain a <see cref="BinaryData"/> object once the asynchronous operation on the service has completed. Details of the body schema for the operation's final value are in the Remarks section below. </returns>
+        /// <example>
+        /// This sample shows how to call CreateCascadeDeleteJobAsync with required parameters and parse the result.
+        /// <code><![CDATA[
+        /// var credential = new DefaultAzureCredential();
+        /// var client = new OAuthProvidersClient(credential);
+        /// 
+        /// var operation = await client.CreateCascadeDeleteJobAsync(WaitUntil.Completed, "<jobId>", "<oauthProviderId>");
+        /// 
+        /// BinaryData data = await operation.WaitForCompletionAsync();
+        /// JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
+        /// Console.WriteLine(result.GetProperty("oauthProviderId").ToString());
+        /// Console.WriteLine(result.GetProperty("id").ToString());
+        /// Console.WriteLine(result.GetProperty("status").ToString());
+        /// Console.WriteLine(result.GetProperty("durationInSeconds").ToString());
+        /// Console.WriteLine(result.GetProperty("message").ToString());
+        /// Console.WriteLine(result.GetProperty("createdDateTime").ToString());
+        /// Console.WriteLine(result.GetProperty("lastActionDateTime").ToString());
+        /// Console.WriteLine(result.GetProperty("startTime").ToString());
+        /// Console.WriteLine(result.GetProperty("endTime").ToString());
+        /// Console.WriteLine(result.GetProperty("name").ToString());
+        /// Console.WriteLine(result.GetProperty("description").ToString());
+        /// Console.WriteLine(result.GetProperty("properties").GetProperty("<test>").ToString());
+        /// ]]></code>
+        /// </example>
+        /// <remarks>
+        /// Below is the JSON schema for the response payload.
+        /// 
+        /// Response Body:
+        /// 
+        /// Schema for <c>OAuthProviderCascadeDeleteJob</c>:
+        /// <code>{
+        ///   oauthProviderId: string, # Required. The id of the oauth provider.
+        ///   id: string, # Optional. Unique job id.
+        ///   status: string, # Optional. Status of the job.
+        /// Possible values: &apos;Waiting&apos;, &apos;Running&apos;, &apos;Succeeded&apos;, &apos;Failed&apos;, &apos;Cancelled&apos;.
+        ///   durationInSeconds: number, # Optional. Duration of the job in seconds.
+        ///   message: string, # Optional. Status message to capture more details of the job.
+        ///   createdDateTime: string (ISO 8601 Format), # Optional. Job created at dateTime. Sample format: yyyy-MM-ddTHH:mm:ssZ.
+        ///   lastActionDateTime: string (ISO 8601 Format), # Optional. Job was last acted upon at dateTime. Sample format: yyyy-MM-ddTHH:mm:ssZ.
+        ///   startTime: string (ISO 8601 Format), # Optional. Job start time when available. Sample format: yyyy-MM-ddTHH:mm:ssZ.
+        ///   endTime: string (ISO 8601 Format), # Optional. Job end time when available. Sample format: yyyy-MM-ddTHH:mm:ssZ.
+        ///   name: string, # Optional. Name to identify resource.
+        ///   description: string, # Optional. Textual description of the resource.
+        ///   properties: Dictionary&lt;string, any&gt;, # Optional. A collection of key value pairs that belongs to the resource.
+        /// Each pair must not have a key greater than 50 characters
+        /// and must not have a value greater than 150 characters.
+        /// Note: A maximum of 25 key value pairs can be provided for a resource and only string,
+        /// numeral and datetime (yyyy-MM-ddTHH:mm:ssZ) values are supported.
+        /// }
+        /// </code>
+        /// 
+        /// </remarks>
+        public virtual async Task<Operation<BinaryData>> CreateCascadeDeleteJobAsync(WaitUntil waitUntil, string jobId, string oauthProviderId, RequestContext context = null)
+        {
+            Argument.AssertNotNullOrEmpty(jobId, nameof(jobId));
+            Argument.AssertNotNull(oauthProviderId, nameof(oauthProviderId));
+
+            using var scope = ClientDiagnostics.CreateScope("OAuthProvidersClient.CreateCascadeDeleteJob");
+            scope.Start();
+            try
+            {
+                using HttpMessage message = CreateCreateCascadeDeleteJobRequest(jobId, oauthProviderId, context);
+                return await ProtocolOperationHelpers.ProcessMessageAsync(_pipeline, message, ClientDiagnostics, "OAuthProvidersClient.CreateCascadeDeleteJob", OperationFinalStateVia.Location, context, waitUntil).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary> Create cascade delete job for oauthProvider resource. </summary>
+        /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
+        /// <param name="jobId"> Job Id supplied by end user. </param>
+        /// <param name="oauthProviderId"> Id of the application data. </param>
+        /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="jobId"/> or <paramref name="oauthProviderId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="jobId"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
+        /// <returns> The <see cref="Operation{T}"/> from the service that will contain a <see cref="BinaryData"/> object once the asynchronous operation on the service has completed. Details of the body schema for the operation's final value are in the Remarks section below. </returns>
+        /// <example>
+        /// This sample shows how to call CreateCascadeDeleteJob with required parameters and parse the result.
+        /// <code><![CDATA[
+        /// var credential = new DefaultAzureCredential();
+        /// var client = new OAuthProvidersClient(credential);
+        /// 
+        /// var operation = client.CreateCascadeDeleteJob(WaitUntil.Completed, "<jobId>", "<oauthProviderId>");
+        /// 
+        /// BinaryData data = operation.WaitForCompletion();
+        /// JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
+        /// Console.WriteLine(result.GetProperty("oauthProviderId").ToString());
+        /// Console.WriteLine(result.GetProperty("id").ToString());
+        /// Console.WriteLine(result.GetProperty("status").ToString());
+        /// Console.WriteLine(result.GetProperty("durationInSeconds").ToString());
+        /// Console.WriteLine(result.GetProperty("message").ToString());
+        /// Console.WriteLine(result.GetProperty("createdDateTime").ToString());
+        /// Console.WriteLine(result.GetProperty("lastActionDateTime").ToString());
+        /// Console.WriteLine(result.GetProperty("startTime").ToString());
+        /// Console.WriteLine(result.GetProperty("endTime").ToString());
+        /// Console.WriteLine(result.GetProperty("name").ToString());
+        /// Console.WriteLine(result.GetProperty("description").ToString());
+        /// Console.WriteLine(result.GetProperty("properties").GetProperty("<test>").ToString());
+        /// ]]></code>
+        /// </example>
+        /// <remarks>
+        /// Below is the JSON schema for the response payload.
+        /// 
+        /// Response Body:
+        /// 
+        /// Schema for <c>OAuthProviderCascadeDeleteJob</c>:
+        /// <code>{
+        ///   oauthProviderId: string, # Required. The id of the oauth provider.
+        ///   id: string, # Optional. Unique job id.
+        ///   status: string, # Optional. Status of the job.
+        /// Possible values: &apos;Waiting&apos;, &apos;Running&apos;, &apos;Succeeded&apos;, &apos;Failed&apos;, &apos;Cancelled&apos;.
+        ///   durationInSeconds: number, # Optional. Duration of the job in seconds.
+        ///   message: string, # Optional. Status message to capture more details of the job.
+        ///   createdDateTime: string (ISO 8601 Format), # Optional. Job created at dateTime. Sample format: yyyy-MM-ddTHH:mm:ssZ.
+        ///   lastActionDateTime: string (ISO 8601 Format), # Optional. Job was last acted upon at dateTime. Sample format: yyyy-MM-ddTHH:mm:ssZ.
+        ///   startTime: string (ISO 8601 Format), # Optional. Job start time when available. Sample format: yyyy-MM-ddTHH:mm:ssZ.
+        ///   endTime: string (ISO 8601 Format), # Optional. Job end time when available. Sample format: yyyy-MM-ddTHH:mm:ssZ.
+        ///   name: string, # Optional. Name to identify resource.
+        ///   description: string, # Optional. Textual description of the resource.
+        ///   properties: Dictionary&lt;string, any&gt;, # Optional. A collection of key value pairs that belongs to the resource.
+        /// Each pair must not have a key greater than 50 characters
+        /// and must not have a value greater than 150 characters.
+        /// Note: A maximum of 25 key value pairs can be provided for a resource and only string,
+        /// numeral and datetime (yyyy-MM-ddTHH:mm:ssZ) values are supported.
+        /// }
+        /// </code>
+        /// 
+        /// </remarks>
+        public virtual Operation<BinaryData> CreateCascadeDeleteJob(WaitUntil waitUntil, string jobId, string oauthProviderId, RequestContext context = null)
+        {
+            Argument.AssertNotNullOrEmpty(jobId, nameof(jobId));
+            Argument.AssertNotNull(oauthProviderId, nameof(oauthProviderId));
+
+            using var scope = ClientDiagnostics.CreateScope("OAuthProvidersClient.CreateCascadeDeleteJob");
+            scope.Start();
+            try
+            {
+                using HttpMessage message = CreateCreateCascadeDeleteJobRequest(jobId, oauthProviderId, context);
+                return ProtocolOperationHelpers.ProcessMessage(_pipeline, message, ClientDiagnostics, "OAuthProvidersClient.CreateCascadeDeleteJob", OperationFinalStateVia.Location, context, waitUntil);
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
             }
         }
 
@@ -864,6 +1174,37 @@ namespace Azure.Verticals.AgriFood.Farming
             return message;
         }
 
+        internal HttpMessage CreateGetCascadeDeleteJobDetailsRequest(string jobId, RequestContext context)
+        {
+            var message = _pipeline.CreateMessage(context, ResponseClassifier200);
+            var request = message.Request;
+            request.Method = RequestMethod.Get;
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/oauth/providers/cascade-delete/", false);
+            uri.AppendPath(jobId, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            request.Uri = uri;
+            request.Headers.Add("Accept", "application/json");
+            return message;
+        }
+
+        internal HttpMessage CreateCreateCascadeDeleteJobRequest(string jobId, string oauthProviderId, RequestContext context)
+        {
+            var message = _pipeline.CreateMessage(context, ResponseClassifier202);
+            var request = message.Request;
+            request.Method = RequestMethod.Put;
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/oauth/providers/cascade-delete/", false);
+            uri.AppendPath(jobId, true);
+            uri.AppendQuery("oauthProviderId", oauthProviderId, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            request.Uri = uri;
+            request.Headers.Add("Accept", "application/json");
+            return message;
+        }
+
         internal HttpMessage CreateGetOAuthProvidersNextPageRequest(string nextLink, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
         {
             var message = _pipeline.CreateMessage(context, ResponseClassifier200);
@@ -883,5 +1224,7 @@ namespace Azure.Verticals.AgriFood.Farming
         private static ResponseClassifier ResponseClassifier200201 => _responseClassifier200201 ??= new StatusCodeClassifier(stackalloc ushort[] { 200, 201 });
         private static ResponseClassifier _responseClassifier204;
         private static ResponseClassifier ResponseClassifier204 => _responseClassifier204 ??= new StatusCodeClassifier(stackalloc ushort[] { 204 });
+        private static ResponseClassifier _responseClassifier202;
+        private static ResponseClassifier ResponseClassifier202 => _responseClassifier202 ??= new StatusCodeClassifier(stackalloc ushort[] { 202 });
     }
 }

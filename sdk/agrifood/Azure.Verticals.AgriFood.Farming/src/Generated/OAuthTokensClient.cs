@@ -41,19 +41,19 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <param name="endpoint"> The endpoint of your FarmBeats resource (protocol and hostname, for example: https://{resourceName}.farmbeats.azure.net). </param>
         /// <param name="credential"> A credential used to authenticate to an Azure Service. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="endpoint"/> or <paramref name="credential"/> is null. </exception>
-        public OAuthTokensClient(Uri endpoint, TokenCredential credential) : this(endpoint, credential, new FarmBeatsClientOptions())
+        public OAuthTokensClient(TokenCredential credential, Uri endpoint) : this(credential, endpoint, new FarmBeatsClientOptions())
         {
         }
 
         /// <summary> Initializes a new instance of OAuthTokensClient. </summary>
-        /// <param name="endpoint"> The endpoint of your FarmBeats resource (protocol and hostname, for example: https://{resourceName}.farmbeats.azure.net). </param>
         /// <param name="credential"> A credential used to authenticate to an Azure Service. </param>
+        /// <param name="endpoint"> server parameter. </param>
         /// <param name="options"> The options for configuring the client. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="endpoint"/> or <paramref name="credential"/> is null. </exception>
-        public OAuthTokensClient(Uri endpoint, TokenCredential credential, FarmBeatsClientOptions options)
+        /// <exception cref="ArgumentNullException"> <paramref name="credential"/> or <paramref name="endpoint"/> is null. </exception>
+        public OAuthTokensClient(TokenCredential credential, Uri endpoint, FarmBeatsClientOptions options)
         {
-            Argument.AssertNotNull(endpoint, nameof(endpoint));
             Argument.AssertNotNull(credential, nameof(credential));
+            Argument.AssertNotNull(endpoint, nameof(endpoint));
             options ??= new FarmBeatsClientOptions();
 
             ClientDiagnostics = new ClientDiagnostics(options, true);
@@ -66,14 +66,14 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <summary> Returns Connection link needed in the OAuth flow. </summary>
         /// <param name="content"> The content to send as the body of the request. Details of the request body schema are in the Remarks section below. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="content"/> is null. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The response returned from the service. </returns>
         /// <example>
         /// This sample shows how to call GetOAuthConnectionLinkAsync with required request content, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new OAuthTokensClient(endpoint, credential);
+        /// var client = new OAuthTokensClient(credential);
         /// 
         /// var data = new {
         ///     farmerId = "<farmerId>",
@@ -89,8 +89,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call GetOAuthConnectionLinkAsync with all request content, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new OAuthTokensClient(endpoint, credential);
+        /// var client = new OAuthTokensClient(credential);
         /// 
         /// var data = new {
         ///     farmerId = "<farmerId>",
@@ -112,8 +111,8 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Schema for <c>OAuthConnectRequest</c>:
         /// <code>{
-        ///   farmerId: string, # Required. ID of the farmer.
-        ///   oAuthProviderId: string, # Required. ID of the OAuthProvider.
+        ///   farmerId: string, # Required. Id of the farmer.
+        ///   oAuthProviderId: string, # Required. Id of the OAuthProvider.
         ///   userRedirectLink: string, # Required. Link to redirect the user to, at the end of the oauth flow.
         ///   userRedirectState: string, # Optional. State to provide back when redirecting the user, at the end of the oauth flow.
         /// }
@@ -122,6 +121,8 @@ namespace Azure.Verticals.AgriFood.Farming
         /// </remarks>
         public virtual async Task<Response> GetOAuthConnectionLinkAsync(RequestContent content, RequestContext context = null)
         {
+            Argument.AssertNotNull(content, nameof(content));
+
             using var scope = ClientDiagnostics.CreateScope("OAuthTokensClient.GetOAuthConnectionLink");
             scope.Start();
             try
@@ -139,14 +140,14 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <summary> Returns Connection link needed in the OAuth flow. </summary>
         /// <param name="content"> The content to send as the body of the request. Details of the request body schema are in the Remarks section below. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="content"/> is null. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The response returned from the service. </returns>
         /// <example>
         /// This sample shows how to call GetOAuthConnectionLink with required request content, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new OAuthTokensClient(endpoint, credential);
+        /// var client = new OAuthTokensClient(credential);
         /// 
         /// var data = new {
         ///     farmerId = "<farmerId>",
@@ -162,8 +163,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call GetOAuthConnectionLink with all request content, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new OAuthTokensClient(endpoint, credential);
+        /// var client = new OAuthTokensClient(credential);
         /// 
         /// var data = new {
         ///     farmerId = "<farmerId>",
@@ -185,8 +185,8 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Schema for <c>OAuthConnectRequest</c>:
         /// <code>{
-        ///   farmerId: string, # Required. ID of the farmer.
-        ///   oAuthProviderId: string, # Required. ID of the OAuthProvider.
+        ///   farmerId: string, # Required. Id of the farmer.
+        ///   oAuthProviderId: string, # Required. Id of the OAuthProvider.
         ///   userRedirectLink: string, # Required. Link to redirect the user to, at the end of the oauth flow.
         ///   userRedirectState: string, # Optional. State to provide back when redirecting the user, at the end of the oauth flow.
         /// }
@@ -195,6 +195,8 @@ namespace Azure.Verticals.AgriFood.Farming
         /// </remarks>
         public virtual Response GetOAuthConnectionLink(RequestContent content, RequestContext context = null)
         {
+            Argument.AssertNotNull(content, nameof(content));
+
             using var scope = ClientDiagnostics.CreateScope("OAuthTokensClient.GetOAuthConnectionLink");
             scope.Start();
             try
@@ -209,8 +211,8 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Get cascade delete job details for OAuth tokens for specified job ID. </summary>
-        /// <param name="jobId"> ID of the job. </param>
+        /// <summary> Get remove job for OAuth token. </summary>
+        /// <param name="jobId"> Id of the job. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="jobId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="jobId"/> is an empty string, and was expected to be non-empty. </exception>
@@ -220,8 +222,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call GetCascadeDeleteJobDetailsAsync with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new OAuthTokensClient(endpoint, credential);
+        /// var client = new OAuthTokensClient(credential);
         /// 
         /// Response response = await client.GetCascadeDeleteJobDetailsAsync("<jobId>");
         /// 
@@ -237,9 +238,6 @@ namespace Azure.Verticals.AgriFood.Farming
         /// Console.WriteLine(result.GetProperty("lastActionDateTime").ToString());
         /// Console.WriteLine(result.GetProperty("startTime").ToString());
         /// Console.WriteLine(result.GetProperty("endTime").ToString());
-        /// Console.WriteLine(result.GetProperty("name").ToString());
-        /// Console.WriteLine(result.GetProperty("description").ToString());
-        /// Console.WriteLine(result.GetProperty("properties").GetProperty("<test>").ToString());
         /// ]]></code>
         /// </example>
         /// <remarks>
@@ -249,11 +247,11 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Schema for <c>CascadeDeleteJob</c>:
         /// <code>{
-        ///   farmerId: string, # Required. Farmer ID.
+        ///   farmerId: string, # Required. Farmer Id.
         ///   resourceId: string, # Required. The id of the resource.
         ///   resourceType: string, # Required. The type of the resource.
         ///   id: string, # Optional. Unique job id.
-        ///   status: string, # Optional. Status of the job.
+        ///   status: &quot;Waiting&quot; | &quot;Running&quot; | &quot;Succeeded&quot; | &quot;Failed&quot; | &quot;Cancelled&quot;, # Optional. Status of the job.
         /// Possible values: &apos;Waiting&apos;, &apos;Running&apos;, &apos;Succeeded&apos;, &apos;Failed&apos;, &apos;Cancelled&apos;.
         ///   durationInSeconds: number, # Optional. Duration of the job in seconds.
         ///   message: string, # Optional. Status message to capture more details of the job.
@@ -261,12 +259,6 @@ namespace Azure.Verticals.AgriFood.Farming
         ///   lastActionDateTime: string (ISO 8601 Format), # Optional. Job was last acted upon at dateTime. Sample format: yyyy-MM-ddTHH:mm:ssZ.
         ///   startTime: string (ISO 8601 Format), # Optional. Job start time when available. Sample format: yyyy-MM-ddTHH:mm:ssZ.
         ///   endTime: string (ISO 8601 Format), # Optional. Job end time when available. Sample format: yyyy-MM-ddTHH:mm:ssZ.
-        ///   name: string, # Optional. Name to identify resource.
-        ///   description: string, # Optional. Textual description of the resource.
-        ///   properties: Dictionary&lt;string, AnyObject&gt;, # Optional. A collection of key value pairs that belongs to the resource.
-        /// Each pair must not have a key greater than 50 characters
-        /// and must not have a value greater than 150 characters.
-        /// Note: A maximum of 25 key value pairs can be provided for a resource and only string and numeral values are supported.
         /// }
         /// </code>
         /// 
@@ -289,8 +281,8 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Get cascade delete job details for OAuth tokens for specified job ID. </summary>
-        /// <param name="jobId"> ID of the job. </param>
+        /// <summary> Get remove job for OAuth token. </summary>
+        /// <param name="jobId"> Id of the job. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="jobId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="jobId"/> is an empty string, and was expected to be non-empty. </exception>
@@ -300,8 +292,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call GetCascadeDeleteJobDetails with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new OAuthTokensClient(endpoint, credential);
+        /// var client = new OAuthTokensClient(credential);
         /// 
         /// Response response = client.GetCascadeDeleteJobDetails("<jobId>");
         /// 
@@ -317,9 +308,6 @@ namespace Azure.Verticals.AgriFood.Farming
         /// Console.WriteLine(result.GetProperty("lastActionDateTime").ToString());
         /// Console.WriteLine(result.GetProperty("startTime").ToString());
         /// Console.WriteLine(result.GetProperty("endTime").ToString());
-        /// Console.WriteLine(result.GetProperty("name").ToString());
-        /// Console.WriteLine(result.GetProperty("description").ToString());
-        /// Console.WriteLine(result.GetProperty("properties").GetProperty("<test>").ToString());
         /// ]]></code>
         /// </example>
         /// <remarks>
@@ -329,11 +317,11 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Schema for <c>CascadeDeleteJob</c>:
         /// <code>{
-        ///   farmerId: string, # Required. Farmer ID.
+        ///   farmerId: string, # Required. Farmer Id.
         ///   resourceId: string, # Required. The id of the resource.
         ///   resourceType: string, # Required. The type of the resource.
         ///   id: string, # Optional. Unique job id.
-        ///   status: string, # Optional. Status of the job.
+        ///   status: &quot;Waiting&quot; | &quot;Running&quot; | &quot;Succeeded&quot; | &quot;Failed&quot; | &quot;Cancelled&quot;, # Optional. Status of the job.
         /// Possible values: &apos;Waiting&apos;, &apos;Running&apos;, &apos;Succeeded&apos;, &apos;Failed&apos;, &apos;Cancelled&apos;.
         ///   durationInSeconds: number, # Optional. Duration of the job in seconds.
         ///   message: string, # Optional. Status message to capture more details of the job.
@@ -341,12 +329,6 @@ namespace Azure.Verticals.AgriFood.Farming
         ///   lastActionDateTime: string (ISO 8601 Format), # Optional. Job was last acted upon at dateTime. Sample format: yyyy-MM-ddTHH:mm:ssZ.
         ///   startTime: string (ISO 8601 Format), # Optional. Job start time when available. Sample format: yyyy-MM-ddTHH:mm:ssZ.
         ///   endTime: string (ISO 8601 Format), # Optional. Job end time when available. Sample format: yyyy-MM-ddTHH:mm:ssZ.
-        ///   name: string, # Optional. Name to identify resource.
-        ///   description: string, # Optional. Textual description of the resource.
-        ///   properties: Dictionary&lt;string, AnyObject&gt;, # Optional. A collection of key value pairs that belongs to the resource.
-        /// Each pair must not have a key greater than 50 characters
-        /// and must not have a value greater than 150 characters.
-        /// Note: A maximum of 25 key value pairs can be provided for a resource and only string and numeral values are supported.
         /// }
         /// </code>
         /// 
@@ -389,8 +371,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call GetOAuthTokensAsync and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new OAuthTokensClient(endpoint, credential);
+        /// var client = new OAuthTokensClient(credential);
         /// 
         /// await foreach (var data in client.GetOAuthTokensAsync())
         /// {
@@ -402,8 +383,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call GetOAuthTokensAsync with all parameters, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new OAuthTokensClient(endpoint, credential);
+        /// var client = new OAuthTokensClient(credential);
         /// 
         /// await foreach (var data in client.GetOAuthTokensAsync(new String[]{"<authProviderIds>"}, new String[]{"<farmerIds>"}, true, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1234, "<skipToken>"))
         /// {
@@ -476,8 +456,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call GetOAuthTokens and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new OAuthTokensClient(endpoint, credential);
+        /// var client = new OAuthTokensClient(credential);
         /// 
         /// foreach (var data in client.GetOAuthTokens())
         /// {
@@ -489,8 +468,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call GetOAuthTokens with all parameters, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new OAuthTokensClient(endpoint, credential);
+        /// var client = new OAuthTokensClient(credential);
         /// 
         /// foreach (var data in client.GetOAuthTokens(new String[]{"<authProviderIds>"}, new String[]{"<farmerIds>"}, true, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1234, "<skipToken>"))
         /// {
@@ -543,11 +521,11 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Create a cascade delete job for OAuth tokens. </summary>
+        /// <summary> Create remove job for OAuth token. </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
-        /// <param name="jobId"> Job ID supplied by end user. </param>
-        /// <param name="farmerId"> ID of the farmer. </param>
-        /// <param name="oauthProviderId"> ID of the OAuthProvider. </param>
+        /// <param name="jobId"> Job Id supplied by end user. </param>
+        /// <param name="farmerId"> Id of the farmer. </param>
+        /// <param name="oauthProviderId"> Id of the OAuthProvider. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="jobId"/>, <paramref name="farmerId"/> or <paramref name="oauthProviderId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="jobId"/> is an empty string, and was expected to be non-empty. </exception>
@@ -557,8 +535,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call CreateCascadeDeleteJobAsync with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new OAuthTokensClient(endpoint, credential);
+        /// var client = new OAuthTokensClient(credential);
         /// 
         /// var operation = await client.CreateCascadeDeleteJobAsync(WaitUntil.Completed, "<jobId>", "<farmerId>", "<oauthProviderId>");
         /// 
@@ -575,9 +552,6 @@ namespace Azure.Verticals.AgriFood.Farming
         /// Console.WriteLine(result.GetProperty("lastActionDateTime").ToString());
         /// Console.WriteLine(result.GetProperty("startTime").ToString());
         /// Console.WriteLine(result.GetProperty("endTime").ToString());
-        /// Console.WriteLine(result.GetProperty("name").ToString());
-        /// Console.WriteLine(result.GetProperty("description").ToString());
-        /// Console.WriteLine(result.GetProperty("properties").GetProperty("<test>").ToString());
         /// ]]></code>
         /// </example>
         /// <remarks>
@@ -587,11 +561,11 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Schema for <c>CascadeDeleteJob</c>:
         /// <code>{
-        ///   farmerId: string, # Required. Farmer ID.
+        ///   farmerId: string, # Required. Farmer Id.
         ///   resourceId: string, # Required. The id of the resource.
         ///   resourceType: string, # Required. The type of the resource.
         ///   id: string, # Optional. Unique job id.
-        ///   status: string, # Optional. Status of the job.
+        ///   status: &quot;Waiting&quot; | &quot;Running&quot; | &quot;Succeeded&quot; | &quot;Failed&quot; | &quot;Cancelled&quot;, # Optional. Status of the job.
         /// Possible values: &apos;Waiting&apos;, &apos;Running&apos;, &apos;Succeeded&apos;, &apos;Failed&apos;, &apos;Cancelled&apos;.
         ///   durationInSeconds: number, # Optional. Duration of the job in seconds.
         ///   message: string, # Optional. Status message to capture more details of the job.
@@ -599,12 +573,6 @@ namespace Azure.Verticals.AgriFood.Farming
         ///   lastActionDateTime: string (ISO 8601 Format), # Optional. Job was last acted upon at dateTime. Sample format: yyyy-MM-ddTHH:mm:ssZ.
         ///   startTime: string (ISO 8601 Format), # Optional. Job start time when available. Sample format: yyyy-MM-ddTHH:mm:ssZ.
         ///   endTime: string (ISO 8601 Format), # Optional. Job end time when available. Sample format: yyyy-MM-ddTHH:mm:ssZ.
-        ///   name: string, # Optional. Name to identify resource.
-        ///   description: string, # Optional. Textual description of the resource.
-        ///   properties: Dictionary&lt;string, AnyObject&gt;, # Optional. A collection of key value pairs that belongs to the resource.
-        /// Each pair must not have a key greater than 50 characters
-        /// and must not have a value greater than 150 characters.
-        /// Note: A maximum of 25 key value pairs can be provided for a resource and only string and numeral values are supported.
         /// }
         /// </code>
         /// 
@@ -629,11 +597,11 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Create a cascade delete job for OAuth tokens. </summary>
+        /// <summary> Create remove job for OAuth token. </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
-        /// <param name="jobId"> Job ID supplied by end user. </param>
-        /// <param name="farmerId"> ID of the farmer. </param>
-        /// <param name="oauthProviderId"> ID of the OAuthProvider. </param>
+        /// <param name="jobId"> Job Id supplied by end user. </param>
+        /// <param name="farmerId"> Id of the farmer. </param>
+        /// <param name="oauthProviderId"> Id of the OAuthProvider. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="jobId"/>, <paramref name="farmerId"/> or <paramref name="oauthProviderId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="jobId"/> is an empty string, and was expected to be non-empty. </exception>
@@ -643,8 +611,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call CreateCascadeDeleteJob with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new OAuthTokensClient(endpoint, credential);
+        /// var client = new OAuthTokensClient(credential);
         /// 
         /// var operation = client.CreateCascadeDeleteJob(WaitUntil.Completed, "<jobId>", "<farmerId>", "<oauthProviderId>");
         /// 
@@ -661,9 +628,6 @@ namespace Azure.Verticals.AgriFood.Farming
         /// Console.WriteLine(result.GetProperty("lastActionDateTime").ToString());
         /// Console.WriteLine(result.GetProperty("startTime").ToString());
         /// Console.WriteLine(result.GetProperty("endTime").ToString());
-        /// Console.WriteLine(result.GetProperty("name").ToString());
-        /// Console.WriteLine(result.GetProperty("description").ToString());
-        /// Console.WriteLine(result.GetProperty("properties").GetProperty("<test>").ToString());
         /// ]]></code>
         /// </example>
         /// <remarks>
@@ -673,11 +637,11 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Schema for <c>CascadeDeleteJob</c>:
         /// <code>{
-        ///   farmerId: string, # Required. Farmer ID.
+        ///   farmerId: string, # Required. Farmer Id.
         ///   resourceId: string, # Required. The id of the resource.
         ///   resourceType: string, # Required. The type of the resource.
         ///   id: string, # Optional. Unique job id.
-        ///   status: string, # Optional. Status of the job.
+        ///   status: &quot;Waiting&quot; | &quot;Running&quot; | &quot;Succeeded&quot; | &quot;Failed&quot; | &quot;Cancelled&quot;, # Optional. Status of the job.
         /// Possible values: &apos;Waiting&apos;, &apos;Running&apos;, &apos;Succeeded&apos;, &apos;Failed&apos;, &apos;Cancelled&apos;.
         ///   durationInSeconds: number, # Optional. Duration of the job in seconds.
         ///   message: string, # Optional. Status message to capture more details of the job.
@@ -685,12 +649,6 @@ namespace Azure.Verticals.AgriFood.Farming
         ///   lastActionDateTime: string (ISO 8601 Format), # Optional. Job was last acted upon at dateTime. Sample format: yyyy-MM-ddTHH:mm:ssZ.
         ///   startTime: string (ISO 8601 Format), # Optional. Job start time when available. Sample format: yyyy-MM-ddTHH:mm:ssZ.
         ///   endTime: string (ISO 8601 Format), # Optional. Job end time when available. Sample format: yyyy-MM-ddTHH:mm:ssZ.
-        ///   name: string, # Optional. Name to identify resource.
-        ///   description: string, # Optional. Textual description of the resource.
-        ///   properties: Dictionary&lt;string, AnyObject&gt;, # Optional. A collection of key value pairs that belongs to the resource.
-        /// Each pair must not have a key greater than 50 characters
-        /// and must not have a value greater than 150 characters.
-        /// Note: A maximum of 25 key value pairs can be provided for a resource and only string and numeral values are supported.
         /// }
         /// </code>
         /// 
@@ -787,21 +745,6 @@ namespace Azure.Verticals.AgriFood.Farming
             return message;
         }
 
-        internal HttpMessage CreateGetCascadeDeleteJobDetailsRequest(string jobId, RequestContext context)
-        {
-            var message = _pipeline.CreateMessage(context, ResponseClassifier200);
-            var request = message.Request;
-            request.Method = RequestMethod.Get;
-            var uri = new RawRequestUriBuilder();
-            uri.Reset(_endpoint);
-            uri.AppendPath("/oauth/tokens/remove/", false);
-            uri.AppendPath(jobId, true);
-            uri.AppendQuery("api-version", _apiVersion, true);
-            request.Uri = uri;
-            request.Headers.Add("Accept", "application/json");
-            return message;
-        }
-
         internal HttpMessage CreateCreateCascadeDeleteJobRequest(string jobId, string farmerId, string oauthProviderId, RequestContext context)
         {
             var message = _pipeline.CreateMessage(context, ResponseClassifier202);
@@ -813,6 +756,21 @@ namespace Azure.Verticals.AgriFood.Farming
             uri.AppendPath(jobId, true);
             uri.AppendQuery("farmerId", farmerId, true);
             uri.AppendQuery("oauthProviderId", oauthProviderId, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            request.Uri = uri;
+            request.Headers.Add("Accept", "application/json");
+            return message;
+        }
+
+        internal HttpMessage CreateGetCascadeDeleteJobDetailsRequest(string jobId, RequestContext context)
+        {
+            var message = _pipeline.CreateMessage(context, ResponseClassifier200);
+            var request = message.Request;
+            request.Method = RequestMethod.Get;
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/oauth/tokens/remove/", false);
+            uri.AppendPath(jobId, true);
             uri.AppendQuery("api-version", _apiVersion, true);
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");

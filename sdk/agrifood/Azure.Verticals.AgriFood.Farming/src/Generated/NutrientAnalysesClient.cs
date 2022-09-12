@@ -16,9 +16,9 @@ using Azure.Core.Pipeline;
 
 namespace Azure.Verticals.AgriFood.Farming
 {
-    // Data plane generated client. The Farms service client.
-    /// <summary> The Farms service client. </summary>
-    public partial class FarmsClient
+    // Data plane generated client. The NutrientAnalyses service client.
+    /// <summary> The NutrientAnalyses service client. </summary>
+    public partial class NutrientAnalysesClient
     {
         private static readonly string[] AuthorizationScopes = new string[] { "https://farmbeats.azure.net/.default" };
         private readonly TokenCredential _tokenCredential;
@@ -32,25 +32,25 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <summary> The HTTP pipeline for sending and receiving REST requests and responses. </summary>
         public virtual HttpPipeline Pipeline => _pipeline;
 
-        /// <summary> Initializes a new instance of FarmsClient for mocking. </summary>
-        protected FarmsClient()
+        /// <summary> Initializes a new instance of NutrientAnalysesClient for mocking. </summary>
+        protected NutrientAnalysesClient()
         {
         }
 
-        /// <summary> Initializes a new instance of FarmsClient. </summary>
+        /// <summary> Initializes a new instance of NutrientAnalysesClient. </summary>
         /// <param name="endpoint"> The endpoint of your FarmBeats resource (protocol and hostname, for example: https://{resourceName}.farmbeats.azure.net). </param>
         /// <param name="credential"> A credential used to authenticate to an Azure Service. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="endpoint"/> or <paramref name="credential"/> is null. </exception>
-        public FarmsClient(TokenCredential credential, Uri endpoint) : this(credential, endpoint, new FarmBeatsClientOptions())
+        public NutrientAnalysesClient(TokenCredential credential, Uri endpoint) : this(credential, endpoint, new FarmBeatsClientOptions())
         {
         }
 
-        /// <summary> Initializes a new instance of FarmsClient. </summary>
+        /// <summary> Initializes a new instance of NutrientAnalysesClient. </summary>
         /// <param name="credential"> A credential used to authenticate to an Azure Service. </param>
         /// <param name="endpoint"> server parameter. </param>
         /// <param name="options"> The options for configuring the client. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="credential"/> or <paramref name="endpoint"/> is null. </exception>
-        public FarmsClient(TokenCredential credential, Uri endpoint, FarmBeatsClientOptions options)
+        public NutrientAnalysesClient(TokenCredential credential, Uri endpoint, FarmBeatsClientOptions options)
         {
             Argument.AssertNotNull(credential, nameof(credential));
             Argument.AssertNotNull(endpoint, nameof(endpoint));
@@ -63,24 +63,35 @@ namespace Azure.Verticals.AgriFood.Farming
             _apiVersion = options.Version;
         }
 
-        /// <summary> Gets a specified farm resource under a particular farmer. </summary>
-        /// <param name="farmerId"> ID of the associated farmer resource. </param>
-        /// <param name="farmId"> ID of the farm resource. </param>
+        /// <summary> Gets a specified nutrient analysis resource under a particular farmer. </summary>
+        /// <param name="farmerId"> Id of the associated farmer. </param>
+        /// <param name="nutrientAnalysisId"> Id of the nutrient analysis. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/> or <paramref name="farmId"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="farmId"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/> or <paramref name="nutrientAnalysisId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="nutrientAnalysisId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
         /// <example>
-        /// This sample shows how to call GetFarmAsync with required parameters and parse the result.
+        /// This sample shows how to call GetNutrientAnalysisAsync with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmsClient(credential);
+        /// var client = new NutrientAnalysesClient(credential);
         /// 
-        /// Response response = await client.GetFarmAsync("<farmerId>", "<farmId>");
+        /// Response response = await client.GetNutrientAnalysisAsync("<farmerId>", "<nutrientAnalysisId>");
         /// 
         /// JsonElement result = JsonDocument.Parse(response.ContentStream).RootElement;
         /// Console.WriteLine(result.GetProperty("farmerId").ToString());
+        /// Console.WriteLine(result.GetProperty("parentId").ToString());
+        /// Console.WriteLine(result.GetProperty("parentType").ToString());
+        /// Console.WriteLine(result.GetProperty("unit").ToString());
+        /// Console.WriteLine(result.GetProperty("value").ToString());
+        /// Console.WriteLine(result.GetProperty("referenceValueLow").ToString());
+        /// Console.WriteLine(result.GetProperty("referenceValueHigh").ToString());
+        /// Console.WriteLine(result.GetProperty("classification").ToString());
+        /// Console.WriteLine(result.GetProperty("recommendation").ToString());
+        /// Console.WriteLine(result.GetProperty("products")[0].GetProperty("rate").ToString());
+        /// Console.WriteLine(result.GetProperty("products")[0].GetProperty("instruction").ToString());
+        /// Console.WriteLine(result.GetProperty("products")[0].GetProperty("product").ToString());
         /// Console.WriteLine(result.GetProperty("id").ToString());
         /// Console.WriteLine(result.GetProperty("eTag").ToString());
         /// Console.WriteLine(result.GetProperty("status").ToString());
@@ -97,9 +108,25 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Response Body:
         /// 
-        /// Schema for <c>Farm</c>:
+        /// Schema for <c>NutrientAnalysis</c>:
         /// <code>{
-        ///   farmerId: string, # Optional. Farmer Id.
+        ///   farmerId: string, # Optional. Farmer id for this nutrient analysis.
+        ///   parentId: string, # Optional. Parent id for this nutrient analysis.
+        ///   parentType: &quot;PlantTissueAnalysis&quot;, # Optional. Parent type for this nutrient analysis.
+        /// i.e. PlantTissueAnalysis.
+        ///   unit: string, # Optional. Unit for this nutrient analysis.
+        ///   value: number, # Optional. Value for this nutrient analysis.
+        ///   referenceValueLow: number, # Optional. Reference value low for this nutrient analysis.
+        ///   referenceValueHigh: number, # Optional. Reference value high for this nutrient analysis.
+        ///   classification: string, # Optional. Classification for this nutrient analysis.
+        ///   recommendation: string, # Optional. Recommendation for this nutrient analysis.
+        ///   products: [
+        ///     {
+        ///       rate: string, # Optional. Rate of the product.
+        ///       instruction: string, # Optional. Instruction of the resource.
+        ///       product: string, # Optional. Product of the resource.
+        ///     }
+        ///   ], # Optional. Products for this nutrient analysis.
         ///   id: string, # Optional. Unique resource ID.
         ///   eTag: string, # Optional. The ETag value to implement optimistic concurrency.
         ///   status: string, # Optional. Status of the resource.
@@ -117,16 +144,16 @@ namespace Azure.Verticals.AgriFood.Farming
         /// </code>
         /// 
         /// </remarks>
-        public virtual async Task<Response> GetFarmAsync(string farmerId, string farmId, RequestContext context = null)
+        public virtual async Task<Response> GetNutrientAnalysisAsync(string farmerId, string nutrientAnalysisId, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(farmerId, nameof(farmerId));
-            Argument.AssertNotNullOrEmpty(farmId, nameof(farmId));
+            Argument.AssertNotNullOrEmpty(nutrientAnalysisId, nameof(nutrientAnalysisId));
 
-            using var scope = ClientDiagnostics.CreateScope("FarmsClient.GetFarm");
+            using var scope = ClientDiagnostics.CreateScope("NutrientAnalysesClient.GetNutrientAnalysis");
             scope.Start();
             try
             {
-                using HttpMessage message = CreateGetFarmRequest(farmerId, farmId, context);
+                using HttpMessage message = CreateGetNutrientAnalysisRequest(farmerId, nutrientAnalysisId, context);
                 return await _pipeline.ProcessMessageAsync(message, context).ConfigureAwait(false);
             }
             catch (Exception e)
@@ -136,24 +163,35 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Gets a specified farm resource under a particular farmer. </summary>
-        /// <param name="farmerId"> ID of the associated farmer resource. </param>
-        /// <param name="farmId"> ID of the farm resource. </param>
+        /// <summary> Gets a specified nutrient analysis resource under a particular farmer. </summary>
+        /// <param name="farmerId"> Id of the associated farmer. </param>
+        /// <param name="nutrientAnalysisId"> Id of the nutrient analysis. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/> or <paramref name="farmId"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="farmId"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/> or <paramref name="nutrientAnalysisId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="nutrientAnalysisId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
         /// <example>
-        /// This sample shows how to call GetFarm with required parameters and parse the result.
+        /// This sample shows how to call GetNutrientAnalysis with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmsClient(credential);
+        /// var client = new NutrientAnalysesClient(credential);
         /// 
-        /// Response response = client.GetFarm("<farmerId>", "<farmId>");
+        /// Response response = client.GetNutrientAnalysis("<farmerId>", "<nutrientAnalysisId>");
         /// 
         /// JsonElement result = JsonDocument.Parse(response.ContentStream).RootElement;
         /// Console.WriteLine(result.GetProperty("farmerId").ToString());
+        /// Console.WriteLine(result.GetProperty("parentId").ToString());
+        /// Console.WriteLine(result.GetProperty("parentType").ToString());
+        /// Console.WriteLine(result.GetProperty("unit").ToString());
+        /// Console.WriteLine(result.GetProperty("value").ToString());
+        /// Console.WriteLine(result.GetProperty("referenceValueLow").ToString());
+        /// Console.WriteLine(result.GetProperty("referenceValueHigh").ToString());
+        /// Console.WriteLine(result.GetProperty("classification").ToString());
+        /// Console.WriteLine(result.GetProperty("recommendation").ToString());
+        /// Console.WriteLine(result.GetProperty("products")[0].GetProperty("rate").ToString());
+        /// Console.WriteLine(result.GetProperty("products")[0].GetProperty("instruction").ToString());
+        /// Console.WriteLine(result.GetProperty("products")[0].GetProperty("product").ToString());
         /// Console.WriteLine(result.GetProperty("id").ToString());
         /// Console.WriteLine(result.GetProperty("eTag").ToString());
         /// Console.WriteLine(result.GetProperty("status").ToString());
@@ -170,9 +208,25 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Response Body:
         /// 
-        /// Schema for <c>Farm</c>:
+        /// Schema for <c>NutrientAnalysis</c>:
         /// <code>{
-        ///   farmerId: string, # Optional. Farmer Id.
+        ///   farmerId: string, # Optional. Farmer id for this nutrient analysis.
+        ///   parentId: string, # Optional. Parent id for this nutrient analysis.
+        ///   parentType: &quot;PlantTissueAnalysis&quot;, # Optional. Parent type for this nutrient analysis.
+        /// i.e. PlantTissueAnalysis.
+        ///   unit: string, # Optional. Unit for this nutrient analysis.
+        ///   value: number, # Optional. Value for this nutrient analysis.
+        ///   referenceValueLow: number, # Optional. Reference value low for this nutrient analysis.
+        ///   referenceValueHigh: number, # Optional. Reference value high for this nutrient analysis.
+        ///   classification: string, # Optional. Classification for this nutrient analysis.
+        ///   recommendation: string, # Optional. Recommendation for this nutrient analysis.
+        ///   products: [
+        ///     {
+        ///       rate: string, # Optional. Rate of the product.
+        ///       instruction: string, # Optional. Instruction of the resource.
+        ///       product: string, # Optional. Product of the resource.
+        ///     }
+        ///   ], # Optional. Products for this nutrient analysis.
         ///   id: string, # Optional. Unique resource ID.
         ///   eTag: string, # Optional. The ETag value to implement optimistic concurrency.
         ///   status: string, # Optional. Status of the resource.
@@ -190,16 +244,16 @@ namespace Azure.Verticals.AgriFood.Farming
         /// </code>
         /// 
         /// </remarks>
-        public virtual Response GetFarm(string farmerId, string farmId, RequestContext context = null)
+        public virtual Response GetNutrientAnalysis(string farmerId, string nutrientAnalysisId, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(farmerId, nameof(farmerId));
-            Argument.AssertNotNullOrEmpty(farmId, nameof(farmId));
+            Argument.AssertNotNullOrEmpty(nutrientAnalysisId, nameof(nutrientAnalysisId));
 
-            using var scope = ClientDiagnostics.CreateScope("FarmsClient.GetFarm");
+            using var scope = ClientDiagnostics.CreateScope("NutrientAnalysesClient.GetNutrientAnalysis");
             scope.Start();
             try
             {
-                using HttpMessage message = CreateGetFarmRequest(farmerId, farmId, context);
+                using HttpMessage message = CreateGetNutrientAnalysisRequest(farmerId, nutrientAnalysisId, context);
                 return _pipeline.ProcessMessage(message, context);
             }
             catch (Exception e)
@@ -209,24 +263,24 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Creates or updates a farm resource under a particular farmer. </summary>
-        /// <param name="farmerId"> Id of the associated farmer resource. </param>
-        /// <param name="farmId"> Id of the farm resource. </param>
+        /// <summary> Creates or updates a nutrient analysis resource. </summary>
+        /// <param name="farmerId"> Id of the farmer resource. </param>
+        /// <param name="nutrientAnalysisId"> Id of the nutrient analysis resource. </param>
         /// <param name="content"> The content to send as the body of the request. Details of the request body schema are in the Remarks section below. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/>, <paramref name="farmId"/> or <paramref name="content"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="farmId"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/>, <paramref name="nutrientAnalysisId"/> or <paramref name="content"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="nutrientAnalysisId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
         /// <example>
         /// This sample shows how to call CreateOrUpdateAsync with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmsClient(credential);
+        /// var client = new NutrientAnalysesClient(credential);
         /// 
         /// var data = new {};
         /// 
-        /// Response response = await client.CreateOrUpdateAsync("<farmerId>", "<farmId>", RequestContent.Create(data));
+        /// Response response = await client.CreateOrUpdateAsync("<farmerId>", "<nutrientAnalysisId>", RequestContent.Create(data));
         /// 
         /// JsonElement result = JsonDocument.Parse(response.ContentStream).RootElement;
         /// Console.WriteLine(result.ToString());
@@ -234,9 +288,24 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call CreateOrUpdateAsync with all parameters and request content, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmsClient(credential);
+        /// var client = new NutrientAnalysesClient(credential);
         /// 
         /// var data = new {
+        ///     parentId = "<parentId>",
+        ///     parentType = "PlantTissueAnalysis",
+        ///     unit = "<unit>",
+        ///     value = 123.45d,
+        ///     referenceValueLow = 123.45d,
+        ///     referenceValueHigh = 123.45d,
+        ///     classification = "<classification>",
+        ///     recommendation = "<recommendation>",
+        ///     products = new[] {
+        ///         new {
+        ///             rate = "<rate>",
+        ///             instruction = "<instruction>",
+        ///             product = "<product>",
+        ///         }
+        ///     },
         ///     status = "<status>",
         ///     source = "<source>",
         ///     name = "<name>",
@@ -246,10 +315,21 @@ namespace Azure.Verticals.AgriFood.Farming
         ///     },
         /// };
         /// 
-        /// Response response = await client.CreateOrUpdateAsync("<farmerId>", "<farmId>", RequestContent.Create(data));
+        /// Response response = await client.CreateOrUpdateAsync("<farmerId>", "<nutrientAnalysisId>", RequestContent.Create(data));
         /// 
         /// JsonElement result = JsonDocument.Parse(response.ContentStream).RootElement;
         /// Console.WriteLine(result.GetProperty("farmerId").ToString());
+        /// Console.WriteLine(result.GetProperty("parentId").ToString());
+        /// Console.WriteLine(result.GetProperty("parentType").ToString());
+        /// Console.WriteLine(result.GetProperty("unit").ToString());
+        /// Console.WriteLine(result.GetProperty("value").ToString());
+        /// Console.WriteLine(result.GetProperty("referenceValueLow").ToString());
+        /// Console.WriteLine(result.GetProperty("referenceValueHigh").ToString());
+        /// Console.WriteLine(result.GetProperty("classification").ToString());
+        /// Console.WriteLine(result.GetProperty("recommendation").ToString());
+        /// Console.WriteLine(result.GetProperty("products")[0].GetProperty("rate").ToString());
+        /// Console.WriteLine(result.GetProperty("products")[0].GetProperty("instruction").ToString());
+        /// Console.WriteLine(result.GetProperty("products")[0].GetProperty("product").ToString());
         /// Console.WriteLine(result.GetProperty("id").ToString());
         /// Console.WriteLine(result.GetProperty("eTag").ToString());
         /// Console.WriteLine(result.GetProperty("status").ToString());
@@ -266,9 +346,25 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Request Body:
         /// 
-        /// Schema for <c>Farm</c>:
+        /// Schema for <c>NutrientAnalysis</c>:
         /// <code>{
-        ///   farmerId: string, # Optional. Farmer Id.
+        ///   farmerId: string, # Optional. Farmer id for this nutrient analysis.
+        ///   parentId: string, # Optional. Parent id for this nutrient analysis.
+        ///   parentType: &quot;PlantTissueAnalysis&quot;, # Optional. Parent type for this nutrient analysis.
+        /// i.e. PlantTissueAnalysis.
+        ///   unit: string, # Optional. Unit for this nutrient analysis.
+        ///   value: number, # Optional. Value for this nutrient analysis.
+        ///   referenceValueLow: number, # Optional. Reference value low for this nutrient analysis.
+        ///   referenceValueHigh: number, # Optional. Reference value high for this nutrient analysis.
+        ///   classification: string, # Optional. Classification for this nutrient analysis.
+        ///   recommendation: string, # Optional. Recommendation for this nutrient analysis.
+        ///   products: [
+        ///     {
+        ///       rate: string, # Optional. Rate of the product.
+        ///       instruction: string, # Optional. Instruction of the resource.
+        ///       product: string, # Optional. Product of the resource.
+        ///     }
+        ///   ], # Optional. Products for this nutrient analysis.
         ///   id: string, # Optional. Unique resource ID.
         ///   eTag: string, # Optional. The ETag value to implement optimistic concurrency.
         ///   status: string, # Optional. Status of the resource.
@@ -287,9 +383,25 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Response Body:
         /// 
-        /// Schema for <c>Farm</c>:
+        /// Schema for <c>NutrientAnalysis</c>:
         /// <code>{
-        ///   farmerId: string, # Optional. Farmer Id.
+        ///   farmerId: string, # Optional. Farmer id for this nutrient analysis.
+        ///   parentId: string, # Optional. Parent id for this nutrient analysis.
+        ///   parentType: &quot;PlantTissueAnalysis&quot;, # Optional. Parent type for this nutrient analysis.
+        /// i.e. PlantTissueAnalysis.
+        ///   unit: string, # Optional. Unit for this nutrient analysis.
+        ///   value: number, # Optional. Value for this nutrient analysis.
+        ///   referenceValueLow: number, # Optional. Reference value low for this nutrient analysis.
+        ///   referenceValueHigh: number, # Optional. Reference value high for this nutrient analysis.
+        ///   classification: string, # Optional. Classification for this nutrient analysis.
+        ///   recommendation: string, # Optional. Recommendation for this nutrient analysis.
+        ///   products: [
+        ///     {
+        ///       rate: string, # Optional. Rate of the product.
+        ///       instruction: string, # Optional. Instruction of the resource.
+        ///       product: string, # Optional. Product of the resource.
+        ///     }
+        ///   ], # Optional. Products for this nutrient analysis.
         ///   id: string, # Optional. Unique resource ID.
         ///   eTag: string, # Optional. The ETag value to implement optimistic concurrency.
         ///   status: string, # Optional. Status of the resource.
@@ -307,17 +419,17 @@ namespace Azure.Verticals.AgriFood.Farming
         /// </code>
         /// 
         /// </remarks>
-        public virtual async Task<Response> CreateOrUpdateAsync(string farmerId, string farmId, RequestContent content, RequestContext context = null)
+        public virtual async Task<Response> CreateOrUpdateAsync(string farmerId, string nutrientAnalysisId, RequestContent content, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(farmerId, nameof(farmerId));
-            Argument.AssertNotNullOrEmpty(farmId, nameof(farmId));
+            Argument.AssertNotNullOrEmpty(nutrientAnalysisId, nameof(nutrientAnalysisId));
             Argument.AssertNotNull(content, nameof(content));
 
-            using var scope = ClientDiagnostics.CreateScope("FarmsClient.CreateOrUpdate");
+            using var scope = ClientDiagnostics.CreateScope("NutrientAnalysesClient.CreateOrUpdate");
             scope.Start();
             try
             {
-                using HttpMessage message = CreateCreateOrUpdateRequest(farmerId, farmId, content, context);
+                using HttpMessage message = CreateCreateOrUpdateRequest(farmerId, nutrientAnalysisId, content, context);
                 return await _pipeline.ProcessMessageAsync(message, context).ConfigureAwait(false);
             }
             catch (Exception e)
@@ -327,24 +439,24 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Creates or updates a farm resource under a particular farmer. </summary>
-        /// <param name="farmerId"> Id of the associated farmer resource. </param>
-        /// <param name="farmId"> Id of the farm resource. </param>
+        /// <summary> Creates or updates a nutrient analysis resource. </summary>
+        /// <param name="farmerId"> Id of the farmer resource. </param>
+        /// <param name="nutrientAnalysisId"> Id of the nutrient analysis resource. </param>
         /// <param name="content"> The content to send as the body of the request. Details of the request body schema are in the Remarks section below. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/>, <paramref name="farmId"/> or <paramref name="content"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="farmId"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/>, <paramref name="nutrientAnalysisId"/> or <paramref name="content"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="nutrientAnalysisId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
         /// <example>
         /// This sample shows how to call CreateOrUpdate with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmsClient(credential);
+        /// var client = new NutrientAnalysesClient(credential);
         /// 
         /// var data = new {};
         /// 
-        /// Response response = client.CreateOrUpdate("<farmerId>", "<farmId>", RequestContent.Create(data));
+        /// Response response = client.CreateOrUpdate("<farmerId>", "<nutrientAnalysisId>", RequestContent.Create(data));
         /// 
         /// JsonElement result = JsonDocument.Parse(response.ContentStream).RootElement;
         /// Console.WriteLine(result.ToString());
@@ -352,9 +464,24 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call CreateOrUpdate with all parameters and request content, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmsClient(credential);
+        /// var client = new NutrientAnalysesClient(credential);
         /// 
         /// var data = new {
+        ///     parentId = "<parentId>",
+        ///     parentType = "PlantTissueAnalysis",
+        ///     unit = "<unit>",
+        ///     value = 123.45d,
+        ///     referenceValueLow = 123.45d,
+        ///     referenceValueHigh = 123.45d,
+        ///     classification = "<classification>",
+        ///     recommendation = "<recommendation>",
+        ///     products = new[] {
+        ///         new {
+        ///             rate = "<rate>",
+        ///             instruction = "<instruction>",
+        ///             product = "<product>",
+        ///         }
+        ///     },
         ///     status = "<status>",
         ///     source = "<source>",
         ///     name = "<name>",
@@ -364,10 +491,21 @@ namespace Azure.Verticals.AgriFood.Farming
         ///     },
         /// };
         /// 
-        /// Response response = client.CreateOrUpdate("<farmerId>", "<farmId>", RequestContent.Create(data));
+        /// Response response = client.CreateOrUpdate("<farmerId>", "<nutrientAnalysisId>", RequestContent.Create(data));
         /// 
         /// JsonElement result = JsonDocument.Parse(response.ContentStream).RootElement;
         /// Console.WriteLine(result.GetProperty("farmerId").ToString());
+        /// Console.WriteLine(result.GetProperty("parentId").ToString());
+        /// Console.WriteLine(result.GetProperty("parentType").ToString());
+        /// Console.WriteLine(result.GetProperty("unit").ToString());
+        /// Console.WriteLine(result.GetProperty("value").ToString());
+        /// Console.WriteLine(result.GetProperty("referenceValueLow").ToString());
+        /// Console.WriteLine(result.GetProperty("referenceValueHigh").ToString());
+        /// Console.WriteLine(result.GetProperty("classification").ToString());
+        /// Console.WriteLine(result.GetProperty("recommendation").ToString());
+        /// Console.WriteLine(result.GetProperty("products")[0].GetProperty("rate").ToString());
+        /// Console.WriteLine(result.GetProperty("products")[0].GetProperty("instruction").ToString());
+        /// Console.WriteLine(result.GetProperty("products")[0].GetProperty("product").ToString());
         /// Console.WriteLine(result.GetProperty("id").ToString());
         /// Console.WriteLine(result.GetProperty("eTag").ToString());
         /// Console.WriteLine(result.GetProperty("status").ToString());
@@ -384,9 +522,25 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Request Body:
         /// 
-        /// Schema for <c>Farm</c>:
+        /// Schema for <c>NutrientAnalysis</c>:
         /// <code>{
-        ///   farmerId: string, # Optional. Farmer Id.
+        ///   farmerId: string, # Optional. Farmer id for this nutrient analysis.
+        ///   parentId: string, # Optional. Parent id for this nutrient analysis.
+        ///   parentType: &quot;PlantTissueAnalysis&quot;, # Optional. Parent type for this nutrient analysis.
+        /// i.e. PlantTissueAnalysis.
+        ///   unit: string, # Optional. Unit for this nutrient analysis.
+        ///   value: number, # Optional. Value for this nutrient analysis.
+        ///   referenceValueLow: number, # Optional. Reference value low for this nutrient analysis.
+        ///   referenceValueHigh: number, # Optional. Reference value high for this nutrient analysis.
+        ///   classification: string, # Optional. Classification for this nutrient analysis.
+        ///   recommendation: string, # Optional. Recommendation for this nutrient analysis.
+        ///   products: [
+        ///     {
+        ///       rate: string, # Optional. Rate of the product.
+        ///       instruction: string, # Optional. Instruction of the resource.
+        ///       product: string, # Optional. Product of the resource.
+        ///     }
+        ///   ], # Optional. Products for this nutrient analysis.
         ///   id: string, # Optional. Unique resource ID.
         ///   eTag: string, # Optional. The ETag value to implement optimistic concurrency.
         ///   status: string, # Optional. Status of the resource.
@@ -405,9 +559,25 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Response Body:
         /// 
-        /// Schema for <c>Farm</c>:
+        /// Schema for <c>NutrientAnalysis</c>:
         /// <code>{
-        ///   farmerId: string, # Optional. Farmer Id.
+        ///   farmerId: string, # Optional. Farmer id for this nutrient analysis.
+        ///   parentId: string, # Optional. Parent id for this nutrient analysis.
+        ///   parentType: &quot;PlantTissueAnalysis&quot;, # Optional. Parent type for this nutrient analysis.
+        /// i.e. PlantTissueAnalysis.
+        ///   unit: string, # Optional. Unit for this nutrient analysis.
+        ///   value: number, # Optional. Value for this nutrient analysis.
+        ///   referenceValueLow: number, # Optional. Reference value low for this nutrient analysis.
+        ///   referenceValueHigh: number, # Optional. Reference value high for this nutrient analysis.
+        ///   classification: string, # Optional. Classification for this nutrient analysis.
+        ///   recommendation: string, # Optional. Recommendation for this nutrient analysis.
+        ///   products: [
+        ///     {
+        ///       rate: string, # Optional. Rate of the product.
+        ///       instruction: string, # Optional. Instruction of the resource.
+        ///       product: string, # Optional. Product of the resource.
+        ///     }
+        ///   ], # Optional. Products for this nutrient analysis.
         ///   id: string, # Optional. Unique resource ID.
         ///   eTag: string, # Optional. The ETag value to implement optimistic concurrency.
         ///   status: string, # Optional. Status of the resource.
@@ -425,17 +595,17 @@ namespace Azure.Verticals.AgriFood.Farming
         /// </code>
         /// 
         /// </remarks>
-        public virtual Response CreateOrUpdate(string farmerId, string farmId, RequestContent content, RequestContext context = null)
+        public virtual Response CreateOrUpdate(string farmerId, string nutrientAnalysisId, RequestContent content, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(farmerId, nameof(farmerId));
-            Argument.AssertNotNullOrEmpty(farmId, nameof(farmId));
+            Argument.AssertNotNullOrEmpty(nutrientAnalysisId, nameof(nutrientAnalysisId));
             Argument.AssertNotNull(content, nameof(content));
 
-            using var scope = ClientDiagnostics.CreateScope("FarmsClient.CreateOrUpdate");
+            using var scope = ClientDiagnostics.CreateScope("NutrientAnalysesClient.CreateOrUpdate");
             scope.Start();
             try
             {
-                using HttpMessage message = CreateCreateOrUpdateRequest(farmerId, farmId, content, context);
+                using HttpMessage message = CreateCreateOrUpdateRequest(farmerId, nutrientAnalysisId, content, context);
                 return _pipeline.ProcessMessage(message, context);
             }
             catch (Exception e)
@@ -445,34 +615,34 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Deletes a specified farm resource under a particular farmer. </summary>
+        /// <summary> Deletes a specified nutrient analysis resource under a particular farmer. </summary>
         /// <param name="farmerId"> Id of the farmer. </param>
-        /// <param name="farmId"> Id of the farm. </param>
+        /// <param name="nutrientAnalysisId"> Id of the nutrient analysis. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/> or <paramref name="farmId"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="farmId"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/> or <paramref name="nutrientAnalysisId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="nutrientAnalysisId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The response returned from the service. </returns>
         /// <example>
         /// This sample shows how to call DeleteAsync with required parameters.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmsClient(credential);
+        /// var client = new NutrientAnalysesClient(credential);
         /// 
-        /// Response response = await client.DeleteAsync("<farmerId>", "<farmId>");
+        /// Response response = await client.DeleteAsync("<farmerId>", "<nutrientAnalysisId>");
         /// Console.WriteLine(response.Status);
         /// ]]></code>
         /// </example>
-        public virtual async Task<Response> DeleteAsync(string farmerId, string farmId, RequestContext context = null)
+        public virtual async Task<Response> DeleteAsync(string farmerId, string nutrientAnalysisId, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(farmerId, nameof(farmerId));
-            Argument.AssertNotNullOrEmpty(farmId, nameof(farmId));
+            Argument.AssertNotNullOrEmpty(nutrientAnalysisId, nameof(nutrientAnalysisId));
 
-            using var scope = ClientDiagnostics.CreateScope("FarmsClient.Delete");
+            using var scope = ClientDiagnostics.CreateScope("NutrientAnalysesClient.Delete");
             scope.Start();
             try
             {
-                using HttpMessage message = CreateDeleteRequest(farmerId, farmId, context);
+                using HttpMessage message = CreateDeleteRequest(farmerId, nutrientAnalysisId, context);
                 return await _pipeline.ProcessMessageAsync(message, context).ConfigureAwait(false);
             }
             catch (Exception e)
@@ -482,34 +652,34 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Deletes a specified farm resource under a particular farmer. </summary>
+        /// <summary> Deletes a specified nutrient analysis resource under a particular farmer. </summary>
         /// <param name="farmerId"> Id of the farmer. </param>
-        /// <param name="farmId"> Id of the farm. </param>
+        /// <param name="nutrientAnalysisId"> Id of the nutrient analysis. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/> or <paramref name="farmId"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="farmId"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/> or <paramref name="nutrientAnalysisId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="nutrientAnalysisId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The response returned from the service. </returns>
         /// <example>
         /// This sample shows how to call Delete with required parameters.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmsClient(credential);
+        /// var client = new NutrientAnalysesClient(credential);
         /// 
-        /// Response response = client.Delete("<farmerId>", "<farmId>");
+        /// Response response = client.Delete("<farmerId>", "<nutrientAnalysisId>");
         /// Console.WriteLine(response.Status);
         /// ]]></code>
         /// </example>
-        public virtual Response Delete(string farmerId, string farmId, RequestContext context = null)
+        public virtual Response Delete(string farmerId, string nutrientAnalysisId, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(farmerId, nameof(farmerId));
-            Argument.AssertNotNullOrEmpty(farmId, nameof(farmId));
+            Argument.AssertNotNullOrEmpty(nutrientAnalysisId, nameof(nutrientAnalysisId));
 
-            using var scope = ClientDiagnostics.CreateScope("FarmsClient.Delete");
+            using var scope = ClientDiagnostics.CreateScope("NutrientAnalysesClient.Delete");
             scope.Start();
             try
             {
-                using HttpMessage message = CreateDeleteRequest(farmerId, farmId, context);
+                using HttpMessage message = CreateDeleteRequest(farmerId, nutrientAnalysisId, context);
                 return _pipeline.ProcessMessage(message, context);
             }
             catch (Exception e)
@@ -519,148 +689,14 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Get a cascade delete job for specified farm. </summary>
-        /// <param name="jobId"> Id of the job. </param>
-        /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="jobId"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="jobId"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
-        /// <example>
-        /// This sample shows how to call GetCascadeDeleteJobDetailsAsync with required parameters and parse the result.
-        /// <code><![CDATA[
-        /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmsClient(credential);
-        /// 
-        /// Response response = await client.GetCascadeDeleteJobDetailsAsync("<jobId>");
-        /// 
-        /// JsonElement result = JsonDocument.Parse(response.ContentStream).RootElement;
-        /// Console.WriteLine(result.GetProperty("farmerId").ToString());
-        /// Console.WriteLine(result.GetProperty("resourceId").ToString());
-        /// Console.WriteLine(result.GetProperty("resourceType").ToString());
-        /// Console.WriteLine(result.GetProperty("id").ToString());
-        /// Console.WriteLine(result.GetProperty("status").ToString());
-        /// Console.WriteLine(result.GetProperty("durationInSeconds").ToString());
-        /// Console.WriteLine(result.GetProperty("message").ToString());
-        /// Console.WriteLine(result.GetProperty("createdDateTime").ToString());
-        /// Console.WriteLine(result.GetProperty("lastActionDateTime").ToString());
-        /// Console.WriteLine(result.GetProperty("startTime").ToString());
-        /// Console.WriteLine(result.GetProperty("endTime").ToString());
-        /// ]]></code>
-        /// </example>
-        /// <remarks>
-        /// Below is the JSON schema for the response payload.
-        /// 
-        /// Response Body:
-        /// 
-        /// Schema for <c>CascadeDeleteJob</c>:
-        /// <code>{
-        ///   farmerId: string, # Required. Farmer Id.
-        ///   resourceId: string, # Required. The id of the resource.
-        ///   resourceType: string, # Required. The type of the resource.
-        ///   id: string, # Optional. Unique job id.
-        ///   status: &quot;Waiting&quot; | &quot;Running&quot; | &quot;Succeeded&quot; | &quot;Failed&quot; | &quot;Cancelled&quot;, # Optional. Status of the job.
-        /// Possible values: &apos;Waiting&apos;, &apos;Running&apos;, &apos;Succeeded&apos;, &apos;Failed&apos;, &apos;Cancelled&apos;.
-        ///   durationInSeconds: number, # Optional. Duration of the job in seconds.
-        ///   message: string, # Optional. Status message to capture more details of the job.
-        ///   createdDateTime: string (ISO 8601 Format), # Optional. Job created at dateTime. Sample format: yyyy-MM-ddTHH:mm:ssZ.
-        ///   lastActionDateTime: string (ISO 8601 Format), # Optional. Job was last acted upon at dateTime. Sample format: yyyy-MM-ddTHH:mm:ssZ.
-        ///   startTime: string (ISO 8601 Format), # Optional. Job start time when available. Sample format: yyyy-MM-ddTHH:mm:ssZ.
-        ///   endTime: string (ISO 8601 Format), # Optional. Job end time when available. Sample format: yyyy-MM-ddTHH:mm:ssZ.
-        /// }
-        /// </code>
-        /// 
-        /// </remarks>
-        public virtual async Task<Response> GetCascadeDeleteJobDetailsAsync(string jobId, RequestContext context = null)
-        {
-            Argument.AssertNotNullOrEmpty(jobId, nameof(jobId));
-
-            using var scope = ClientDiagnostics.CreateScope("FarmsClient.GetCascadeDeleteJobDetails");
-            scope.Start();
-            try
-            {
-                using HttpMessage message = CreateGetCascadeDeleteJobDetailsRequest(jobId, context);
-                return await _pipeline.ProcessMessageAsync(message, context).ConfigureAwait(false);
-            }
-            catch (Exception e)
-            {
-                scope.Failed(e);
-                throw;
-            }
-        }
-
-        /// <summary> Get a cascade delete job for specified farm. </summary>
-        /// <param name="jobId"> Id of the job. </param>
-        /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="jobId"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="jobId"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
-        /// <example>
-        /// This sample shows how to call GetCascadeDeleteJobDetails with required parameters and parse the result.
-        /// <code><![CDATA[
-        /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmsClient(credential);
-        /// 
-        /// Response response = client.GetCascadeDeleteJobDetails("<jobId>");
-        /// 
-        /// JsonElement result = JsonDocument.Parse(response.ContentStream).RootElement;
-        /// Console.WriteLine(result.GetProperty("farmerId").ToString());
-        /// Console.WriteLine(result.GetProperty("resourceId").ToString());
-        /// Console.WriteLine(result.GetProperty("resourceType").ToString());
-        /// Console.WriteLine(result.GetProperty("id").ToString());
-        /// Console.WriteLine(result.GetProperty("status").ToString());
-        /// Console.WriteLine(result.GetProperty("durationInSeconds").ToString());
-        /// Console.WriteLine(result.GetProperty("message").ToString());
-        /// Console.WriteLine(result.GetProperty("createdDateTime").ToString());
-        /// Console.WriteLine(result.GetProperty("lastActionDateTime").ToString());
-        /// Console.WriteLine(result.GetProperty("startTime").ToString());
-        /// Console.WriteLine(result.GetProperty("endTime").ToString());
-        /// ]]></code>
-        /// </example>
-        /// <remarks>
-        /// Below is the JSON schema for the response payload.
-        /// 
-        /// Response Body:
-        /// 
-        /// Schema for <c>CascadeDeleteJob</c>:
-        /// <code>{
-        ///   farmerId: string, # Required. Farmer Id.
-        ///   resourceId: string, # Required. The id of the resource.
-        ///   resourceType: string, # Required. The type of the resource.
-        ///   id: string, # Optional. Unique job id.
-        ///   status: &quot;Waiting&quot; | &quot;Running&quot; | &quot;Succeeded&quot; | &quot;Failed&quot; | &quot;Cancelled&quot;, # Optional. Status of the job.
-        /// Possible values: &apos;Waiting&apos;, &apos;Running&apos;, &apos;Succeeded&apos;, &apos;Failed&apos;, &apos;Cancelled&apos;.
-        ///   durationInSeconds: number, # Optional. Duration of the job in seconds.
-        ///   message: string, # Optional. Status message to capture more details of the job.
-        ///   createdDateTime: string (ISO 8601 Format), # Optional. Job created at dateTime. Sample format: yyyy-MM-ddTHH:mm:ssZ.
-        ///   lastActionDateTime: string (ISO 8601 Format), # Optional. Job was last acted upon at dateTime. Sample format: yyyy-MM-ddTHH:mm:ssZ.
-        ///   startTime: string (ISO 8601 Format), # Optional. Job start time when available. Sample format: yyyy-MM-ddTHH:mm:ssZ.
-        ///   endTime: string (ISO 8601 Format), # Optional. Job end time when available. Sample format: yyyy-MM-ddTHH:mm:ssZ.
-        /// }
-        /// </code>
-        /// 
-        /// </remarks>
-        public virtual Response GetCascadeDeleteJobDetails(string jobId, RequestContext context = null)
-        {
-            Argument.AssertNotNullOrEmpty(jobId, nameof(jobId));
-
-            using var scope = ClientDiagnostics.CreateScope("FarmsClient.GetCascadeDeleteJobDetails");
-            scope.Start();
-            try
-            {
-                using HttpMessage message = CreateGetCascadeDeleteJobDetailsRequest(jobId, context);
-                return _pipeline.ProcessMessage(message, context);
-            }
-            catch (Exception e)
-            {
-                scope.Failed(e);
-                throw;
-            }
-        }
-
-        /// <summary> Returns a paginated list of farm resources under a particular farmer. </summary>
+        /// <summary> Returns a paginated list of nutrient analysis resources under a particular farmer. </summary>
         /// <param name="farmerId"> Id of the associated farmer. </param>
+        /// <param name="parentType">
+        /// Type of the parent it belongs to.
+        /// i.e. PlantTissueAnalysis.
+        /// </param>
+        /// <param name="parentIds"> Parent ids of the resource. </param>
+        /// <param name="classifications"> Classifications for nutrient analyses. </param>
         /// <param name="ids"> Ids of the resource. </param>
         /// <param name="names"> Names of the resource. </param>
         /// <param name="propertyFilters">
@@ -683,26 +719,37 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The <see cref="AsyncPageable{T}"/> from the service containing a list of <see cref="BinaryData"/> objects. Details of the body schema for each item in the collection are in the Remarks section below. </returns>
         /// <example>
-        /// This sample shows how to call GetFarmsByFarmerIdAsync with required parameters and parse the result.
+        /// This sample shows how to call GetNutrientAnalysesByFarmerIdAsync with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmsClient(credential);
+        /// var client = new NutrientAnalysesClient(credential);
         /// 
-        /// await foreach (var data in client.GetFarmsByFarmerIdAsync("<farmerId>"))
+        /// await foreach (var data in client.GetNutrientAnalysesByFarmerIdAsync("<farmerId>"))
         /// {
         ///     JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
         ///     Console.WriteLine(result.ToString());
         /// }
         /// ]]></code>
-        /// This sample shows how to call GetFarmsByFarmerIdAsync with all parameters, and how to parse the result.
+        /// This sample shows how to call GetNutrientAnalysesByFarmerIdAsync with all parameters, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmsClient(credential);
+        /// var client = new NutrientAnalysesClient(credential);
         /// 
-        /// await foreach (var data in client.GetFarmsByFarmerIdAsync("<farmerId>", new String[]{"<ids>"}, new String[]{"<names>"}, new String[]{"<propertyFilters>"}, new String[]{"<statuses>"}, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1234, "<skipToken>"))
+        /// await foreach (var data in client.GetNutrientAnalysesByFarmerIdAsync("<farmerId>", "<parentType>", new String[]{"<parentIds>"}, new String[]{"<classifications>"}, new String[]{"<ids>"}, new String[]{"<names>"}, new String[]{"<propertyFilters>"}, new String[]{"<statuses>"}, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1234, "<skipToken>"))
         /// {
         ///     JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
         ///     Console.WriteLine(result.GetProperty("farmerId").ToString());
+        ///     Console.WriteLine(result.GetProperty("parentId").ToString());
+        ///     Console.WriteLine(result.GetProperty("parentType").ToString());
+        ///     Console.WriteLine(result.GetProperty("unit").ToString());
+        ///     Console.WriteLine(result.GetProperty("value").ToString());
+        ///     Console.WriteLine(result.GetProperty("referenceValueLow").ToString());
+        ///     Console.WriteLine(result.GetProperty("referenceValueHigh").ToString());
+        ///     Console.WriteLine(result.GetProperty("classification").ToString());
+        ///     Console.WriteLine(result.GetProperty("recommendation").ToString());
+        ///     Console.WriteLine(result.GetProperty("products")[0].GetProperty("rate").ToString());
+        ///     Console.WriteLine(result.GetProperty("products")[0].GetProperty("instruction").ToString());
+        ///     Console.WriteLine(result.GetProperty("products")[0].GetProperty("product").ToString());
         ///     Console.WriteLine(result.GetProperty("id").ToString());
         ///     Console.WriteLine(result.GetProperty("eTag").ToString());
         ///     Console.WriteLine(result.GetProperty("status").ToString());
@@ -720,9 +767,25 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Response Body:
         /// 
-        /// Schema for <c>FarmListResponseValue</c>:
+        /// Schema for <c>NutrientAnalysisListResponseValue</c>:
         /// <code>{
-        ///   farmerId: string, # Optional. Farmer Id.
+        ///   farmerId: string, # Optional. Farmer id for this nutrient analysis.
+        ///   parentId: string, # Optional. Parent id for this nutrient analysis.
+        ///   parentType: &quot;PlantTissueAnalysis&quot;, # Optional. Parent type for this nutrient analysis.
+        /// i.e. PlantTissueAnalysis.
+        ///   unit: string, # Optional. Unit for this nutrient analysis.
+        ///   value: number, # Optional. Value for this nutrient analysis.
+        ///   referenceValueLow: number, # Optional. Reference value low for this nutrient analysis.
+        ///   referenceValueHigh: number, # Optional. Reference value high for this nutrient analysis.
+        ///   classification: string, # Optional. Classification for this nutrient analysis.
+        ///   recommendation: string, # Optional. Recommendation for this nutrient analysis.
+        ///   products: [
+        ///     {
+        ///       rate: string, # Optional. Rate of the product.
+        ///       instruction: string, # Optional. Instruction of the resource.
+        ///       product: string, # Optional. Product of the resource.
+        ///     }
+        ///   ], # Optional. Products for this nutrient analysis.
         ///   id: string, # Optional. Unique resource ID.
         ///   eTag: string, # Optional. The ETag value to implement optimistic concurrency.
         ///   status: string, # Optional. Status of the resource.
@@ -740,14 +803,14 @@ namespace Azure.Verticals.AgriFood.Farming
         /// </code>
         /// 
         /// </remarks>
-        public virtual AsyncPageable<BinaryData> GetFarmsByFarmerIdAsync(string farmerId, IEnumerable<string> ids = null, IEnumerable<string> names = null, IEnumerable<string> propertyFilters = null, IEnumerable<string> statuses = null, DateTimeOffset? minCreatedDateTime = null, DateTimeOffset? maxCreatedDateTime = null, DateTimeOffset? minLastModifiedDateTime = null, DateTimeOffset? maxLastModifiedDateTime = null, int? maxPageSize = null, string skipToken = null, RequestContext context = null)
+        public virtual AsyncPageable<BinaryData> GetNutrientAnalysesByFarmerIdAsync(string farmerId, string parentType = null, IEnumerable<string> parentIds = null, IEnumerable<string> classifications = null, IEnumerable<string> ids = null, IEnumerable<string> names = null, IEnumerable<string> propertyFilters = null, IEnumerable<string> statuses = null, DateTimeOffset? minCreatedDateTime = null, DateTimeOffset? maxCreatedDateTime = null, DateTimeOffset? minLastModifiedDateTime = null, DateTimeOffset? maxLastModifiedDateTime = null, int? maxPageSize = null, string skipToken = null, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(farmerId, nameof(farmerId));
 
-            return GetFarmsByFarmerIdImplementationAsync("FarmsClient.GetFarmsByFarmerId", farmerId, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
+            return GetNutrientAnalysesByFarmerIdImplementationAsync("NutrientAnalysesClient.GetNutrientAnalysesByFarmerId", farmerId, parentType, parentIds, classifications, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
         }
 
-        private AsyncPageable<BinaryData> GetFarmsByFarmerIdImplementationAsync(string diagnosticsScopeName, string farmerId, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
+        private AsyncPageable<BinaryData> GetNutrientAnalysesByFarmerIdImplementationAsync(string diagnosticsScopeName, string farmerId, string parentType, IEnumerable<string> parentIds, IEnumerable<string> classifications, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
         {
             return PageableHelpers.CreateAsyncPageable(CreateEnumerableAsync, ClientDiagnostics, diagnosticsScopeName);
             async IAsyncEnumerable<Page<BinaryData>> CreateEnumerableAsync(string nextLink, int? pageSizeHint, [EnumeratorCancellation] CancellationToken cancellationToken = default)
@@ -755,8 +818,8 @@ namespace Azure.Verticals.AgriFood.Farming
                 do
                 {
                     var message = string.IsNullOrEmpty(nextLink)
-                        ? CreateGetFarmsByFarmerIdRequest(farmerId, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context)
-                        : CreateGetFarmsByFarmerIdNextPageRequest(nextLink, farmerId, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
+                        ? CreateGetNutrientAnalysesByFarmerIdRequest(farmerId, parentType, parentIds, classifications, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context)
+                        : CreateGetNutrientAnalysesByFarmerIdNextPageRequest(nextLink, farmerId, parentType, parentIds, classifications, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
                     var page = await LowLevelPageableHelpers.ProcessMessageAsync(_pipeline, message, context, "value", "nextLink", cancellationToken).ConfigureAwait(false);
                     nextLink = page.ContinuationToken;
                     yield return page;
@@ -764,8 +827,14 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Returns a paginated list of farm resources under a particular farmer. </summary>
+        /// <summary> Returns a paginated list of nutrient analysis resources under a particular farmer. </summary>
         /// <param name="farmerId"> Id of the associated farmer. </param>
+        /// <param name="parentType">
+        /// Type of the parent it belongs to.
+        /// i.e. PlantTissueAnalysis.
+        /// </param>
+        /// <param name="parentIds"> Parent ids of the resource. </param>
+        /// <param name="classifications"> Classifications for nutrient analyses. </param>
         /// <param name="ids"> Ids of the resource. </param>
         /// <param name="names"> Names of the resource. </param>
         /// <param name="propertyFilters">
@@ -788,26 +857,37 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The <see cref="Pageable{T}"/> from the service containing a list of <see cref="BinaryData"/> objects. Details of the body schema for each item in the collection are in the Remarks section below. </returns>
         /// <example>
-        /// This sample shows how to call GetFarmsByFarmerId with required parameters and parse the result.
+        /// This sample shows how to call GetNutrientAnalysesByFarmerId with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmsClient(credential);
+        /// var client = new NutrientAnalysesClient(credential);
         /// 
-        /// foreach (var data in client.GetFarmsByFarmerId("<farmerId>"))
+        /// foreach (var data in client.GetNutrientAnalysesByFarmerId("<farmerId>"))
         /// {
         ///     JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
         ///     Console.WriteLine(result.ToString());
         /// }
         /// ]]></code>
-        /// This sample shows how to call GetFarmsByFarmerId with all parameters, and how to parse the result.
+        /// This sample shows how to call GetNutrientAnalysesByFarmerId with all parameters, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmsClient(credential);
+        /// var client = new NutrientAnalysesClient(credential);
         /// 
-        /// foreach (var data in client.GetFarmsByFarmerId("<farmerId>", new String[]{"<ids>"}, new String[]{"<names>"}, new String[]{"<propertyFilters>"}, new String[]{"<statuses>"}, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1234, "<skipToken>"))
+        /// foreach (var data in client.GetNutrientAnalysesByFarmerId("<farmerId>", "<parentType>", new String[]{"<parentIds>"}, new String[]{"<classifications>"}, new String[]{"<ids>"}, new String[]{"<names>"}, new String[]{"<propertyFilters>"}, new String[]{"<statuses>"}, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1234, "<skipToken>"))
         /// {
         ///     JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
         ///     Console.WriteLine(result.GetProperty("farmerId").ToString());
+        ///     Console.WriteLine(result.GetProperty("parentId").ToString());
+        ///     Console.WriteLine(result.GetProperty("parentType").ToString());
+        ///     Console.WriteLine(result.GetProperty("unit").ToString());
+        ///     Console.WriteLine(result.GetProperty("value").ToString());
+        ///     Console.WriteLine(result.GetProperty("referenceValueLow").ToString());
+        ///     Console.WriteLine(result.GetProperty("referenceValueHigh").ToString());
+        ///     Console.WriteLine(result.GetProperty("classification").ToString());
+        ///     Console.WriteLine(result.GetProperty("recommendation").ToString());
+        ///     Console.WriteLine(result.GetProperty("products")[0].GetProperty("rate").ToString());
+        ///     Console.WriteLine(result.GetProperty("products")[0].GetProperty("instruction").ToString());
+        ///     Console.WriteLine(result.GetProperty("products")[0].GetProperty("product").ToString());
         ///     Console.WriteLine(result.GetProperty("id").ToString());
         ///     Console.WriteLine(result.GetProperty("eTag").ToString());
         ///     Console.WriteLine(result.GetProperty("status").ToString());
@@ -825,9 +905,25 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Response Body:
         /// 
-        /// Schema for <c>FarmListResponseValue</c>:
+        /// Schema for <c>NutrientAnalysisListResponseValue</c>:
         /// <code>{
-        ///   farmerId: string, # Optional. Farmer Id.
+        ///   farmerId: string, # Optional. Farmer id for this nutrient analysis.
+        ///   parentId: string, # Optional. Parent id for this nutrient analysis.
+        ///   parentType: &quot;PlantTissueAnalysis&quot;, # Optional. Parent type for this nutrient analysis.
+        /// i.e. PlantTissueAnalysis.
+        ///   unit: string, # Optional. Unit for this nutrient analysis.
+        ///   value: number, # Optional. Value for this nutrient analysis.
+        ///   referenceValueLow: number, # Optional. Reference value low for this nutrient analysis.
+        ///   referenceValueHigh: number, # Optional. Reference value high for this nutrient analysis.
+        ///   classification: string, # Optional. Classification for this nutrient analysis.
+        ///   recommendation: string, # Optional. Recommendation for this nutrient analysis.
+        ///   products: [
+        ///     {
+        ///       rate: string, # Optional. Rate of the product.
+        ///       instruction: string, # Optional. Instruction of the resource.
+        ///       product: string, # Optional. Product of the resource.
+        ///     }
+        ///   ], # Optional. Products for this nutrient analysis.
         ///   id: string, # Optional. Unique resource ID.
         ///   eTag: string, # Optional. The ETag value to implement optimistic concurrency.
         ///   status: string, # Optional. Status of the resource.
@@ -845,14 +941,14 @@ namespace Azure.Verticals.AgriFood.Farming
         /// </code>
         /// 
         /// </remarks>
-        public virtual Pageable<BinaryData> GetFarmsByFarmerId(string farmerId, IEnumerable<string> ids = null, IEnumerable<string> names = null, IEnumerable<string> propertyFilters = null, IEnumerable<string> statuses = null, DateTimeOffset? minCreatedDateTime = null, DateTimeOffset? maxCreatedDateTime = null, DateTimeOffset? minLastModifiedDateTime = null, DateTimeOffset? maxLastModifiedDateTime = null, int? maxPageSize = null, string skipToken = null, RequestContext context = null)
+        public virtual Pageable<BinaryData> GetNutrientAnalysesByFarmerId(string farmerId, string parentType = null, IEnumerable<string> parentIds = null, IEnumerable<string> classifications = null, IEnumerable<string> ids = null, IEnumerable<string> names = null, IEnumerable<string> propertyFilters = null, IEnumerable<string> statuses = null, DateTimeOffset? minCreatedDateTime = null, DateTimeOffset? maxCreatedDateTime = null, DateTimeOffset? minLastModifiedDateTime = null, DateTimeOffset? maxLastModifiedDateTime = null, int? maxPageSize = null, string skipToken = null, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(farmerId, nameof(farmerId));
 
-            return GetFarmsByFarmerIdImplementation("FarmsClient.GetFarmsByFarmerId", farmerId, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
+            return GetNutrientAnalysesByFarmerIdImplementation("NutrientAnalysesClient.GetNutrientAnalysesByFarmerId", farmerId, parentType, parentIds, classifications, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
         }
 
-        private Pageable<BinaryData> GetFarmsByFarmerIdImplementation(string diagnosticsScopeName, string farmerId, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
+        private Pageable<BinaryData> GetNutrientAnalysesByFarmerIdImplementation(string diagnosticsScopeName, string farmerId, string parentType, IEnumerable<string> parentIds, IEnumerable<string> classifications, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
         {
             return PageableHelpers.CreatePageable(CreateEnumerable, ClientDiagnostics, diagnosticsScopeName);
             IEnumerable<Page<BinaryData>> CreateEnumerable(string nextLink, int? pageSizeHint)
@@ -860,8 +956,8 @@ namespace Azure.Verticals.AgriFood.Farming
                 do
                 {
                     var message = string.IsNullOrEmpty(nextLink)
-                        ? CreateGetFarmsByFarmerIdRequest(farmerId, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context)
-                        : CreateGetFarmsByFarmerIdNextPageRequest(nextLink, farmerId, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
+                        ? CreateGetNutrientAnalysesByFarmerIdRequest(farmerId, parentType, parentIds, classifications, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context)
+                        : CreateGetNutrientAnalysesByFarmerIdNextPageRequest(nextLink, farmerId, parentType, parentIds, classifications, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
                     var page = LowLevelPageableHelpers.ProcessMessage(_pipeline, message, context, "value", "nextLink");
                     nextLink = page.ContinuationToken;
                     yield return page;
@@ -869,7 +965,13 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Returns a paginated list of farm resources across all farmers. </summary>
+        /// <summary> Returns a paginated list of nutrient analysis resources across all farmers. </summary>
+        /// <param name="parentType">
+        /// Type of the parent it belongs to.
+        /// i.e. PlantTissueAnalysis.
+        /// </param>
+        /// <param name="parentIds"> Parent ids of the resource. </param>
+        /// <param name="classifications"> Classifications for nutrient analyses. </param>
         /// <param name="ids"> Ids of the resource. </param>
         /// <param name="names"> Names of the resource. </param>
         /// <param name="propertyFilters">
@@ -890,26 +992,37 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The <see cref="AsyncPageable{T}"/> from the service containing a list of <see cref="BinaryData"/> objects. Details of the body schema for each item in the collection are in the Remarks section below. </returns>
         /// <example>
-        /// This sample shows how to call GetFarmsAsync and parse the result.
+        /// This sample shows how to call GetNutrientAnalysesAsync and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmsClient(credential);
+        /// var client = new NutrientAnalysesClient(credential);
         /// 
-        /// await foreach (var data in client.GetFarmsAsync())
+        /// await foreach (var data in client.GetNutrientAnalysesAsync())
         /// {
         ///     JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
         ///     Console.WriteLine(result.ToString());
         /// }
         /// ]]></code>
-        /// This sample shows how to call GetFarmsAsync with all parameters, and how to parse the result.
+        /// This sample shows how to call GetNutrientAnalysesAsync with all parameters, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmsClient(credential);
+        /// var client = new NutrientAnalysesClient(credential);
         /// 
-        /// await foreach (var data in client.GetFarmsAsync(new String[]{"<ids>"}, new String[]{"<names>"}, new String[]{"<propertyFilters>"}, new String[]{"<statuses>"}, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1234, "<skipToken>"))
+        /// await foreach (var data in client.GetNutrientAnalysesAsync("<parentType>", new String[]{"<parentIds>"}, new String[]{"<classifications>"}, new String[]{"<ids>"}, new String[]{"<names>"}, new String[]{"<propertyFilters>"}, new String[]{"<statuses>"}, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1234, "<skipToken>"))
         /// {
         ///     JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
         ///     Console.WriteLine(result.GetProperty("farmerId").ToString());
+        ///     Console.WriteLine(result.GetProperty("parentId").ToString());
+        ///     Console.WriteLine(result.GetProperty("parentType").ToString());
+        ///     Console.WriteLine(result.GetProperty("unit").ToString());
+        ///     Console.WriteLine(result.GetProperty("value").ToString());
+        ///     Console.WriteLine(result.GetProperty("referenceValueLow").ToString());
+        ///     Console.WriteLine(result.GetProperty("referenceValueHigh").ToString());
+        ///     Console.WriteLine(result.GetProperty("classification").ToString());
+        ///     Console.WriteLine(result.GetProperty("recommendation").ToString());
+        ///     Console.WriteLine(result.GetProperty("products")[0].GetProperty("rate").ToString());
+        ///     Console.WriteLine(result.GetProperty("products")[0].GetProperty("instruction").ToString());
+        ///     Console.WriteLine(result.GetProperty("products")[0].GetProperty("product").ToString());
         ///     Console.WriteLine(result.GetProperty("id").ToString());
         ///     Console.WriteLine(result.GetProperty("eTag").ToString());
         ///     Console.WriteLine(result.GetProperty("status").ToString());
@@ -927,9 +1040,25 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Response Body:
         /// 
-        /// Schema for <c>FarmListResponseValue</c>:
+        /// Schema for <c>NutrientAnalysisListResponseValue</c>:
         /// <code>{
-        ///   farmerId: string, # Optional. Farmer Id.
+        ///   farmerId: string, # Optional. Farmer id for this nutrient analysis.
+        ///   parentId: string, # Optional. Parent id for this nutrient analysis.
+        ///   parentType: &quot;PlantTissueAnalysis&quot;, # Optional. Parent type for this nutrient analysis.
+        /// i.e. PlantTissueAnalysis.
+        ///   unit: string, # Optional. Unit for this nutrient analysis.
+        ///   value: number, # Optional. Value for this nutrient analysis.
+        ///   referenceValueLow: number, # Optional. Reference value low for this nutrient analysis.
+        ///   referenceValueHigh: number, # Optional. Reference value high for this nutrient analysis.
+        ///   classification: string, # Optional. Classification for this nutrient analysis.
+        ///   recommendation: string, # Optional. Recommendation for this nutrient analysis.
+        ///   products: [
+        ///     {
+        ///       rate: string, # Optional. Rate of the product.
+        ///       instruction: string, # Optional. Instruction of the resource.
+        ///       product: string, # Optional. Product of the resource.
+        ///     }
+        ///   ], # Optional. Products for this nutrient analysis.
         ///   id: string, # Optional. Unique resource ID.
         ///   eTag: string, # Optional. The ETag value to implement optimistic concurrency.
         ///   status: string, # Optional. Status of the resource.
@@ -947,12 +1076,12 @@ namespace Azure.Verticals.AgriFood.Farming
         /// </code>
         /// 
         /// </remarks>
-        public virtual AsyncPageable<BinaryData> GetFarmsAsync(IEnumerable<string> ids = null, IEnumerable<string> names = null, IEnumerable<string> propertyFilters = null, IEnumerable<string> statuses = null, DateTimeOffset? minCreatedDateTime = null, DateTimeOffset? maxCreatedDateTime = null, DateTimeOffset? minLastModifiedDateTime = null, DateTimeOffset? maxLastModifiedDateTime = null, int? maxPageSize = null, string skipToken = null, RequestContext context = null)
+        public virtual AsyncPageable<BinaryData> GetNutrientAnalysesAsync(string parentType = null, IEnumerable<string> parentIds = null, IEnumerable<string> classifications = null, IEnumerable<string> ids = null, IEnumerable<string> names = null, IEnumerable<string> propertyFilters = null, IEnumerable<string> statuses = null, DateTimeOffset? minCreatedDateTime = null, DateTimeOffset? maxCreatedDateTime = null, DateTimeOffset? minLastModifiedDateTime = null, DateTimeOffset? maxLastModifiedDateTime = null, int? maxPageSize = null, string skipToken = null, RequestContext context = null)
         {
-            return GetFarmsImplementationAsync("FarmsClient.GetFarms", ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
+            return GetNutrientAnalysesImplementationAsync("NutrientAnalysesClient.GetNutrientAnalyses", parentType, parentIds, classifications, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
         }
 
-        private AsyncPageable<BinaryData> GetFarmsImplementationAsync(string diagnosticsScopeName, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
+        private AsyncPageable<BinaryData> GetNutrientAnalysesImplementationAsync(string diagnosticsScopeName, string parentType, IEnumerable<string> parentIds, IEnumerable<string> classifications, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
         {
             return PageableHelpers.CreateAsyncPageable(CreateEnumerableAsync, ClientDiagnostics, diagnosticsScopeName);
             async IAsyncEnumerable<Page<BinaryData>> CreateEnumerableAsync(string nextLink, int? pageSizeHint, [EnumeratorCancellation] CancellationToken cancellationToken = default)
@@ -960,8 +1089,8 @@ namespace Azure.Verticals.AgriFood.Farming
                 do
                 {
                     var message = string.IsNullOrEmpty(nextLink)
-                        ? CreateGetFarmsRequest(ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context)
-                        : CreateGetFarmsNextPageRequest(nextLink, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
+                        ? CreateGetNutrientAnalysesRequest(parentType, parentIds, classifications, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context)
+                        : CreateGetNutrientAnalysesNextPageRequest(nextLink, parentType, parentIds, classifications, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
                     var page = await LowLevelPageableHelpers.ProcessMessageAsync(_pipeline, message, context, "value", "nextLink", cancellationToken).ConfigureAwait(false);
                     nextLink = page.ContinuationToken;
                     yield return page;
@@ -969,7 +1098,13 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Returns a paginated list of farm resources across all farmers. </summary>
+        /// <summary> Returns a paginated list of nutrient analysis resources across all farmers. </summary>
+        /// <param name="parentType">
+        /// Type of the parent it belongs to.
+        /// i.e. PlantTissueAnalysis.
+        /// </param>
+        /// <param name="parentIds"> Parent ids of the resource. </param>
+        /// <param name="classifications"> Classifications for nutrient analyses. </param>
         /// <param name="ids"> Ids of the resource. </param>
         /// <param name="names"> Names of the resource. </param>
         /// <param name="propertyFilters">
@@ -990,26 +1125,37 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The <see cref="Pageable{T}"/> from the service containing a list of <see cref="BinaryData"/> objects. Details of the body schema for each item in the collection are in the Remarks section below. </returns>
         /// <example>
-        /// This sample shows how to call GetFarms and parse the result.
+        /// This sample shows how to call GetNutrientAnalyses and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmsClient(credential);
+        /// var client = new NutrientAnalysesClient(credential);
         /// 
-        /// foreach (var data in client.GetFarms())
+        /// foreach (var data in client.GetNutrientAnalyses())
         /// {
         ///     JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
         ///     Console.WriteLine(result.ToString());
         /// }
         /// ]]></code>
-        /// This sample shows how to call GetFarms with all parameters, and how to parse the result.
+        /// This sample shows how to call GetNutrientAnalyses with all parameters, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmsClient(credential);
+        /// var client = new NutrientAnalysesClient(credential);
         /// 
-        /// foreach (var data in client.GetFarms(new String[]{"<ids>"}, new String[]{"<names>"}, new String[]{"<propertyFilters>"}, new String[]{"<statuses>"}, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1234, "<skipToken>"))
+        /// foreach (var data in client.GetNutrientAnalyses("<parentType>", new String[]{"<parentIds>"}, new String[]{"<classifications>"}, new String[]{"<ids>"}, new String[]{"<names>"}, new String[]{"<propertyFilters>"}, new String[]{"<statuses>"}, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1234, "<skipToken>"))
         /// {
         ///     JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
         ///     Console.WriteLine(result.GetProperty("farmerId").ToString());
+        ///     Console.WriteLine(result.GetProperty("parentId").ToString());
+        ///     Console.WriteLine(result.GetProperty("parentType").ToString());
+        ///     Console.WriteLine(result.GetProperty("unit").ToString());
+        ///     Console.WriteLine(result.GetProperty("value").ToString());
+        ///     Console.WriteLine(result.GetProperty("referenceValueLow").ToString());
+        ///     Console.WriteLine(result.GetProperty("referenceValueHigh").ToString());
+        ///     Console.WriteLine(result.GetProperty("classification").ToString());
+        ///     Console.WriteLine(result.GetProperty("recommendation").ToString());
+        ///     Console.WriteLine(result.GetProperty("products")[0].GetProperty("rate").ToString());
+        ///     Console.WriteLine(result.GetProperty("products")[0].GetProperty("instruction").ToString());
+        ///     Console.WriteLine(result.GetProperty("products")[0].GetProperty("product").ToString());
         ///     Console.WriteLine(result.GetProperty("id").ToString());
         ///     Console.WriteLine(result.GetProperty("eTag").ToString());
         ///     Console.WriteLine(result.GetProperty("status").ToString());
@@ -1027,9 +1173,25 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Response Body:
         /// 
-        /// Schema for <c>FarmListResponseValue</c>:
+        /// Schema for <c>NutrientAnalysisListResponseValue</c>:
         /// <code>{
-        ///   farmerId: string, # Optional. Farmer Id.
+        ///   farmerId: string, # Optional. Farmer id for this nutrient analysis.
+        ///   parentId: string, # Optional. Parent id for this nutrient analysis.
+        ///   parentType: &quot;PlantTissueAnalysis&quot;, # Optional. Parent type for this nutrient analysis.
+        /// i.e. PlantTissueAnalysis.
+        ///   unit: string, # Optional. Unit for this nutrient analysis.
+        ///   value: number, # Optional. Value for this nutrient analysis.
+        ///   referenceValueLow: number, # Optional. Reference value low for this nutrient analysis.
+        ///   referenceValueHigh: number, # Optional. Reference value high for this nutrient analysis.
+        ///   classification: string, # Optional. Classification for this nutrient analysis.
+        ///   recommendation: string, # Optional. Recommendation for this nutrient analysis.
+        ///   products: [
+        ///     {
+        ///       rate: string, # Optional. Rate of the product.
+        ///       instruction: string, # Optional. Instruction of the resource.
+        ///       product: string, # Optional. Product of the resource.
+        ///     }
+        ///   ], # Optional. Products for this nutrient analysis.
         ///   id: string, # Optional. Unique resource ID.
         ///   eTag: string, # Optional. The ETag value to implement optimistic concurrency.
         ///   status: string, # Optional. Status of the resource.
@@ -1047,12 +1209,12 @@ namespace Azure.Verticals.AgriFood.Farming
         /// </code>
         /// 
         /// </remarks>
-        public virtual Pageable<BinaryData> GetFarms(IEnumerable<string> ids = null, IEnumerable<string> names = null, IEnumerable<string> propertyFilters = null, IEnumerable<string> statuses = null, DateTimeOffset? minCreatedDateTime = null, DateTimeOffset? maxCreatedDateTime = null, DateTimeOffset? minLastModifiedDateTime = null, DateTimeOffset? maxLastModifiedDateTime = null, int? maxPageSize = null, string skipToken = null, RequestContext context = null)
+        public virtual Pageable<BinaryData> GetNutrientAnalyses(string parentType = null, IEnumerable<string> parentIds = null, IEnumerable<string> classifications = null, IEnumerable<string> ids = null, IEnumerable<string> names = null, IEnumerable<string> propertyFilters = null, IEnumerable<string> statuses = null, DateTimeOffset? minCreatedDateTime = null, DateTimeOffset? maxCreatedDateTime = null, DateTimeOffset? minLastModifiedDateTime = null, DateTimeOffset? maxLastModifiedDateTime = null, int? maxPageSize = null, string skipToken = null, RequestContext context = null)
         {
-            return GetFarmsImplementation("FarmsClient.GetFarms", ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
+            return GetNutrientAnalysesImplementation("NutrientAnalysesClient.GetNutrientAnalyses", parentType, parentIds, classifications, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
         }
 
-        private Pageable<BinaryData> GetFarmsImplementation(string diagnosticsScopeName, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
+        private Pageable<BinaryData> GetNutrientAnalysesImplementation(string diagnosticsScopeName, string parentType, IEnumerable<string> parentIds, IEnumerable<string> classifications, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
         {
             return PageableHelpers.CreatePageable(CreateEnumerable, ClientDiagnostics, diagnosticsScopeName);
             IEnumerable<Page<BinaryData>> CreateEnumerable(string nextLink, int? pageSizeHint)
@@ -1060,8 +1222,8 @@ namespace Azure.Verticals.AgriFood.Farming
                 do
                 {
                     var message = string.IsNullOrEmpty(nextLink)
-                        ? CreateGetFarmsRequest(ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context)
-                        : CreateGetFarmsNextPageRequest(nextLink, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
+                        ? CreateGetNutrientAnalysesRequest(parentType, parentIds, classifications, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context)
+                        : CreateGetNutrientAnalysesNextPageRequest(nextLink, parentType, parentIds, classifications, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
                     var page = LowLevelPageableHelpers.ProcessMessage(_pipeline, message, context, "value", "nextLink");
                     nextLink = page.ContinuationToken;
                     yield return page;
@@ -1069,159 +1231,7 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Create a cascade delete job for specified farm. </summary>
-        /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
-        /// <param name="jobId"> Job ID supplied by end user. </param>
-        /// <param name="farmerId"> ID of the associated farmer. </param>
-        /// <param name="farmId"> ID of the farm to be deleted. </param>
-        /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="jobId"/>, <paramref name="farmerId"/> or <paramref name="farmId"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="jobId"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The <see cref="Operation{T}"/> from the service that will contain a <see cref="BinaryData"/> object once the asynchronous operation on the service has completed. Details of the body schema for the operation's final value are in the Remarks section below. </returns>
-        /// <example>
-        /// This sample shows how to call CreateCascadeDeleteJobAsync with required parameters and parse the result.
-        /// <code><![CDATA[
-        /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmsClient(credential);
-        /// 
-        /// var operation = await client.CreateCascadeDeleteJobAsync(WaitUntil.Completed, "<jobId>", "<farmerId>", "<farmId>");
-        /// 
-        /// BinaryData data = await operation.WaitForCompletionAsync();
-        /// JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
-        /// Console.WriteLine(result.GetProperty("farmerId").ToString());
-        /// Console.WriteLine(result.GetProperty("resourceId").ToString());
-        /// Console.WriteLine(result.GetProperty("resourceType").ToString());
-        /// Console.WriteLine(result.GetProperty("id").ToString());
-        /// Console.WriteLine(result.GetProperty("status").ToString());
-        /// Console.WriteLine(result.GetProperty("durationInSeconds").ToString());
-        /// Console.WriteLine(result.GetProperty("message").ToString());
-        /// Console.WriteLine(result.GetProperty("createdDateTime").ToString());
-        /// Console.WriteLine(result.GetProperty("lastActionDateTime").ToString());
-        /// Console.WriteLine(result.GetProperty("startTime").ToString());
-        /// Console.WriteLine(result.GetProperty("endTime").ToString());
-        /// ]]></code>
-        /// </example>
-        /// <remarks>
-        /// Below is the JSON schema for the response payload.
-        /// 
-        /// Response Body:
-        /// 
-        /// Schema for <c>CascadeDeleteJob</c>:
-        /// <code>{
-        ///   farmerId: string, # Required. Farmer Id.
-        ///   resourceId: string, # Required. The id of the resource.
-        ///   resourceType: string, # Required. The type of the resource.
-        ///   id: string, # Optional. Unique job id.
-        ///   status: &quot;Waiting&quot; | &quot;Running&quot; | &quot;Succeeded&quot; | &quot;Failed&quot; | &quot;Cancelled&quot;, # Optional. Status of the job.
-        /// Possible values: &apos;Waiting&apos;, &apos;Running&apos;, &apos;Succeeded&apos;, &apos;Failed&apos;, &apos;Cancelled&apos;.
-        ///   durationInSeconds: number, # Optional. Duration of the job in seconds.
-        ///   message: string, # Optional. Status message to capture more details of the job.
-        ///   createdDateTime: string (ISO 8601 Format), # Optional. Job created at dateTime. Sample format: yyyy-MM-ddTHH:mm:ssZ.
-        ///   lastActionDateTime: string (ISO 8601 Format), # Optional. Job was last acted upon at dateTime. Sample format: yyyy-MM-ddTHH:mm:ssZ.
-        ///   startTime: string (ISO 8601 Format), # Optional. Job start time when available. Sample format: yyyy-MM-ddTHH:mm:ssZ.
-        ///   endTime: string (ISO 8601 Format), # Optional. Job end time when available. Sample format: yyyy-MM-ddTHH:mm:ssZ.
-        /// }
-        /// </code>
-        /// 
-        /// </remarks>
-        public virtual async Task<Operation<BinaryData>> CreateCascadeDeleteJobAsync(WaitUntil waitUntil, string jobId, string farmerId, string farmId, RequestContext context = null)
-        {
-            Argument.AssertNotNullOrEmpty(jobId, nameof(jobId));
-            Argument.AssertNotNull(farmerId, nameof(farmerId));
-            Argument.AssertNotNull(farmId, nameof(farmId));
-
-            using var scope = ClientDiagnostics.CreateScope("FarmsClient.CreateCascadeDeleteJob");
-            scope.Start();
-            try
-            {
-                using HttpMessage message = CreateCreateCascadeDeleteJobRequest(jobId, farmerId, farmId, context);
-                return await ProtocolOperationHelpers.ProcessMessageAsync(_pipeline, message, ClientDiagnostics, "FarmsClient.CreateCascadeDeleteJob", OperationFinalStateVia.Location, context, waitUntil).ConfigureAwait(false);
-            }
-            catch (Exception e)
-            {
-                scope.Failed(e);
-                throw;
-            }
-        }
-
-        /// <summary> Create a cascade delete job for specified farm. </summary>
-        /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
-        /// <param name="jobId"> Job ID supplied by end user. </param>
-        /// <param name="farmerId"> ID of the associated farmer. </param>
-        /// <param name="farmId"> ID of the farm to be deleted. </param>
-        /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="jobId"/>, <paramref name="farmerId"/> or <paramref name="farmId"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="jobId"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The <see cref="Operation{T}"/> from the service that will contain a <see cref="BinaryData"/> object once the asynchronous operation on the service has completed. Details of the body schema for the operation's final value are in the Remarks section below. </returns>
-        /// <example>
-        /// This sample shows how to call CreateCascadeDeleteJob with required parameters and parse the result.
-        /// <code><![CDATA[
-        /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmsClient(credential);
-        /// 
-        /// var operation = client.CreateCascadeDeleteJob(WaitUntil.Completed, "<jobId>", "<farmerId>", "<farmId>");
-        /// 
-        /// BinaryData data = operation.WaitForCompletion();
-        /// JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
-        /// Console.WriteLine(result.GetProperty("farmerId").ToString());
-        /// Console.WriteLine(result.GetProperty("resourceId").ToString());
-        /// Console.WriteLine(result.GetProperty("resourceType").ToString());
-        /// Console.WriteLine(result.GetProperty("id").ToString());
-        /// Console.WriteLine(result.GetProperty("status").ToString());
-        /// Console.WriteLine(result.GetProperty("durationInSeconds").ToString());
-        /// Console.WriteLine(result.GetProperty("message").ToString());
-        /// Console.WriteLine(result.GetProperty("createdDateTime").ToString());
-        /// Console.WriteLine(result.GetProperty("lastActionDateTime").ToString());
-        /// Console.WriteLine(result.GetProperty("startTime").ToString());
-        /// Console.WriteLine(result.GetProperty("endTime").ToString());
-        /// ]]></code>
-        /// </example>
-        /// <remarks>
-        /// Below is the JSON schema for the response payload.
-        /// 
-        /// Response Body:
-        /// 
-        /// Schema for <c>CascadeDeleteJob</c>:
-        /// <code>{
-        ///   farmerId: string, # Required. Farmer Id.
-        ///   resourceId: string, # Required. The id of the resource.
-        ///   resourceType: string, # Required. The type of the resource.
-        ///   id: string, # Optional. Unique job id.
-        ///   status: &quot;Waiting&quot; | &quot;Running&quot; | &quot;Succeeded&quot; | &quot;Failed&quot; | &quot;Cancelled&quot;, # Optional. Status of the job.
-        /// Possible values: &apos;Waiting&apos;, &apos;Running&apos;, &apos;Succeeded&apos;, &apos;Failed&apos;, &apos;Cancelled&apos;.
-        ///   durationInSeconds: number, # Optional. Duration of the job in seconds.
-        ///   message: string, # Optional. Status message to capture more details of the job.
-        ///   createdDateTime: string (ISO 8601 Format), # Optional. Job created at dateTime. Sample format: yyyy-MM-ddTHH:mm:ssZ.
-        ///   lastActionDateTime: string (ISO 8601 Format), # Optional. Job was last acted upon at dateTime. Sample format: yyyy-MM-ddTHH:mm:ssZ.
-        ///   startTime: string (ISO 8601 Format), # Optional. Job start time when available. Sample format: yyyy-MM-ddTHH:mm:ssZ.
-        ///   endTime: string (ISO 8601 Format), # Optional. Job end time when available. Sample format: yyyy-MM-ddTHH:mm:ssZ.
-        /// }
-        /// </code>
-        /// 
-        /// </remarks>
-        public virtual Operation<BinaryData> CreateCascadeDeleteJob(WaitUntil waitUntil, string jobId, string farmerId, string farmId, RequestContext context = null)
-        {
-            Argument.AssertNotNullOrEmpty(jobId, nameof(jobId));
-            Argument.AssertNotNull(farmerId, nameof(farmerId));
-            Argument.AssertNotNull(farmId, nameof(farmId));
-
-            using var scope = ClientDiagnostics.CreateScope("FarmsClient.CreateCascadeDeleteJob");
-            scope.Start();
-            try
-            {
-                using HttpMessage message = CreateCreateCascadeDeleteJobRequest(jobId, farmerId, farmId, context);
-                return ProtocolOperationHelpers.ProcessMessage(_pipeline, message, ClientDiagnostics, "FarmsClient.CreateCascadeDeleteJob", OperationFinalStateVia.Location, context, waitUntil);
-            }
-            catch (Exception e)
-            {
-                scope.Failed(e);
-                throw;
-            }
-        }
-
-        internal HttpMessage CreateGetFarmsByFarmerIdRequest(string farmerId, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
+        internal HttpMessage CreateGetNutrientAnalysesByFarmerIdRequest(string farmerId, string parentType, IEnumerable<string> parentIds, IEnumerable<string> classifications, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
         {
             var message = _pipeline.CreateMessage(context, ResponseClassifier200);
             var request = message.Request;
@@ -1230,7 +1240,25 @@ namespace Azure.Verticals.AgriFood.Farming
             uri.Reset(_endpoint);
             uri.AppendPath("/farmers/", false);
             uri.AppendPath(farmerId, true);
-            uri.AppendPath("/farms", false);
+            uri.AppendPath("/nutrient-analyses", false);
+            if (parentType != null)
+            {
+                uri.AppendQuery("parentType", parentType, true);
+            }
+            if (parentIds != null)
+            {
+                foreach (var param in parentIds)
+                {
+                    uri.AppendQuery("parentIds", param, true);
+                }
+            }
+            if (classifications != null)
+            {
+                foreach (var param in classifications)
+                {
+                    uri.AppendQuery("classifications", param, true);
+                }
+            }
             if (ids != null)
             {
                 foreach (var param in ids)
@@ -1289,7 +1317,7 @@ namespace Azure.Verticals.AgriFood.Farming
             return message;
         }
 
-        internal HttpMessage CreateGetFarmRequest(string farmerId, string farmId, RequestContext context)
+        internal HttpMessage CreateGetNutrientAnalysisRequest(string farmerId, string nutrientAnalysisId, RequestContext context)
         {
             var message = _pipeline.CreateMessage(context, ResponseClassifier200);
             var request = message.Request;
@@ -1298,15 +1326,15 @@ namespace Azure.Verticals.AgriFood.Farming
             uri.Reset(_endpoint);
             uri.AppendPath("/farmers/", false);
             uri.AppendPath(farmerId, true);
-            uri.AppendPath("/farms/", false);
-            uri.AppendPath(farmId, true);
+            uri.AppendPath("/nutrient-analyses/", false);
+            uri.AppendPath(nutrientAnalysisId, true);
             uri.AppendQuery("api-version", _apiVersion, true);
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");
             return message;
         }
 
-        internal HttpMessage CreateCreateOrUpdateRequest(string farmerId, string farmId, RequestContent content, RequestContext context)
+        internal HttpMessage CreateCreateOrUpdateRequest(string farmerId, string nutrientAnalysisId, RequestContent content, RequestContext context)
         {
             var message = _pipeline.CreateMessage(context, ResponseClassifier200201);
             var request = message.Request;
@@ -1315,8 +1343,8 @@ namespace Azure.Verticals.AgriFood.Farming
             uri.Reset(_endpoint);
             uri.AppendPath("/farmers/", false);
             uri.AppendPath(farmerId, true);
-            uri.AppendPath("/farms/", false);
-            uri.AppendPath(farmId, true);
+            uri.AppendPath("/nutrient-analyses/", false);
+            uri.AppendPath(nutrientAnalysisId, true);
             uri.AppendQuery("api-version", _apiVersion, true);
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");
@@ -1325,7 +1353,7 @@ namespace Azure.Verticals.AgriFood.Farming
             return message;
         }
 
-        internal HttpMessage CreateDeleteRequest(string farmerId, string farmId, RequestContext context)
+        internal HttpMessage CreateDeleteRequest(string farmerId, string nutrientAnalysisId, RequestContext context)
         {
             var message = _pipeline.CreateMessage(context, ResponseClassifier204);
             var request = message.Request;
@@ -1334,22 +1362,40 @@ namespace Azure.Verticals.AgriFood.Farming
             uri.Reset(_endpoint);
             uri.AppendPath("/farmers/", false);
             uri.AppendPath(farmerId, true);
-            uri.AppendPath("/farms/", false);
-            uri.AppendPath(farmId, true);
+            uri.AppendPath("/nutrient-analyses/", false);
+            uri.AppendPath(nutrientAnalysisId, true);
             uri.AppendQuery("api-version", _apiVersion, true);
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");
             return message;
         }
 
-        internal HttpMessage CreateGetFarmsRequest(IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
+        internal HttpMessage CreateGetNutrientAnalysesRequest(string parentType, IEnumerable<string> parentIds, IEnumerable<string> classifications, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
         {
             var message = _pipeline.CreateMessage(context, ResponseClassifier200);
             var request = message.Request;
             request.Method = RequestMethod.Get;
             var uri = new RawRequestUriBuilder();
             uri.Reset(_endpoint);
-            uri.AppendPath("/farms", false);
+            uri.AppendPath("/nutrient-analyses", false);
+            if (parentType != null)
+            {
+                uri.AppendQuery("parentType", parentType, true);
+            }
+            if (parentIds != null)
+            {
+                foreach (var param in parentIds)
+                {
+                    uri.AppendQuery("parentIds", param, true);
+                }
+            }
+            if (classifications != null)
+            {
+                foreach (var param in classifications)
+                {
+                    uri.AppendQuery("classifications", param, true);
+                }
+            }
             if (ids != null)
             {
                 foreach (var param in ids)
@@ -1408,39 +1454,7 @@ namespace Azure.Verticals.AgriFood.Farming
             return message;
         }
 
-        internal HttpMessage CreateCreateCascadeDeleteJobRequest(string jobId, string farmerId, string farmId, RequestContext context)
-        {
-            var message = _pipeline.CreateMessage(context, ResponseClassifier202);
-            var request = message.Request;
-            request.Method = RequestMethod.Put;
-            var uri = new RawRequestUriBuilder();
-            uri.Reset(_endpoint);
-            uri.AppendPath("/farms/cascade-delete/", false);
-            uri.AppendPath(jobId, true);
-            uri.AppendQuery("farmerId", farmerId, true);
-            uri.AppendQuery("farmId", farmId, true);
-            uri.AppendQuery("api-version", _apiVersion, true);
-            request.Uri = uri;
-            request.Headers.Add("Accept", "application/json");
-            return message;
-        }
-
-        internal HttpMessage CreateGetCascadeDeleteJobDetailsRequest(string jobId, RequestContext context)
-        {
-            var message = _pipeline.CreateMessage(context, ResponseClassifier200);
-            var request = message.Request;
-            request.Method = RequestMethod.Get;
-            var uri = new RawRequestUriBuilder();
-            uri.Reset(_endpoint);
-            uri.AppendPath("/farms/cascade-delete/", false);
-            uri.AppendPath(jobId, true);
-            uri.AppendQuery("api-version", _apiVersion, true);
-            request.Uri = uri;
-            request.Headers.Add("Accept", "application/json");
-            return message;
-        }
-
-        internal HttpMessage CreateGetFarmsByFarmerIdNextPageRequest(string nextLink, string farmerId, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
+        internal HttpMessage CreateGetNutrientAnalysesByFarmerIdNextPageRequest(string nextLink, string farmerId, string parentType, IEnumerable<string> parentIds, IEnumerable<string> classifications, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
         {
             var message = _pipeline.CreateMessage(context, ResponseClassifier200);
             var request = message.Request;
@@ -1453,7 +1467,7 @@ namespace Azure.Verticals.AgriFood.Farming
             return message;
         }
 
-        internal HttpMessage CreateGetFarmsNextPageRequest(string nextLink, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
+        internal HttpMessage CreateGetNutrientAnalysesNextPageRequest(string nextLink, string parentType, IEnumerable<string> parentIds, IEnumerable<string> classifications, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
         {
             var message = _pipeline.CreateMessage(context, ResponseClassifier200);
             var request = message.Request;
@@ -1472,7 +1486,5 @@ namespace Azure.Verticals.AgriFood.Farming
         private static ResponseClassifier ResponseClassifier200201 => _responseClassifier200201 ??= new StatusCodeClassifier(stackalloc ushort[] { 200, 201 });
         private static ResponseClassifier _responseClassifier204;
         private static ResponseClassifier ResponseClassifier204 => _responseClassifier204 ??= new StatusCodeClassifier(stackalloc ushort[] { 204 });
-        private static ResponseClassifier _responseClassifier202;
-        private static ResponseClassifier ResponseClassifier202 => _responseClassifier202 ??= new StatusCodeClassifier(stackalloc ushort[] { 202 });
     }
 }

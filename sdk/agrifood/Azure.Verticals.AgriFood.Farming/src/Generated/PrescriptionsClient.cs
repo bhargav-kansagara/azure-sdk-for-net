@@ -16,9 +16,9 @@ using Azure.Core.Pipeline;
 
 namespace Azure.Verticals.AgriFood.Farming
 {
-    // Data plane generated client. The SeasonalFields service client.
-    /// <summary> The SeasonalFields service client. </summary>
-    public partial class SeasonalFieldsClient
+    // Data plane generated client. The Prescriptions service client.
+    /// <summary> The Prescriptions service client. </summary>
+    public partial class PrescriptionsClient
     {
         private static readonly string[] AuthorizationScopes = new string[] { "https://farmbeats.azure.net/.default" };
         private readonly TokenCredential _tokenCredential;
@@ -32,25 +32,25 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <summary> The HTTP pipeline for sending and receiving REST requests and responses. </summary>
         public virtual HttpPipeline Pipeline => _pipeline;
 
-        /// <summary> Initializes a new instance of SeasonalFieldsClient for mocking. </summary>
-        protected SeasonalFieldsClient()
+        /// <summary> Initializes a new instance of PrescriptionsClient for mocking. </summary>
+        protected PrescriptionsClient()
         {
         }
 
-        /// <summary> Initializes a new instance of SeasonalFieldsClient. </summary>
+        /// <summary> Initializes a new instance of PrescriptionsClient. </summary>
         /// <param name="endpoint"> The endpoint of your FarmBeats resource (protocol and hostname, for example: https://{resourceName}.farmbeats.azure.net). </param>
         /// <param name="credential"> A credential used to authenticate to an Azure Service. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="endpoint"/> or <paramref name="credential"/> is null. </exception>
-        public SeasonalFieldsClient(TokenCredential credential, Uri endpoint) : this(credential, endpoint, new FarmBeatsClientOptions())
+        public PrescriptionsClient(TokenCredential credential, Uri endpoint) : this(credential, endpoint, new FarmBeatsClientOptions())
         {
         }
 
-        /// <summary> Initializes a new instance of SeasonalFieldsClient. </summary>
+        /// <summary> Initializes a new instance of PrescriptionsClient. </summary>
         /// <param name="credential"> A credential used to authenticate to an Azure Service. </param>
         /// <param name="endpoint"> server parameter. </param>
         /// <param name="options"> The options for configuring the client. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="credential"/> or <paramref name="endpoint"/> is null. </exception>
-        public SeasonalFieldsClient(TokenCredential credential, Uri endpoint, FarmBeatsClientOptions options)
+        public PrescriptionsClient(TokenCredential credential, Uri endpoint, FarmBeatsClientOptions options)
         {
             Argument.AssertNotNull(credential, nameof(credential));
             Argument.AssertNotNull(endpoint, nameof(endpoint));
@@ -63,36 +63,30 @@ namespace Azure.Verticals.AgriFood.Farming
             _apiVersion = options.Version;
         }
 
-        /// <summary> Gets a specified seasonal field resource under a particular farmer. </summary>
+        /// <summary> Gets a specified prescription resource under a particular farmer. </summary>
         /// <param name="farmerId"> Id of the associated farmer. </param>
-        /// <param name="seasonalFieldId"> Id of the seasonal field. </param>
+        /// <param name="prescriptionId"> Id of the prescription. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/> or <paramref name="seasonalFieldId"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="seasonalFieldId"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/> or <paramref name="prescriptionId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="prescriptionId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
         /// <example>
-        /// This sample shows how to call GetSeasonalFieldAsync with required parameters and parse the result.
+        /// This sample shows how to call GetPrescriptionAsync with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new SeasonalFieldsClient(credential);
+        /// var client = new PrescriptionsClient(credential);
         /// 
-        /// Response response = await client.GetSeasonalFieldAsync("<farmerId>", "<seasonalFieldId>");
+        /// Response response = await client.GetPrescriptionAsync("<farmerId>", "<prescriptionId>");
         /// 
         /// JsonElement result = JsonDocument.Parse(response.ContentStream).RootElement;
         /// Console.WriteLine(result.GetProperty("farmerId").ToString());
-        /// Console.WriteLine(result.GetProperty("primaryBoundaryId").ToString());
-        /// Console.WriteLine(result.GetProperty("boundaryIds")[0].ToString());
-        /// Console.WriteLine(result.GetProperty("farmId").ToString());
-        /// Console.WriteLine(result.GetProperty("fieldId").ToString());
-        /// Console.WriteLine(result.GetProperty("seasonId").ToString());
-        /// Console.WriteLine(result.GetProperty("cropVarietyIds")[0].ToString());
-        /// Console.WriteLine(result.GetProperty("cropId").ToString());
-        /// Console.WriteLine(result.GetProperty("avgYieldValue").ToString());
-        /// Console.WriteLine(result.GetProperty("avgYieldUnit").ToString());
-        /// Console.WriteLine(result.GetProperty("avgSeedPopulationValue").ToString());
-        /// Console.WriteLine(result.GetProperty("avgSeedPopulationUnit").ToString());
-        /// Console.WriteLine(result.GetProperty("plantingDateTime").ToString());
+        /// Console.WriteLine(result.GetProperty("prescriptionMapId").ToString());
+        /// Console.WriteLine(result.GetProperty("productCode").ToString());
+        /// Console.WriteLine(result.GetProperty("productName").ToString());
+        /// Console.WriteLine(result.GetProperty("type").ToString());
+        /// Console.WriteLine(result.GetProperty("measures").GetProperty("<test>").GetProperty("unit").ToString());
+        /// Console.WriteLine(result.GetProperty("measures").GetProperty("<test>").GetProperty("value").ToString());
         /// Console.WriteLine(result.GetProperty("id").ToString());
         /// Console.WriteLine(result.GetProperty("eTag").ToString());
         /// Console.WriteLine(result.GetProperty("status").ToString());
@@ -109,21 +103,14 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Response Body:
         /// 
-        /// Schema for <c>SeasonalField</c>:
+        /// Schema for <c>Prescription</c>:
         /// <code>{
         ///   farmerId: string, # Optional. Farmer Id.
-        ///   primaryBoundaryId: string, # Optional. Primary boundary id.
-        ///   boundaryIds: [string], # Optional. Boundary Ids.
-        ///   farmId: string, # Optional. Id of the associated Farm.
-        ///   fieldId: string, # Optional. Id of the associated Field.
-        ///   seasonId: string, # Optional. Id of the season it belongs to.
-        ///   cropVarietyIds: [string], # Optional. CropVariety ids.
-        ///   cropId: string, # Optional. Id of the crop it belongs to.
-        ///   avgYieldValue: number, # Optional. Average yield value of the seasonal field.
-        ///   avgYieldUnit: string, # Optional. Unit of the average yield value attribute.
-        ///   avgSeedPopulationValue: number, # Optional. Average seed population value of the seasonal field.
-        ///   avgSeedPopulationUnit: string, # Optional. Unit of average seed population value attribute.
-        ///   plantingDateTime: string (ISO 8601 Format), # Optional. Planting datetime, sample format: yyyy-MM-ddTHH:mm:ssZ.
+        ///   prescriptionMapId: string, # Optional. Prescription map Id.
+        ///   productCode: string, # Optional. Product Code.
+        ///   productName: string, # Optional. Product name.
+        ///   type: string, # Optional. Prescription type.
+        ///   measures: Dictionary&lt;string, Measure&gt;, # Optional. Measures.
         ///   id: string, # Optional. Unique resource ID.
         ///   eTag: string, # Optional. The ETag value to implement optimistic concurrency.
         ///   status: string, # Optional. Status of the resource.
@@ -141,16 +128,16 @@ namespace Azure.Verticals.AgriFood.Farming
         /// </code>
         /// 
         /// </remarks>
-        public virtual async Task<Response> GetSeasonalFieldAsync(string farmerId, string seasonalFieldId, RequestContext context = null)
+        public virtual async Task<Response> GetPrescriptionAsync(string farmerId, string prescriptionId, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(farmerId, nameof(farmerId));
-            Argument.AssertNotNullOrEmpty(seasonalFieldId, nameof(seasonalFieldId));
+            Argument.AssertNotNullOrEmpty(prescriptionId, nameof(prescriptionId));
 
-            using var scope = ClientDiagnostics.CreateScope("SeasonalFieldsClient.GetSeasonalField");
+            using var scope = ClientDiagnostics.CreateScope("PrescriptionsClient.GetPrescription");
             scope.Start();
             try
             {
-                using HttpMessage message = CreateGetSeasonalFieldRequest(farmerId, seasonalFieldId, context);
+                using HttpMessage message = CreateGetPrescriptionRequest(farmerId, prescriptionId, context);
                 return await _pipeline.ProcessMessageAsync(message, context).ConfigureAwait(false);
             }
             catch (Exception e)
@@ -160,36 +147,30 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Gets a specified seasonal field resource under a particular farmer. </summary>
+        /// <summary> Gets a specified prescription resource under a particular farmer. </summary>
         /// <param name="farmerId"> Id of the associated farmer. </param>
-        /// <param name="seasonalFieldId"> Id of the seasonal field. </param>
+        /// <param name="prescriptionId"> Id of the prescription. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/> or <paramref name="seasonalFieldId"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="seasonalFieldId"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/> or <paramref name="prescriptionId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="prescriptionId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
         /// <example>
-        /// This sample shows how to call GetSeasonalField with required parameters and parse the result.
+        /// This sample shows how to call GetPrescription with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new SeasonalFieldsClient(credential);
+        /// var client = new PrescriptionsClient(credential);
         /// 
-        /// Response response = client.GetSeasonalField("<farmerId>", "<seasonalFieldId>");
+        /// Response response = client.GetPrescription("<farmerId>", "<prescriptionId>");
         /// 
         /// JsonElement result = JsonDocument.Parse(response.ContentStream).RootElement;
         /// Console.WriteLine(result.GetProperty("farmerId").ToString());
-        /// Console.WriteLine(result.GetProperty("primaryBoundaryId").ToString());
-        /// Console.WriteLine(result.GetProperty("boundaryIds")[0].ToString());
-        /// Console.WriteLine(result.GetProperty("farmId").ToString());
-        /// Console.WriteLine(result.GetProperty("fieldId").ToString());
-        /// Console.WriteLine(result.GetProperty("seasonId").ToString());
-        /// Console.WriteLine(result.GetProperty("cropVarietyIds")[0].ToString());
-        /// Console.WriteLine(result.GetProperty("cropId").ToString());
-        /// Console.WriteLine(result.GetProperty("avgYieldValue").ToString());
-        /// Console.WriteLine(result.GetProperty("avgYieldUnit").ToString());
-        /// Console.WriteLine(result.GetProperty("avgSeedPopulationValue").ToString());
-        /// Console.WriteLine(result.GetProperty("avgSeedPopulationUnit").ToString());
-        /// Console.WriteLine(result.GetProperty("plantingDateTime").ToString());
+        /// Console.WriteLine(result.GetProperty("prescriptionMapId").ToString());
+        /// Console.WriteLine(result.GetProperty("productCode").ToString());
+        /// Console.WriteLine(result.GetProperty("productName").ToString());
+        /// Console.WriteLine(result.GetProperty("type").ToString());
+        /// Console.WriteLine(result.GetProperty("measures").GetProperty("<test>").GetProperty("unit").ToString());
+        /// Console.WriteLine(result.GetProperty("measures").GetProperty("<test>").GetProperty("value").ToString());
         /// Console.WriteLine(result.GetProperty("id").ToString());
         /// Console.WriteLine(result.GetProperty("eTag").ToString());
         /// Console.WriteLine(result.GetProperty("status").ToString());
@@ -206,21 +187,14 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Response Body:
         /// 
-        /// Schema for <c>SeasonalField</c>:
+        /// Schema for <c>Prescription</c>:
         /// <code>{
         ///   farmerId: string, # Optional. Farmer Id.
-        ///   primaryBoundaryId: string, # Optional. Primary boundary id.
-        ///   boundaryIds: [string], # Optional. Boundary Ids.
-        ///   farmId: string, # Optional. Id of the associated Farm.
-        ///   fieldId: string, # Optional. Id of the associated Field.
-        ///   seasonId: string, # Optional. Id of the season it belongs to.
-        ///   cropVarietyIds: [string], # Optional. CropVariety ids.
-        ///   cropId: string, # Optional. Id of the crop it belongs to.
-        ///   avgYieldValue: number, # Optional. Average yield value of the seasonal field.
-        ///   avgYieldUnit: string, # Optional. Unit of the average yield value attribute.
-        ///   avgSeedPopulationValue: number, # Optional. Average seed population value of the seasonal field.
-        ///   avgSeedPopulationUnit: string, # Optional. Unit of average seed population value attribute.
-        ///   plantingDateTime: string (ISO 8601 Format), # Optional. Planting datetime, sample format: yyyy-MM-ddTHH:mm:ssZ.
+        ///   prescriptionMapId: string, # Optional. Prescription map Id.
+        ///   productCode: string, # Optional. Product Code.
+        ///   productName: string, # Optional. Product name.
+        ///   type: string, # Optional. Prescription type.
+        ///   measures: Dictionary&lt;string, Measure&gt;, # Optional. Measures.
         ///   id: string, # Optional. Unique resource ID.
         ///   eTag: string, # Optional. The ETag value to implement optimistic concurrency.
         ///   status: string, # Optional. Status of the resource.
@@ -238,16 +212,16 @@ namespace Azure.Verticals.AgriFood.Farming
         /// </code>
         /// 
         /// </remarks>
-        public virtual Response GetSeasonalField(string farmerId, string seasonalFieldId, RequestContext context = null)
+        public virtual Response GetPrescription(string farmerId, string prescriptionId, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(farmerId, nameof(farmerId));
-            Argument.AssertNotNullOrEmpty(seasonalFieldId, nameof(seasonalFieldId));
+            Argument.AssertNotNullOrEmpty(prescriptionId, nameof(prescriptionId));
 
-            using var scope = ClientDiagnostics.CreateScope("SeasonalFieldsClient.GetSeasonalField");
+            using var scope = ClientDiagnostics.CreateScope("PrescriptionsClient.GetPrescription");
             scope.Start();
             try
             {
-                using HttpMessage message = CreateGetSeasonalFieldRequest(farmerId, seasonalFieldId, context);
+                using HttpMessage message = CreateGetPrescriptionRequest(farmerId, prescriptionId, context);
                 return _pipeline.ProcessMessage(message, context);
             }
             catch (Exception e)
@@ -257,24 +231,24 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Creates or Updates a seasonal field resource under a particular farmer. </summary>
+        /// <summary> Creates or Updates a prescription resource under a particular farmer. </summary>
         /// <param name="farmerId"> Id of the associated farmer resource. </param>
-        /// <param name="seasonalFieldId"> Id of the seasonal field resource. </param>
+        /// <param name="prescriptionId"> Id of the prescription resource. </param>
         /// <param name="content"> The content to send as the body of the request. Details of the request body schema are in the Remarks section below. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/>, <paramref name="seasonalFieldId"/> or <paramref name="content"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="seasonalFieldId"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/>, <paramref name="prescriptionId"/> or <paramref name="content"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="prescriptionId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
         /// <example>
         /// This sample shows how to call CreateOrUpdateAsync with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new SeasonalFieldsClient(credential);
+        /// var client = new PrescriptionsClient(credential);
         /// 
         /// var data = new {};
         /// 
-        /// Response response = await client.CreateOrUpdateAsync("<farmerId>", "<seasonalFieldId>", RequestContent.Create(data));
+        /// Response response = await client.CreateOrUpdateAsync("<farmerId>", "<prescriptionId>", RequestContent.Create(data));
         /// 
         /// JsonElement result = JsonDocument.Parse(response.ContentStream).RootElement;
         /// Console.WriteLine(result.ToString());
@@ -282,21 +256,19 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call CreateOrUpdateAsync with all parameters and request content, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new SeasonalFieldsClient(credential);
+        /// var client = new PrescriptionsClient(credential);
         /// 
         /// var data = new {
-        ///     farmId = "<farmId>",
-        ///     fieldId = "<fieldId>",
-        ///     seasonId = "<seasonId>",
-        ///     cropVarietyIds = new[] {
-        ///         "<String>"
+        ///     prescriptionMapId = "<prescriptionMapId>",
+        ///     productCode = "<productCode>",
+        ///     productName = "<productName>",
+        ///     type = "<type>",
+        ///     measures = new {
+        ///         key = new {
+        ///             unit = "<unit>",
+        ///             value = 123.45d,
+        ///         },
         ///     },
-        ///     cropId = "<cropId>",
-        ///     avgYieldValue = 123.45d,
-        ///     avgYieldUnit = "<avgYieldUnit>",
-        ///     avgSeedPopulationValue = 123.45d,
-        ///     avgSeedPopulationUnit = "<avgSeedPopulationUnit>",
-        ///     plantingDateTime = "2022-05-10T18:57:31.2311892Z",
         ///     status = "<status>",
         ///     source = "<source>",
         ///     name = "<name>",
@@ -306,22 +278,16 @@ namespace Azure.Verticals.AgriFood.Farming
         ///     },
         /// };
         /// 
-        /// Response response = await client.CreateOrUpdateAsync("<farmerId>", "<seasonalFieldId>", RequestContent.Create(data));
+        /// Response response = await client.CreateOrUpdateAsync("<farmerId>", "<prescriptionId>", RequestContent.Create(data));
         /// 
         /// JsonElement result = JsonDocument.Parse(response.ContentStream).RootElement;
         /// Console.WriteLine(result.GetProperty("farmerId").ToString());
-        /// Console.WriteLine(result.GetProperty("primaryBoundaryId").ToString());
-        /// Console.WriteLine(result.GetProperty("boundaryIds")[0].ToString());
-        /// Console.WriteLine(result.GetProperty("farmId").ToString());
-        /// Console.WriteLine(result.GetProperty("fieldId").ToString());
-        /// Console.WriteLine(result.GetProperty("seasonId").ToString());
-        /// Console.WriteLine(result.GetProperty("cropVarietyIds")[0].ToString());
-        /// Console.WriteLine(result.GetProperty("cropId").ToString());
-        /// Console.WriteLine(result.GetProperty("avgYieldValue").ToString());
-        /// Console.WriteLine(result.GetProperty("avgYieldUnit").ToString());
-        /// Console.WriteLine(result.GetProperty("avgSeedPopulationValue").ToString());
-        /// Console.WriteLine(result.GetProperty("avgSeedPopulationUnit").ToString());
-        /// Console.WriteLine(result.GetProperty("plantingDateTime").ToString());
+        /// Console.WriteLine(result.GetProperty("prescriptionMapId").ToString());
+        /// Console.WriteLine(result.GetProperty("productCode").ToString());
+        /// Console.WriteLine(result.GetProperty("productName").ToString());
+        /// Console.WriteLine(result.GetProperty("type").ToString());
+        /// Console.WriteLine(result.GetProperty("measures").GetProperty("<test>").GetProperty("unit").ToString());
+        /// Console.WriteLine(result.GetProperty("measures").GetProperty("<test>").GetProperty("value").ToString());
         /// Console.WriteLine(result.GetProperty("id").ToString());
         /// Console.WriteLine(result.GetProperty("eTag").ToString());
         /// Console.WriteLine(result.GetProperty("status").ToString());
@@ -338,21 +304,14 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Request Body:
         /// 
-        /// Schema for <c>SeasonalField</c>:
+        /// Schema for <c>Prescription</c>:
         /// <code>{
         ///   farmerId: string, # Optional. Farmer Id.
-        ///   primaryBoundaryId: string, # Optional. Primary boundary id.
-        ///   boundaryIds: [string], # Optional. Boundary Ids.
-        ///   farmId: string, # Optional. Id of the associated Farm.
-        ///   fieldId: string, # Optional. Id of the associated Field.
-        ///   seasonId: string, # Optional. Id of the season it belongs to.
-        ///   cropVarietyIds: [string], # Optional. CropVariety ids.
-        ///   cropId: string, # Optional. Id of the crop it belongs to.
-        ///   avgYieldValue: number, # Optional. Average yield value of the seasonal field.
-        ///   avgYieldUnit: string, # Optional. Unit of the average yield value attribute.
-        ///   avgSeedPopulationValue: number, # Optional. Average seed population value of the seasonal field.
-        ///   avgSeedPopulationUnit: string, # Optional. Unit of average seed population value attribute.
-        ///   plantingDateTime: string (ISO 8601 Format), # Optional. Planting datetime, sample format: yyyy-MM-ddTHH:mm:ssZ.
+        ///   prescriptionMapId: string, # Optional. Prescription map Id.
+        ///   productCode: string, # Optional. Product Code.
+        ///   productName: string, # Optional. Product name.
+        ///   type: string, # Optional. Prescription type.
+        ///   measures: Dictionary&lt;string, Measure&gt;, # Optional. Measures.
         ///   id: string, # Optional. Unique resource ID.
         ///   eTag: string, # Optional. The ETag value to implement optimistic concurrency.
         ///   status: string, # Optional. Status of the resource.
@@ -371,21 +330,14 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Response Body:
         /// 
-        /// Schema for <c>SeasonalField</c>:
+        /// Schema for <c>Prescription</c>:
         /// <code>{
         ///   farmerId: string, # Optional. Farmer Id.
-        ///   primaryBoundaryId: string, # Optional. Primary boundary id.
-        ///   boundaryIds: [string], # Optional. Boundary Ids.
-        ///   farmId: string, # Optional. Id of the associated Farm.
-        ///   fieldId: string, # Optional. Id of the associated Field.
-        ///   seasonId: string, # Optional. Id of the season it belongs to.
-        ///   cropVarietyIds: [string], # Optional. CropVariety ids.
-        ///   cropId: string, # Optional. Id of the crop it belongs to.
-        ///   avgYieldValue: number, # Optional. Average yield value of the seasonal field.
-        ///   avgYieldUnit: string, # Optional. Unit of the average yield value attribute.
-        ///   avgSeedPopulationValue: number, # Optional. Average seed population value of the seasonal field.
-        ///   avgSeedPopulationUnit: string, # Optional. Unit of average seed population value attribute.
-        ///   plantingDateTime: string (ISO 8601 Format), # Optional. Planting datetime, sample format: yyyy-MM-ddTHH:mm:ssZ.
+        ///   prescriptionMapId: string, # Optional. Prescription map Id.
+        ///   productCode: string, # Optional. Product Code.
+        ///   productName: string, # Optional. Product name.
+        ///   type: string, # Optional. Prescription type.
+        ///   measures: Dictionary&lt;string, Measure&gt;, # Optional. Measures.
         ///   id: string, # Optional. Unique resource ID.
         ///   eTag: string, # Optional. The ETag value to implement optimistic concurrency.
         ///   status: string, # Optional. Status of the resource.
@@ -403,17 +355,17 @@ namespace Azure.Verticals.AgriFood.Farming
         /// </code>
         /// 
         /// </remarks>
-        public virtual async Task<Response> CreateOrUpdateAsync(string farmerId, string seasonalFieldId, RequestContent content, RequestContext context = null)
+        public virtual async Task<Response> CreateOrUpdateAsync(string farmerId, string prescriptionId, RequestContent content, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(farmerId, nameof(farmerId));
-            Argument.AssertNotNullOrEmpty(seasonalFieldId, nameof(seasonalFieldId));
+            Argument.AssertNotNullOrEmpty(prescriptionId, nameof(prescriptionId));
             Argument.AssertNotNull(content, nameof(content));
 
-            using var scope = ClientDiagnostics.CreateScope("SeasonalFieldsClient.CreateOrUpdate");
+            using var scope = ClientDiagnostics.CreateScope("PrescriptionsClient.CreateOrUpdate");
             scope.Start();
             try
             {
-                using HttpMessage message = CreateCreateOrUpdateRequest(farmerId, seasonalFieldId, content, context);
+                using HttpMessage message = CreateCreateOrUpdateRequest(farmerId, prescriptionId, content, context);
                 return await _pipeline.ProcessMessageAsync(message, context).ConfigureAwait(false);
             }
             catch (Exception e)
@@ -423,24 +375,24 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Creates or Updates a seasonal field resource under a particular farmer. </summary>
+        /// <summary> Creates or Updates a prescription resource under a particular farmer. </summary>
         /// <param name="farmerId"> Id of the associated farmer resource. </param>
-        /// <param name="seasonalFieldId"> Id of the seasonal field resource. </param>
+        /// <param name="prescriptionId"> Id of the prescription resource. </param>
         /// <param name="content"> The content to send as the body of the request. Details of the request body schema are in the Remarks section below. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/>, <paramref name="seasonalFieldId"/> or <paramref name="content"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="seasonalFieldId"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/>, <paramref name="prescriptionId"/> or <paramref name="content"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="prescriptionId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
         /// <example>
         /// This sample shows how to call CreateOrUpdate with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new SeasonalFieldsClient(credential);
+        /// var client = new PrescriptionsClient(credential);
         /// 
         /// var data = new {};
         /// 
-        /// Response response = client.CreateOrUpdate("<farmerId>", "<seasonalFieldId>", RequestContent.Create(data));
+        /// Response response = client.CreateOrUpdate("<farmerId>", "<prescriptionId>", RequestContent.Create(data));
         /// 
         /// JsonElement result = JsonDocument.Parse(response.ContentStream).RootElement;
         /// Console.WriteLine(result.ToString());
@@ -448,21 +400,19 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call CreateOrUpdate with all parameters and request content, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new SeasonalFieldsClient(credential);
+        /// var client = new PrescriptionsClient(credential);
         /// 
         /// var data = new {
-        ///     farmId = "<farmId>",
-        ///     fieldId = "<fieldId>",
-        ///     seasonId = "<seasonId>",
-        ///     cropVarietyIds = new[] {
-        ///         "<String>"
+        ///     prescriptionMapId = "<prescriptionMapId>",
+        ///     productCode = "<productCode>",
+        ///     productName = "<productName>",
+        ///     type = "<type>",
+        ///     measures = new {
+        ///         key = new {
+        ///             unit = "<unit>",
+        ///             value = 123.45d,
+        ///         },
         ///     },
-        ///     cropId = "<cropId>",
-        ///     avgYieldValue = 123.45d,
-        ///     avgYieldUnit = "<avgYieldUnit>",
-        ///     avgSeedPopulationValue = 123.45d,
-        ///     avgSeedPopulationUnit = "<avgSeedPopulationUnit>",
-        ///     plantingDateTime = "2022-05-10T18:57:31.2311892Z",
         ///     status = "<status>",
         ///     source = "<source>",
         ///     name = "<name>",
@@ -472,22 +422,16 @@ namespace Azure.Verticals.AgriFood.Farming
         ///     },
         /// };
         /// 
-        /// Response response = client.CreateOrUpdate("<farmerId>", "<seasonalFieldId>", RequestContent.Create(data));
+        /// Response response = client.CreateOrUpdate("<farmerId>", "<prescriptionId>", RequestContent.Create(data));
         /// 
         /// JsonElement result = JsonDocument.Parse(response.ContentStream).RootElement;
         /// Console.WriteLine(result.GetProperty("farmerId").ToString());
-        /// Console.WriteLine(result.GetProperty("primaryBoundaryId").ToString());
-        /// Console.WriteLine(result.GetProperty("boundaryIds")[0].ToString());
-        /// Console.WriteLine(result.GetProperty("farmId").ToString());
-        /// Console.WriteLine(result.GetProperty("fieldId").ToString());
-        /// Console.WriteLine(result.GetProperty("seasonId").ToString());
-        /// Console.WriteLine(result.GetProperty("cropVarietyIds")[0].ToString());
-        /// Console.WriteLine(result.GetProperty("cropId").ToString());
-        /// Console.WriteLine(result.GetProperty("avgYieldValue").ToString());
-        /// Console.WriteLine(result.GetProperty("avgYieldUnit").ToString());
-        /// Console.WriteLine(result.GetProperty("avgSeedPopulationValue").ToString());
-        /// Console.WriteLine(result.GetProperty("avgSeedPopulationUnit").ToString());
-        /// Console.WriteLine(result.GetProperty("plantingDateTime").ToString());
+        /// Console.WriteLine(result.GetProperty("prescriptionMapId").ToString());
+        /// Console.WriteLine(result.GetProperty("productCode").ToString());
+        /// Console.WriteLine(result.GetProperty("productName").ToString());
+        /// Console.WriteLine(result.GetProperty("type").ToString());
+        /// Console.WriteLine(result.GetProperty("measures").GetProperty("<test>").GetProperty("unit").ToString());
+        /// Console.WriteLine(result.GetProperty("measures").GetProperty("<test>").GetProperty("value").ToString());
         /// Console.WriteLine(result.GetProperty("id").ToString());
         /// Console.WriteLine(result.GetProperty("eTag").ToString());
         /// Console.WriteLine(result.GetProperty("status").ToString());
@@ -504,21 +448,14 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Request Body:
         /// 
-        /// Schema for <c>SeasonalField</c>:
+        /// Schema for <c>Prescription</c>:
         /// <code>{
         ///   farmerId: string, # Optional. Farmer Id.
-        ///   primaryBoundaryId: string, # Optional. Primary boundary id.
-        ///   boundaryIds: [string], # Optional. Boundary Ids.
-        ///   farmId: string, # Optional. Id of the associated Farm.
-        ///   fieldId: string, # Optional. Id of the associated Field.
-        ///   seasonId: string, # Optional. Id of the season it belongs to.
-        ///   cropVarietyIds: [string], # Optional. CropVariety ids.
-        ///   cropId: string, # Optional. Id of the crop it belongs to.
-        ///   avgYieldValue: number, # Optional. Average yield value of the seasonal field.
-        ///   avgYieldUnit: string, # Optional. Unit of the average yield value attribute.
-        ///   avgSeedPopulationValue: number, # Optional. Average seed population value of the seasonal field.
-        ///   avgSeedPopulationUnit: string, # Optional. Unit of average seed population value attribute.
-        ///   plantingDateTime: string (ISO 8601 Format), # Optional. Planting datetime, sample format: yyyy-MM-ddTHH:mm:ssZ.
+        ///   prescriptionMapId: string, # Optional. Prescription map Id.
+        ///   productCode: string, # Optional. Product Code.
+        ///   productName: string, # Optional. Product name.
+        ///   type: string, # Optional. Prescription type.
+        ///   measures: Dictionary&lt;string, Measure&gt;, # Optional. Measures.
         ///   id: string, # Optional. Unique resource ID.
         ///   eTag: string, # Optional. The ETag value to implement optimistic concurrency.
         ///   status: string, # Optional. Status of the resource.
@@ -537,21 +474,14 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Response Body:
         /// 
-        /// Schema for <c>SeasonalField</c>:
+        /// Schema for <c>Prescription</c>:
         /// <code>{
         ///   farmerId: string, # Optional. Farmer Id.
-        ///   primaryBoundaryId: string, # Optional. Primary boundary id.
-        ///   boundaryIds: [string], # Optional. Boundary Ids.
-        ///   farmId: string, # Optional. Id of the associated Farm.
-        ///   fieldId: string, # Optional. Id of the associated Field.
-        ///   seasonId: string, # Optional. Id of the season it belongs to.
-        ///   cropVarietyIds: [string], # Optional. CropVariety ids.
-        ///   cropId: string, # Optional. Id of the crop it belongs to.
-        ///   avgYieldValue: number, # Optional. Average yield value of the seasonal field.
-        ///   avgYieldUnit: string, # Optional. Unit of the average yield value attribute.
-        ///   avgSeedPopulationValue: number, # Optional. Average seed population value of the seasonal field.
-        ///   avgSeedPopulationUnit: string, # Optional. Unit of average seed population value attribute.
-        ///   plantingDateTime: string (ISO 8601 Format), # Optional. Planting datetime, sample format: yyyy-MM-ddTHH:mm:ssZ.
+        ///   prescriptionMapId: string, # Optional. Prescription map Id.
+        ///   productCode: string, # Optional. Product Code.
+        ///   productName: string, # Optional. Product name.
+        ///   type: string, # Optional. Prescription type.
+        ///   measures: Dictionary&lt;string, Measure&gt;, # Optional. Measures.
         ///   id: string, # Optional. Unique resource ID.
         ///   eTag: string, # Optional. The ETag value to implement optimistic concurrency.
         ///   status: string, # Optional. Status of the resource.
@@ -569,17 +499,17 @@ namespace Azure.Verticals.AgriFood.Farming
         /// </code>
         /// 
         /// </remarks>
-        public virtual Response CreateOrUpdate(string farmerId, string seasonalFieldId, RequestContent content, RequestContext context = null)
+        public virtual Response CreateOrUpdate(string farmerId, string prescriptionId, RequestContent content, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(farmerId, nameof(farmerId));
-            Argument.AssertNotNullOrEmpty(seasonalFieldId, nameof(seasonalFieldId));
+            Argument.AssertNotNullOrEmpty(prescriptionId, nameof(prescriptionId));
             Argument.AssertNotNull(content, nameof(content));
 
-            using var scope = ClientDiagnostics.CreateScope("SeasonalFieldsClient.CreateOrUpdate");
+            using var scope = ClientDiagnostics.CreateScope("PrescriptionsClient.CreateOrUpdate");
             scope.Start();
             try
             {
-                using HttpMessage message = CreateCreateOrUpdateRequest(farmerId, seasonalFieldId, content, context);
+                using HttpMessage message = CreateCreateOrUpdateRequest(farmerId, prescriptionId, content, context);
                 return _pipeline.ProcessMessage(message, context);
             }
             catch (Exception e)
@@ -589,34 +519,34 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Deletes a specified seasonal-field resource under a particular farmer. </summary>
+        /// <summary> Deletes a specified prescription resource under a particular farmer. </summary>
         /// <param name="farmerId"> Id of the farmer. </param>
-        /// <param name="seasonalFieldId"> Id of the seasonal field. </param>
+        /// <param name="prescriptionId"> Id of the prescription. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/> or <paramref name="seasonalFieldId"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="seasonalFieldId"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/> or <paramref name="prescriptionId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="prescriptionId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The response returned from the service. </returns>
         /// <example>
         /// This sample shows how to call DeleteAsync with required parameters.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new SeasonalFieldsClient(credential);
+        /// var client = new PrescriptionsClient(credential);
         /// 
-        /// Response response = await client.DeleteAsync("<farmerId>", "<seasonalFieldId>");
+        /// Response response = await client.DeleteAsync("<farmerId>", "<prescriptionId>");
         /// Console.WriteLine(response.Status);
         /// ]]></code>
         /// </example>
-        public virtual async Task<Response> DeleteAsync(string farmerId, string seasonalFieldId, RequestContext context = null)
+        public virtual async Task<Response> DeleteAsync(string farmerId, string prescriptionId, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(farmerId, nameof(farmerId));
-            Argument.AssertNotNullOrEmpty(seasonalFieldId, nameof(seasonalFieldId));
+            Argument.AssertNotNullOrEmpty(prescriptionId, nameof(prescriptionId));
 
-            using var scope = ClientDiagnostics.CreateScope("SeasonalFieldsClient.Delete");
+            using var scope = ClientDiagnostics.CreateScope("PrescriptionsClient.Delete");
             scope.Start();
             try
             {
-                using HttpMessage message = CreateDeleteRequest(farmerId, seasonalFieldId, context);
+                using HttpMessage message = CreateDeleteRequest(farmerId, prescriptionId, context);
                 return await _pipeline.ProcessMessageAsync(message, context).ConfigureAwait(false);
             }
             catch (Exception e)
@@ -626,34 +556,34 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Deletes a specified seasonal-field resource under a particular farmer. </summary>
+        /// <summary> Deletes a specified prescription resource under a particular farmer. </summary>
         /// <param name="farmerId"> Id of the farmer. </param>
-        /// <param name="seasonalFieldId"> Id of the seasonal field. </param>
+        /// <param name="prescriptionId"> Id of the prescription. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/> or <paramref name="seasonalFieldId"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="seasonalFieldId"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/> or <paramref name="prescriptionId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="prescriptionId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The response returned from the service. </returns>
         /// <example>
         /// This sample shows how to call Delete with required parameters.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new SeasonalFieldsClient(credential);
+        /// var client = new PrescriptionsClient(credential);
         /// 
-        /// Response response = client.Delete("<farmerId>", "<seasonalFieldId>");
+        /// Response response = client.Delete("<farmerId>", "<prescriptionId>");
         /// Console.WriteLine(response.Status);
         /// ]]></code>
         /// </example>
-        public virtual Response Delete(string farmerId, string seasonalFieldId, RequestContext context = null)
+        public virtual Response Delete(string farmerId, string prescriptionId, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(farmerId, nameof(farmerId));
-            Argument.AssertNotNullOrEmpty(seasonalFieldId, nameof(seasonalFieldId));
+            Argument.AssertNotNullOrEmpty(prescriptionId, nameof(prescriptionId));
 
-            using var scope = ClientDiagnostics.CreateScope("SeasonalFieldsClient.Delete");
+            using var scope = ClientDiagnostics.CreateScope("PrescriptionsClient.Delete");
             scope.Start();
             try
             {
-                using HttpMessage message = CreateDeleteRequest(farmerId, seasonalFieldId, context);
+                using HttpMessage message = CreateDeleteRequest(farmerId, prescriptionId, context);
                 return _pipeline.ProcessMessage(message, context);
             }
             catch (Exception e)
@@ -663,7 +593,7 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Get cascade delete job for specified seasonal field. </summary>
+        /// <summary> Get a cascade delete job for specified prescription. </summary>
         /// <param name="jobId"> Id of the job. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="jobId"/> is null. </exception>
@@ -674,7 +604,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call GetCascadeDeleteJobDetailsAsync with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new SeasonalFieldsClient(credential);
+        /// var client = new PrescriptionsClient(credential);
         /// 
         /// Response response = await client.GetCascadeDeleteJobDetailsAsync("<jobId>");
         /// 
@@ -719,7 +649,7 @@ namespace Azure.Verticals.AgriFood.Farming
         {
             Argument.AssertNotNullOrEmpty(jobId, nameof(jobId));
 
-            using var scope = ClientDiagnostics.CreateScope("SeasonalFieldsClient.GetCascadeDeleteJobDetails");
+            using var scope = ClientDiagnostics.CreateScope("PrescriptionsClient.GetCascadeDeleteJobDetails");
             scope.Start();
             try
             {
@@ -733,7 +663,7 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Get cascade delete job for specified seasonal field. </summary>
+        /// <summary> Get a cascade delete job for specified prescription. </summary>
         /// <param name="jobId"> Id of the job. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="jobId"/> is null. </exception>
@@ -744,7 +674,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call GetCascadeDeleteJobDetails with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new SeasonalFieldsClient(credential);
+        /// var client = new PrescriptionsClient(credential);
         /// 
         /// Response response = client.GetCascadeDeleteJobDetails("<jobId>");
         /// 
@@ -789,7 +719,7 @@ namespace Azure.Verticals.AgriFood.Farming
         {
             Argument.AssertNotNullOrEmpty(jobId, nameof(jobId));
 
-            using var scope = ClientDiagnostics.CreateScope("SeasonalFieldsClient.GetCascadeDeleteJobDetails");
+            using var scope = ClientDiagnostics.CreateScope("PrescriptionsClient.GetCascadeDeleteJobDetails");
             scope.Start();
             try
             {
@@ -803,21 +733,13 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Returns a paginated list of seasonal field resources under a particular farmer. </summary>
+        /// <summary> Returns a paginated list of prescription resources under a particular farmer. </summary>
         /// <param name="farmerId"> Id of the associated farmer. </param>
-        /// <param name="farmIds"> Farm Ids of the resource. </param>
-        /// <param name="fieldIds"> Field Ids of the resource. </param>
-        /// <param name="seasonIds"> Season Ids of the resource. </param>
-        /// <param name="cropVarietyIds"> CropVarietyIds of the resource. </param>
-        /// <param name="cropIds"> Ids of the crop it belongs to. </param>
-        /// <param name="minAvgYieldValue"> Minimum average yield value of the seasonal field(inclusive). </param>
-        /// <param name="maxAvgYieldValue"> Maximum average yield value of the seasonal field(inclusive). </param>
-        /// <param name="avgYieldUnit"> Unit of the average yield value attribute. </param>
-        /// <param name="minAvgSeedPopulationValue"> Minimum average seed population value of the seasonal field(inclusive). </param>
-        /// <param name="maxAvgSeedPopulationValue"> Maximum average seed population value of the seasonal field(inclusive). </param>
-        /// <param name="avgSeedPopulationUnit"> Unit of average seed population value attribute. </param>
-        /// <param name="minPlantingDateTime"> Minimum planting datetime, sample format: yyyy-MM-ddTHH:mm:ssZ. </param>
-        /// <param name="maxPlantingDateTime"> Maximum planting datetime, sample format: yyyy-MM-ddTHH:mm:ssZ. </param>
+        /// <param name="prescriptionMapIds"> Prescription Map Ids of the resource. </param>
+        /// <param name="types"> Types of the resource. </param>
+        /// <param name="productCodes"> Product Codes of the resource. </param>
+        /// <param name="productNames"> Product Names of the resource. </param>
+        /// <param name="sources"> Sources for the resource. </param>
         /// <param name="ids"> Ids of the resource. </param>
         /// <param name="names"> Names of the resource. </param>
         /// <param name="propertyFilters">
@@ -840,38 +762,32 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The <see cref="AsyncPageable{T}"/> from the service containing a list of <see cref="BinaryData"/> objects. Details of the body schema for each item in the collection are in the Remarks section below. </returns>
         /// <example>
-        /// This sample shows how to call GetSeasonalFieldsByFarmerIdAsync with required parameters and parse the result.
+        /// This sample shows how to call GetPrescriptionsByFarmerIdAsync with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new SeasonalFieldsClient(credential);
+        /// var client = new PrescriptionsClient(credential);
         /// 
-        /// await foreach (var data in client.GetSeasonalFieldsByFarmerIdAsync("<farmerId>"))
+        /// await foreach (var data in client.GetPrescriptionsByFarmerIdAsync("<farmerId>"))
         /// {
         ///     JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
         ///     Console.WriteLine(result.ToString());
         /// }
         /// ]]></code>
-        /// This sample shows how to call GetSeasonalFieldsByFarmerIdAsync with all parameters, and how to parse the result.
+        /// This sample shows how to call GetPrescriptionsByFarmerIdAsync with all parameters, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new SeasonalFieldsClient(credential);
+        /// var client = new PrescriptionsClient(credential);
         /// 
-        /// await foreach (var data in client.GetSeasonalFieldsByFarmerIdAsync("<farmerId>", new String[]{"<farmIds>"}, new String[]{"<fieldIds>"}, new String[]{"<seasonIds>"}, new String[]{"<cropVarietyIds>"}, new String[]{"<cropIds>"}, 1234, 1234, "<avgYieldUnit>", 1234, 1234, "<avgSeedPopulationUnit>", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, new String[]{"<ids>"}, new String[]{"<names>"}, new String[]{"<propertyFilters>"}, new String[]{"<statuses>"}, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1234, "<skipToken>"))
+        /// await foreach (var data in client.GetPrescriptionsByFarmerIdAsync("<farmerId>", new String[]{"<prescriptionMapIds>"}, new String[]{"<types>"}, new String[]{"<productCodes>"}, new String[]{"<productNames>"}, new String[]{"<sources>"}, new String[]{"<ids>"}, new String[]{"<names>"}, new String[]{"<propertyFilters>"}, new String[]{"<statuses>"}, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1234, "<skipToken>"))
         /// {
         ///     JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
         ///     Console.WriteLine(result.GetProperty("farmerId").ToString());
-        ///     Console.WriteLine(result.GetProperty("primaryBoundaryId").ToString());
-        ///     Console.WriteLine(result.GetProperty("boundaryIds")[0].ToString());
-        ///     Console.WriteLine(result.GetProperty("farmId").ToString());
-        ///     Console.WriteLine(result.GetProperty("fieldId").ToString());
-        ///     Console.WriteLine(result.GetProperty("seasonId").ToString());
-        ///     Console.WriteLine(result.GetProperty("cropVarietyIds")[0].ToString());
-        ///     Console.WriteLine(result.GetProperty("cropId").ToString());
-        ///     Console.WriteLine(result.GetProperty("avgYieldValue").ToString());
-        ///     Console.WriteLine(result.GetProperty("avgYieldUnit").ToString());
-        ///     Console.WriteLine(result.GetProperty("avgSeedPopulationValue").ToString());
-        ///     Console.WriteLine(result.GetProperty("avgSeedPopulationUnit").ToString());
-        ///     Console.WriteLine(result.GetProperty("plantingDateTime").ToString());
+        ///     Console.WriteLine(result.GetProperty("prescriptionMapId").ToString());
+        ///     Console.WriteLine(result.GetProperty("productCode").ToString());
+        ///     Console.WriteLine(result.GetProperty("productName").ToString());
+        ///     Console.WriteLine(result.GetProperty("type").ToString());
+        ///     Console.WriteLine(result.GetProperty("measures").GetProperty("<test>").GetProperty("unit").ToString());
+        ///     Console.WriteLine(result.GetProperty("measures").GetProperty("<test>").GetProperty("value").ToString());
         ///     Console.WriteLine(result.GetProperty("id").ToString());
         ///     Console.WriteLine(result.GetProperty("eTag").ToString());
         ///     Console.WriteLine(result.GetProperty("status").ToString());
@@ -889,21 +805,14 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Response Body:
         /// 
-        /// Schema for <c>SeasonalFieldListResponseValue</c>:
+        /// Schema for <c>PrescriptionListResponseValue</c>:
         /// <code>{
         ///   farmerId: string, # Optional. Farmer Id.
-        ///   primaryBoundaryId: string, # Optional. Primary boundary id.
-        ///   boundaryIds: [string], # Optional. Boundary Ids.
-        ///   farmId: string, # Optional. Id of the associated Farm.
-        ///   fieldId: string, # Optional. Id of the associated Field.
-        ///   seasonId: string, # Optional. Id of the season it belongs to.
-        ///   cropVarietyIds: [string], # Optional. CropVariety ids.
-        ///   cropId: string, # Optional. Id of the crop it belongs to.
-        ///   avgYieldValue: number, # Optional. Average yield value of the seasonal field.
-        ///   avgYieldUnit: string, # Optional. Unit of the average yield value attribute.
-        ///   avgSeedPopulationValue: number, # Optional. Average seed population value of the seasonal field.
-        ///   avgSeedPopulationUnit: string, # Optional. Unit of average seed population value attribute.
-        ///   plantingDateTime: string (ISO 8601 Format), # Optional. Planting datetime, sample format: yyyy-MM-ddTHH:mm:ssZ.
+        ///   prescriptionMapId: string, # Optional. Prescription map Id.
+        ///   productCode: string, # Optional. Product Code.
+        ///   productName: string, # Optional. Product name.
+        ///   type: string, # Optional. Prescription type.
+        ///   measures: Dictionary&lt;string, Measure&gt;, # Optional. Measures.
         ///   id: string, # Optional. Unique resource ID.
         ///   eTag: string, # Optional. The ETag value to implement optimistic concurrency.
         ///   status: string, # Optional. Status of the resource.
@@ -921,14 +830,14 @@ namespace Azure.Verticals.AgriFood.Farming
         /// </code>
         /// 
         /// </remarks>
-        public virtual AsyncPageable<BinaryData> GetSeasonalFieldsByFarmerIdAsync(string farmerId, IEnumerable<string> farmIds = null, IEnumerable<string> fieldIds = null, IEnumerable<string> seasonIds = null, IEnumerable<string> cropVarietyIds = null, IEnumerable<string> cropIds = null, double? minAvgYieldValue = null, double? maxAvgYieldValue = null, string avgYieldUnit = null, double? minAvgSeedPopulationValue = null, double? maxAvgSeedPopulationValue = null, string avgSeedPopulationUnit = null, DateTimeOffset? minPlantingDateTime = null, DateTimeOffset? maxPlantingDateTime = null, IEnumerable<string> ids = null, IEnumerable<string> names = null, IEnumerable<string> propertyFilters = null, IEnumerable<string> statuses = null, DateTimeOffset? minCreatedDateTime = null, DateTimeOffset? maxCreatedDateTime = null, DateTimeOffset? minLastModifiedDateTime = null, DateTimeOffset? maxLastModifiedDateTime = null, int? maxPageSize = null, string skipToken = null, RequestContext context = null)
+        public virtual AsyncPageable<BinaryData> GetPrescriptionsByFarmerIdAsync(string farmerId, IEnumerable<string> prescriptionMapIds = null, IEnumerable<string> types = null, IEnumerable<string> productCodes = null, IEnumerable<string> productNames = null, IEnumerable<string> sources = null, IEnumerable<string> ids = null, IEnumerable<string> names = null, IEnumerable<string> propertyFilters = null, IEnumerable<string> statuses = null, DateTimeOffset? minCreatedDateTime = null, DateTimeOffset? maxCreatedDateTime = null, DateTimeOffset? minLastModifiedDateTime = null, DateTimeOffset? maxLastModifiedDateTime = null, int? maxPageSize = null, string skipToken = null, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(farmerId, nameof(farmerId));
 
-            return GetSeasonalFieldsByFarmerIdImplementationAsync("SeasonalFieldsClient.GetSeasonalFieldsByFarmerId", farmerId, farmIds, fieldIds, seasonIds, cropVarietyIds, cropIds, minAvgYieldValue, maxAvgYieldValue, avgYieldUnit, minAvgSeedPopulationValue, maxAvgSeedPopulationValue, avgSeedPopulationUnit, minPlantingDateTime, maxPlantingDateTime, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
+            return GetPrescriptionsByFarmerIdImplementationAsync("PrescriptionsClient.GetPrescriptionsByFarmerId", farmerId, prescriptionMapIds, types, productCodes, productNames, sources, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
         }
 
-        private AsyncPageable<BinaryData> GetSeasonalFieldsByFarmerIdImplementationAsync(string diagnosticsScopeName, string farmerId, IEnumerable<string> farmIds, IEnumerable<string> fieldIds, IEnumerable<string> seasonIds, IEnumerable<string> cropVarietyIds, IEnumerable<string> cropIds, double? minAvgYieldValue, double? maxAvgYieldValue, string avgYieldUnit, double? minAvgSeedPopulationValue, double? maxAvgSeedPopulationValue, string avgSeedPopulationUnit, DateTimeOffset? minPlantingDateTime, DateTimeOffset? maxPlantingDateTime, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
+        private AsyncPageable<BinaryData> GetPrescriptionsByFarmerIdImplementationAsync(string diagnosticsScopeName, string farmerId, IEnumerable<string> prescriptionMapIds, IEnumerable<string> types, IEnumerable<string> productCodes, IEnumerable<string> productNames, IEnumerable<string> sources, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
         {
             return PageableHelpers.CreateAsyncPageable(CreateEnumerableAsync, ClientDiagnostics, diagnosticsScopeName);
             async IAsyncEnumerable<Page<BinaryData>> CreateEnumerableAsync(string nextLink, int? pageSizeHint, [EnumeratorCancellation] CancellationToken cancellationToken = default)
@@ -936,8 +845,8 @@ namespace Azure.Verticals.AgriFood.Farming
                 do
                 {
                     var message = string.IsNullOrEmpty(nextLink)
-                        ? CreateGetSeasonalFieldsByFarmerIdRequest(farmerId, farmIds, fieldIds, seasonIds, cropVarietyIds, cropIds, minAvgYieldValue, maxAvgYieldValue, avgYieldUnit, minAvgSeedPopulationValue, maxAvgSeedPopulationValue, avgSeedPopulationUnit, minPlantingDateTime, maxPlantingDateTime, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context)
-                        : CreateGetSeasonalFieldsByFarmerIdNextPageRequest(nextLink, farmerId, farmIds, fieldIds, seasonIds, cropVarietyIds, cropIds, minAvgYieldValue, maxAvgYieldValue, avgYieldUnit, minAvgSeedPopulationValue, maxAvgSeedPopulationValue, avgSeedPopulationUnit, minPlantingDateTime, maxPlantingDateTime, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
+                        ? CreateGetPrescriptionsByFarmerIdRequest(farmerId, prescriptionMapIds, types, productCodes, productNames, sources, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context)
+                        : CreateGetPrescriptionsByFarmerIdNextPageRequest(nextLink, farmerId, prescriptionMapIds, types, productCodes, productNames, sources, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
                     var page = await LowLevelPageableHelpers.ProcessMessageAsync(_pipeline, message, context, "value", "nextLink", cancellationToken).ConfigureAwait(false);
                     nextLink = page.ContinuationToken;
                     yield return page;
@@ -945,21 +854,13 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Returns a paginated list of seasonal field resources under a particular farmer. </summary>
+        /// <summary> Returns a paginated list of prescription resources under a particular farmer. </summary>
         /// <param name="farmerId"> Id of the associated farmer. </param>
-        /// <param name="farmIds"> Farm Ids of the resource. </param>
-        /// <param name="fieldIds"> Field Ids of the resource. </param>
-        /// <param name="seasonIds"> Season Ids of the resource. </param>
-        /// <param name="cropVarietyIds"> CropVarietyIds of the resource. </param>
-        /// <param name="cropIds"> Ids of the crop it belongs to. </param>
-        /// <param name="minAvgYieldValue"> Minimum average yield value of the seasonal field(inclusive). </param>
-        /// <param name="maxAvgYieldValue"> Maximum average yield value of the seasonal field(inclusive). </param>
-        /// <param name="avgYieldUnit"> Unit of the average yield value attribute. </param>
-        /// <param name="minAvgSeedPopulationValue"> Minimum average seed population value of the seasonal field(inclusive). </param>
-        /// <param name="maxAvgSeedPopulationValue"> Maximum average seed population value of the seasonal field(inclusive). </param>
-        /// <param name="avgSeedPopulationUnit"> Unit of average seed population value attribute. </param>
-        /// <param name="minPlantingDateTime"> Minimum planting datetime, sample format: yyyy-MM-ddTHH:mm:ssZ. </param>
-        /// <param name="maxPlantingDateTime"> Maximum planting datetime, sample format: yyyy-MM-ddTHH:mm:ssZ. </param>
+        /// <param name="prescriptionMapIds"> Prescription Map Ids of the resource. </param>
+        /// <param name="types"> Types of the resource. </param>
+        /// <param name="productCodes"> Product Codes of the resource. </param>
+        /// <param name="productNames"> Product Names of the resource. </param>
+        /// <param name="sources"> Sources for the resource. </param>
         /// <param name="ids"> Ids of the resource. </param>
         /// <param name="names"> Names of the resource. </param>
         /// <param name="propertyFilters">
@@ -982,38 +883,32 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The <see cref="Pageable{T}"/> from the service containing a list of <see cref="BinaryData"/> objects. Details of the body schema for each item in the collection are in the Remarks section below. </returns>
         /// <example>
-        /// This sample shows how to call GetSeasonalFieldsByFarmerId with required parameters and parse the result.
+        /// This sample shows how to call GetPrescriptionsByFarmerId with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new SeasonalFieldsClient(credential);
+        /// var client = new PrescriptionsClient(credential);
         /// 
-        /// foreach (var data in client.GetSeasonalFieldsByFarmerId("<farmerId>"))
+        /// foreach (var data in client.GetPrescriptionsByFarmerId("<farmerId>"))
         /// {
         ///     JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
         ///     Console.WriteLine(result.ToString());
         /// }
         /// ]]></code>
-        /// This sample shows how to call GetSeasonalFieldsByFarmerId with all parameters, and how to parse the result.
+        /// This sample shows how to call GetPrescriptionsByFarmerId with all parameters, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new SeasonalFieldsClient(credential);
+        /// var client = new PrescriptionsClient(credential);
         /// 
-        /// foreach (var data in client.GetSeasonalFieldsByFarmerId("<farmerId>", new String[]{"<farmIds>"}, new String[]{"<fieldIds>"}, new String[]{"<seasonIds>"}, new String[]{"<cropVarietyIds>"}, new String[]{"<cropIds>"}, 1234, 1234, "<avgYieldUnit>", 1234, 1234, "<avgSeedPopulationUnit>", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, new String[]{"<ids>"}, new String[]{"<names>"}, new String[]{"<propertyFilters>"}, new String[]{"<statuses>"}, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1234, "<skipToken>"))
+        /// foreach (var data in client.GetPrescriptionsByFarmerId("<farmerId>", new String[]{"<prescriptionMapIds>"}, new String[]{"<types>"}, new String[]{"<productCodes>"}, new String[]{"<productNames>"}, new String[]{"<sources>"}, new String[]{"<ids>"}, new String[]{"<names>"}, new String[]{"<propertyFilters>"}, new String[]{"<statuses>"}, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1234, "<skipToken>"))
         /// {
         ///     JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
         ///     Console.WriteLine(result.GetProperty("farmerId").ToString());
-        ///     Console.WriteLine(result.GetProperty("primaryBoundaryId").ToString());
-        ///     Console.WriteLine(result.GetProperty("boundaryIds")[0].ToString());
-        ///     Console.WriteLine(result.GetProperty("farmId").ToString());
-        ///     Console.WriteLine(result.GetProperty("fieldId").ToString());
-        ///     Console.WriteLine(result.GetProperty("seasonId").ToString());
-        ///     Console.WriteLine(result.GetProperty("cropVarietyIds")[0].ToString());
-        ///     Console.WriteLine(result.GetProperty("cropId").ToString());
-        ///     Console.WriteLine(result.GetProperty("avgYieldValue").ToString());
-        ///     Console.WriteLine(result.GetProperty("avgYieldUnit").ToString());
-        ///     Console.WriteLine(result.GetProperty("avgSeedPopulationValue").ToString());
-        ///     Console.WriteLine(result.GetProperty("avgSeedPopulationUnit").ToString());
-        ///     Console.WriteLine(result.GetProperty("plantingDateTime").ToString());
+        ///     Console.WriteLine(result.GetProperty("prescriptionMapId").ToString());
+        ///     Console.WriteLine(result.GetProperty("productCode").ToString());
+        ///     Console.WriteLine(result.GetProperty("productName").ToString());
+        ///     Console.WriteLine(result.GetProperty("type").ToString());
+        ///     Console.WriteLine(result.GetProperty("measures").GetProperty("<test>").GetProperty("unit").ToString());
+        ///     Console.WriteLine(result.GetProperty("measures").GetProperty("<test>").GetProperty("value").ToString());
         ///     Console.WriteLine(result.GetProperty("id").ToString());
         ///     Console.WriteLine(result.GetProperty("eTag").ToString());
         ///     Console.WriteLine(result.GetProperty("status").ToString());
@@ -1031,21 +926,14 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Response Body:
         /// 
-        /// Schema for <c>SeasonalFieldListResponseValue</c>:
+        /// Schema for <c>PrescriptionListResponseValue</c>:
         /// <code>{
         ///   farmerId: string, # Optional. Farmer Id.
-        ///   primaryBoundaryId: string, # Optional. Primary boundary id.
-        ///   boundaryIds: [string], # Optional. Boundary Ids.
-        ///   farmId: string, # Optional. Id of the associated Farm.
-        ///   fieldId: string, # Optional. Id of the associated Field.
-        ///   seasonId: string, # Optional. Id of the season it belongs to.
-        ///   cropVarietyIds: [string], # Optional. CropVariety ids.
-        ///   cropId: string, # Optional. Id of the crop it belongs to.
-        ///   avgYieldValue: number, # Optional. Average yield value of the seasonal field.
-        ///   avgYieldUnit: string, # Optional. Unit of the average yield value attribute.
-        ///   avgSeedPopulationValue: number, # Optional. Average seed population value of the seasonal field.
-        ///   avgSeedPopulationUnit: string, # Optional. Unit of average seed population value attribute.
-        ///   plantingDateTime: string (ISO 8601 Format), # Optional. Planting datetime, sample format: yyyy-MM-ddTHH:mm:ssZ.
+        ///   prescriptionMapId: string, # Optional. Prescription map Id.
+        ///   productCode: string, # Optional. Product Code.
+        ///   productName: string, # Optional. Product name.
+        ///   type: string, # Optional. Prescription type.
+        ///   measures: Dictionary&lt;string, Measure&gt;, # Optional. Measures.
         ///   id: string, # Optional. Unique resource ID.
         ///   eTag: string, # Optional. The ETag value to implement optimistic concurrency.
         ///   status: string, # Optional. Status of the resource.
@@ -1063,14 +951,14 @@ namespace Azure.Verticals.AgriFood.Farming
         /// </code>
         /// 
         /// </remarks>
-        public virtual Pageable<BinaryData> GetSeasonalFieldsByFarmerId(string farmerId, IEnumerable<string> farmIds = null, IEnumerable<string> fieldIds = null, IEnumerable<string> seasonIds = null, IEnumerable<string> cropVarietyIds = null, IEnumerable<string> cropIds = null, double? minAvgYieldValue = null, double? maxAvgYieldValue = null, string avgYieldUnit = null, double? minAvgSeedPopulationValue = null, double? maxAvgSeedPopulationValue = null, string avgSeedPopulationUnit = null, DateTimeOffset? minPlantingDateTime = null, DateTimeOffset? maxPlantingDateTime = null, IEnumerable<string> ids = null, IEnumerable<string> names = null, IEnumerable<string> propertyFilters = null, IEnumerable<string> statuses = null, DateTimeOffset? minCreatedDateTime = null, DateTimeOffset? maxCreatedDateTime = null, DateTimeOffset? minLastModifiedDateTime = null, DateTimeOffset? maxLastModifiedDateTime = null, int? maxPageSize = null, string skipToken = null, RequestContext context = null)
+        public virtual Pageable<BinaryData> GetPrescriptionsByFarmerId(string farmerId, IEnumerable<string> prescriptionMapIds = null, IEnumerable<string> types = null, IEnumerable<string> productCodes = null, IEnumerable<string> productNames = null, IEnumerable<string> sources = null, IEnumerable<string> ids = null, IEnumerable<string> names = null, IEnumerable<string> propertyFilters = null, IEnumerable<string> statuses = null, DateTimeOffset? minCreatedDateTime = null, DateTimeOffset? maxCreatedDateTime = null, DateTimeOffset? minLastModifiedDateTime = null, DateTimeOffset? maxLastModifiedDateTime = null, int? maxPageSize = null, string skipToken = null, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(farmerId, nameof(farmerId));
 
-            return GetSeasonalFieldsByFarmerIdImplementation("SeasonalFieldsClient.GetSeasonalFieldsByFarmerId", farmerId, farmIds, fieldIds, seasonIds, cropVarietyIds, cropIds, minAvgYieldValue, maxAvgYieldValue, avgYieldUnit, minAvgSeedPopulationValue, maxAvgSeedPopulationValue, avgSeedPopulationUnit, minPlantingDateTime, maxPlantingDateTime, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
+            return GetPrescriptionsByFarmerIdImplementation("PrescriptionsClient.GetPrescriptionsByFarmerId", farmerId, prescriptionMapIds, types, productCodes, productNames, sources, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
         }
 
-        private Pageable<BinaryData> GetSeasonalFieldsByFarmerIdImplementation(string diagnosticsScopeName, string farmerId, IEnumerable<string> farmIds, IEnumerable<string> fieldIds, IEnumerable<string> seasonIds, IEnumerable<string> cropVarietyIds, IEnumerable<string> cropIds, double? minAvgYieldValue, double? maxAvgYieldValue, string avgYieldUnit, double? minAvgSeedPopulationValue, double? maxAvgSeedPopulationValue, string avgSeedPopulationUnit, DateTimeOffset? minPlantingDateTime, DateTimeOffset? maxPlantingDateTime, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
+        private Pageable<BinaryData> GetPrescriptionsByFarmerIdImplementation(string diagnosticsScopeName, string farmerId, IEnumerable<string> prescriptionMapIds, IEnumerable<string> types, IEnumerable<string> productCodes, IEnumerable<string> productNames, IEnumerable<string> sources, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
         {
             return PageableHelpers.CreatePageable(CreateEnumerable, ClientDiagnostics, diagnosticsScopeName);
             IEnumerable<Page<BinaryData>> CreateEnumerable(string nextLink, int? pageSizeHint)
@@ -1078,8 +966,8 @@ namespace Azure.Verticals.AgriFood.Farming
                 do
                 {
                     var message = string.IsNullOrEmpty(nextLink)
-                        ? CreateGetSeasonalFieldsByFarmerIdRequest(farmerId, farmIds, fieldIds, seasonIds, cropVarietyIds, cropIds, minAvgYieldValue, maxAvgYieldValue, avgYieldUnit, minAvgSeedPopulationValue, maxAvgSeedPopulationValue, avgSeedPopulationUnit, minPlantingDateTime, maxPlantingDateTime, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context)
-                        : CreateGetSeasonalFieldsByFarmerIdNextPageRequest(nextLink, farmerId, farmIds, fieldIds, seasonIds, cropVarietyIds, cropIds, minAvgYieldValue, maxAvgYieldValue, avgYieldUnit, minAvgSeedPopulationValue, maxAvgSeedPopulationValue, avgSeedPopulationUnit, minPlantingDateTime, maxPlantingDateTime, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
+                        ? CreateGetPrescriptionsByFarmerIdRequest(farmerId, prescriptionMapIds, types, productCodes, productNames, sources, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context)
+                        : CreateGetPrescriptionsByFarmerIdNextPageRequest(nextLink, farmerId, prescriptionMapIds, types, productCodes, productNames, sources, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
                     var page = LowLevelPageableHelpers.ProcessMessage(_pipeline, message, context, "value", "nextLink");
                     nextLink = page.ContinuationToken;
                     yield return page;
@@ -1087,20 +975,12 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Returns a paginated list of seasonal field resources across all farmers. </summary>
-        /// <param name="farmIds"> Farm Ids of the resource. </param>
-        /// <param name="fieldIds"> Field Ids of the resource. </param>
-        /// <param name="seasonIds"> Season Ids of the resource. </param>
-        /// <param name="cropVarietyIds"> CropVarietyIds of the resource. </param>
-        /// <param name="cropIds"> Ids of the crop it belongs to. </param>
-        /// <param name="minAvgYieldValue"> Minimum average yield value of the seasonal field(inclusive). </param>
-        /// <param name="maxAvgYieldValue"> Maximum average yield value of the seasonal field(inclusive). </param>
-        /// <param name="avgYieldUnit"> Unit of the average yield value attribute. </param>
-        /// <param name="minAvgSeedPopulationValue"> Minimum average seed population value of the seasonal field(inclusive). </param>
-        /// <param name="maxAvgSeedPopulationValue"> Maximum average seed population value of the seasonal field(inclusive). </param>
-        /// <param name="avgSeedPopulationUnit"> Unit of average seed population value attribute. </param>
-        /// <param name="minPlantingDateTime"> Minimum planting datetime, sample format: yyyy-MM-ddTHH:mm:ssZ. </param>
-        /// <param name="maxPlantingDateTime"> Maximum planting datetime, sample format: yyyy-MM-ddTHH:mm:ssZ. </param>
+        /// <summary> Returns a paginated list of prescription resources across all farmers. </summary>
+        /// <param name="prescriptionMapIds"> Prescription Map Ids of the resource. </param>
+        /// <param name="types"> Types of the resource. </param>
+        /// <param name="productCodes"> Product Codes of the resource. </param>
+        /// <param name="productNames"> Product Names of the resource. </param>
+        /// <param name="sources"> Sources for the resource. </param>
         /// <param name="ids"> Ids of the resource. </param>
         /// <param name="names"> Names of the resource. </param>
         /// <param name="propertyFilters">
@@ -1121,38 +1001,32 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The <see cref="AsyncPageable{T}"/> from the service containing a list of <see cref="BinaryData"/> objects. Details of the body schema for each item in the collection are in the Remarks section below. </returns>
         /// <example>
-        /// This sample shows how to call GetSeasonalFieldsAsync and parse the result.
+        /// This sample shows how to call GetPrescriptionsAsync and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new SeasonalFieldsClient(credential);
+        /// var client = new PrescriptionsClient(credential);
         /// 
-        /// await foreach (var data in client.GetSeasonalFieldsAsync())
+        /// await foreach (var data in client.GetPrescriptionsAsync())
         /// {
         ///     JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
         ///     Console.WriteLine(result.ToString());
         /// }
         /// ]]></code>
-        /// This sample shows how to call GetSeasonalFieldsAsync with all parameters, and how to parse the result.
+        /// This sample shows how to call GetPrescriptionsAsync with all parameters, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new SeasonalFieldsClient(credential);
+        /// var client = new PrescriptionsClient(credential);
         /// 
-        /// await foreach (var data in client.GetSeasonalFieldsAsync(new String[]{"<farmIds>"}, new String[]{"<fieldIds>"}, new String[]{"<seasonIds>"}, new String[]{"<cropVarietyIds>"}, new String[]{"<cropIds>"}, 1234, 1234, "<avgYieldUnit>", 1234, 1234, "<avgSeedPopulationUnit>", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, new String[]{"<ids>"}, new String[]{"<names>"}, new String[]{"<propertyFilters>"}, new String[]{"<statuses>"}, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1234, "<skipToken>"))
+        /// await foreach (var data in client.GetPrescriptionsAsync(new String[]{"<prescriptionMapIds>"}, new String[]{"<types>"}, new String[]{"<productCodes>"}, new String[]{"<productNames>"}, new String[]{"<sources>"}, new String[]{"<ids>"}, new String[]{"<names>"}, new String[]{"<propertyFilters>"}, new String[]{"<statuses>"}, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1234, "<skipToken>"))
         /// {
         ///     JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
         ///     Console.WriteLine(result.GetProperty("farmerId").ToString());
-        ///     Console.WriteLine(result.GetProperty("primaryBoundaryId").ToString());
-        ///     Console.WriteLine(result.GetProperty("boundaryIds")[0].ToString());
-        ///     Console.WriteLine(result.GetProperty("farmId").ToString());
-        ///     Console.WriteLine(result.GetProperty("fieldId").ToString());
-        ///     Console.WriteLine(result.GetProperty("seasonId").ToString());
-        ///     Console.WriteLine(result.GetProperty("cropVarietyIds")[0].ToString());
-        ///     Console.WriteLine(result.GetProperty("cropId").ToString());
-        ///     Console.WriteLine(result.GetProperty("avgYieldValue").ToString());
-        ///     Console.WriteLine(result.GetProperty("avgYieldUnit").ToString());
-        ///     Console.WriteLine(result.GetProperty("avgSeedPopulationValue").ToString());
-        ///     Console.WriteLine(result.GetProperty("avgSeedPopulationUnit").ToString());
-        ///     Console.WriteLine(result.GetProperty("plantingDateTime").ToString());
+        ///     Console.WriteLine(result.GetProperty("prescriptionMapId").ToString());
+        ///     Console.WriteLine(result.GetProperty("productCode").ToString());
+        ///     Console.WriteLine(result.GetProperty("productName").ToString());
+        ///     Console.WriteLine(result.GetProperty("type").ToString());
+        ///     Console.WriteLine(result.GetProperty("measures").GetProperty("<test>").GetProperty("unit").ToString());
+        ///     Console.WriteLine(result.GetProperty("measures").GetProperty("<test>").GetProperty("value").ToString());
         ///     Console.WriteLine(result.GetProperty("id").ToString());
         ///     Console.WriteLine(result.GetProperty("eTag").ToString());
         ///     Console.WriteLine(result.GetProperty("status").ToString());
@@ -1170,21 +1044,14 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Response Body:
         /// 
-        /// Schema for <c>SeasonalFieldListResponseValue</c>:
+        /// Schema for <c>PrescriptionListResponseValue</c>:
         /// <code>{
         ///   farmerId: string, # Optional. Farmer Id.
-        ///   primaryBoundaryId: string, # Optional. Primary boundary id.
-        ///   boundaryIds: [string], # Optional. Boundary Ids.
-        ///   farmId: string, # Optional. Id of the associated Farm.
-        ///   fieldId: string, # Optional. Id of the associated Field.
-        ///   seasonId: string, # Optional. Id of the season it belongs to.
-        ///   cropVarietyIds: [string], # Optional. CropVariety ids.
-        ///   cropId: string, # Optional. Id of the crop it belongs to.
-        ///   avgYieldValue: number, # Optional. Average yield value of the seasonal field.
-        ///   avgYieldUnit: string, # Optional. Unit of the average yield value attribute.
-        ///   avgSeedPopulationValue: number, # Optional. Average seed population value of the seasonal field.
-        ///   avgSeedPopulationUnit: string, # Optional. Unit of average seed population value attribute.
-        ///   plantingDateTime: string (ISO 8601 Format), # Optional. Planting datetime, sample format: yyyy-MM-ddTHH:mm:ssZ.
+        ///   prescriptionMapId: string, # Optional. Prescription map Id.
+        ///   productCode: string, # Optional. Product Code.
+        ///   productName: string, # Optional. Product name.
+        ///   type: string, # Optional. Prescription type.
+        ///   measures: Dictionary&lt;string, Measure&gt;, # Optional. Measures.
         ///   id: string, # Optional. Unique resource ID.
         ///   eTag: string, # Optional. The ETag value to implement optimistic concurrency.
         ///   status: string, # Optional. Status of the resource.
@@ -1202,12 +1069,12 @@ namespace Azure.Verticals.AgriFood.Farming
         /// </code>
         /// 
         /// </remarks>
-        public virtual AsyncPageable<BinaryData> GetSeasonalFieldsAsync(IEnumerable<string> farmIds = null, IEnumerable<string> fieldIds = null, IEnumerable<string> seasonIds = null, IEnumerable<string> cropVarietyIds = null, IEnumerable<string> cropIds = null, double? minAvgYieldValue = null, double? maxAvgYieldValue = null, string avgYieldUnit = null, double? minAvgSeedPopulationValue = null, double? maxAvgSeedPopulationValue = null, string avgSeedPopulationUnit = null, DateTimeOffset? minPlantingDateTime = null, DateTimeOffset? maxPlantingDateTime = null, IEnumerable<string> ids = null, IEnumerable<string> names = null, IEnumerable<string> propertyFilters = null, IEnumerable<string> statuses = null, DateTimeOffset? minCreatedDateTime = null, DateTimeOffset? maxCreatedDateTime = null, DateTimeOffset? minLastModifiedDateTime = null, DateTimeOffset? maxLastModifiedDateTime = null, int? maxPageSize = null, string skipToken = null, RequestContext context = null)
+        public virtual AsyncPageable<BinaryData> GetPrescriptionsAsync(IEnumerable<string> prescriptionMapIds = null, IEnumerable<string> types = null, IEnumerable<string> productCodes = null, IEnumerable<string> productNames = null, IEnumerable<string> sources = null, IEnumerable<string> ids = null, IEnumerable<string> names = null, IEnumerable<string> propertyFilters = null, IEnumerable<string> statuses = null, DateTimeOffset? minCreatedDateTime = null, DateTimeOffset? maxCreatedDateTime = null, DateTimeOffset? minLastModifiedDateTime = null, DateTimeOffset? maxLastModifiedDateTime = null, int? maxPageSize = null, string skipToken = null, RequestContext context = null)
         {
-            return GetSeasonalFieldsImplementationAsync("SeasonalFieldsClient.GetSeasonalFields", farmIds, fieldIds, seasonIds, cropVarietyIds, cropIds, minAvgYieldValue, maxAvgYieldValue, avgYieldUnit, minAvgSeedPopulationValue, maxAvgSeedPopulationValue, avgSeedPopulationUnit, minPlantingDateTime, maxPlantingDateTime, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
+            return GetPrescriptionsImplementationAsync("PrescriptionsClient.GetPrescriptions", prescriptionMapIds, types, productCodes, productNames, sources, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
         }
 
-        private AsyncPageable<BinaryData> GetSeasonalFieldsImplementationAsync(string diagnosticsScopeName, IEnumerable<string> farmIds, IEnumerable<string> fieldIds, IEnumerable<string> seasonIds, IEnumerable<string> cropVarietyIds, IEnumerable<string> cropIds, double? minAvgYieldValue, double? maxAvgYieldValue, string avgYieldUnit, double? minAvgSeedPopulationValue, double? maxAvgSeedPopulationValue, string avgSeedPopulationUnit, DateTimeOffset? minPlantingDateTime, DateTimeOffset? maxPlantingDateTime, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
+        private AsyncPageable<BinaryData> GetPrescriptionsImplementationAsync(string diagnosticsScopeName, IEnumerable<string> prescriptionMapIds, IEnumerable<string> types, IEnumerable<string> productCodes, IEnumerable<string> productNames, IEnumerable<string> sources, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
         {
             return PageableHelpers.CreateAsyncPageable(CreateEnumerableAsync, ClientDiagnostics, diagnosticsScopeName);
             async IAsyncEnumerable<Page<BinaryData>> CreateEnumerableAsync(string nextLink, int? pageSizeHint, [EnumeratorCancellation] CancellationToken cancellationToken = default)
@@ -1215,8 +1082,8 @@ namespace Azure.Verticals.AgriFood.Farming
                 do
                 {
                     var message = string.IsNullOrEmpty(nextLink)
-                        ? CreateGetSeasonalFieldsRequest(farmIds, fieldIds, seasonIds, cropVarietyIds, cropIds, minAvgYieldValue, maxAvgYieldValue, avgYieldUnit, minAvgSeedPopulationValue, maxAvgSeedPopulationValue, avgSeedPopulationUnit, minPlantingDateTime, maxPlantingDateTime, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context)
-                        : CreateGetSeasonalFieldsNextPageRequest(nextLink, farmIds, fieldIds, seasonIds, cropVarietyIds, cropIds, minAvgYieldValue, maxAvgYieldValue, avgYieldUnit, minAvgSeedPopulationValue, maxAvgSeedPopulationValue, avgSeedPopulationUnit, minPlantingDateTime, maxPlantingDateTime, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
+                        ? CreateGetPrescriptionsRequest(prescriptionMapIds, types, productCodes, productNames, sources, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context)
+                        : CreateGetPrescriptionsNextPageRequest(nextLink, prescriptionMapIds, types, productCodes, productNames, sources, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
                     var page = await LowLevelPageableHelpers.ProcessMessageAsync(_pipeline, message, context, "value", "nextLink", cancellationToken).ConfigureAwait(false);
                     nextLink = page.ContinuationToken;
                     yield return page;
@@ -1224,20 +1091,12 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Returns a paginated list of seasonal field resources across all farmers. </summary>
-        /// <param name="farmIds"> Farm Ids of the resource. </param>
-        /// <param name="fieldIds"> Field Ids of the resource. </param>
-        /// <param name="seasonIds"> Season Ids of the resource. </param>
-        /// <param name="cropVarietyIds"> CropVarietyIds of the resource. </param>
-        /// <param name="cropIds"> Ids of the crop it belongs to. </param>
-        /// <param name="minAvgYieldValue"> Minimum average yield value of the seasonal field(inclusive). </param>
-        /// <param name="maxAvgYieldValue"> Maximum average yield value of the seasonal field(inclusive). </param>
-        /// <param name="avgYieldUnit"> Unit of the average yield value attribute. </param>
-        /// <param name="minAvgSeedPopulationValue"> Minimum average seed population value of the seasonal field(inclusive). </param>
-        /// <param name="maxAvgSeedPopulationValue"> Maximum average seed population value of the seasonal field(inclusive). </param>
-        /// <param name="avgSeedPopulationUnit"> Unit of average seed population value attribute. </param>
-        /// <param name="minPlantingDateTime"> Minimum planting datetime, sample format: yyyy-MM-ddTHH:mm:ssZ. </param>
-        /// <param name="maxPlantingDateTime"> Maximum planting datetime, sample format: yyyy-MM-ddTHH:mm:ssZ. </param>
+        /// <summary> Returns a paginated list of prescription resources across all farmers. </summary>
+        /// <param name="prescriptionMapIds"> Prescription Map Ids of the resource. </param>
+        /// <param name="types"> Types of the resource. </param>
+        /// <param name="productCodes"> Product Codes of the resource. </param>
+        /// <param name="productNames"> Product Names of the resource. </param>
+        /// <param name="sources"> Sources for the resource. </param>
         /// <param name="ids"> Ids of the resource. </param>
         /// <param name="names"> Names of the resource. </param>
         /// <param name="propertyFilters">
@@ -1258,38 +1117,32 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The <see cref="Pageable{T}"/> from the service containing a list of <see cref="BinaryData"/> objects. Details of the body schema for each item in the collection are in the Remarks section below. </returns>
         /// <example>
-        /// This sample shows how to call GetSeasonalFields and parse the result.
+        /// This sample shows how to call GetPrescriptions and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new SeasonalFieldsClient(credential);
+        /// var client = new PrescriptionsClient(credential);
         /// 
-        /// foreach (var data in client.GetSeasonalFields())
+        /// foreach (var data in client.GetPrescriptions())
         /// {
         ///     JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
         ///     Console.WriteLine(result.ToString());
         /// }
         /// ]]></code>
-        /// This sample shows how to call GetSeasonalFields with all parameters, and how to parse the result.
+        /// This sample shows how to call GetPrescriptions with all parameters, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new SeasonalFieldsClient(credential);
+        /// var client = new PrescriptionsClient(credential);
         /// 
-        /// foreach (var data in client.GetSeasonalFields(new String[]{"<farmIds>"}, new String[]{"<fieldIds>"}, new String[]{"<seasonIds>"}, new String[]{"<cropVarietyIds>"}, new String[]{"<cropIds>"}, 1234, 1234, "<avgYieldUnit>", 1234, 1234, "<avgSeedPopulationUnit>", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, new String[]{"<ids>"}, new String[]{"<names>"}, new String[]{"<propertyFilters>"}, new String[]{"<statuses>"}, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1234, "<skipToken>"))
+        /// foreach (var data in client.GetPrescriptions(new String[]{"<prescriptionMapIds>"}, new String[]{"<types>"}, new String[]{"<productCodes>"}, new String[]{"<productNames>"}, new String[]{"<sources>"}, new String[]{"<ids>"}, new String[]{"<names>"}, new String[]{"<propertyFilters>"}, new String[]{"<statuses>"}, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1234, "<skipToken>"))
         /// {
         ///     JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
         ///     Console.WriteLine(result.GetProperty("farmerId").ToString());
-        ///     Console.WriteLine(result.GetProperty("primaryBoundaryId").ToString());
-        ///     Console.WriteLine(result.GetProperty("boundaryIds")[0].ToString());
-        ///     Console.WriteLine(result.GetProperty("farmId").ToString());
-        ///     Console.WriteLine(result.GetProperty("fieldId").ToString());
-        ///     Console.WriteLine(result.GetProperty("seasonId").ToString());
-        ///     Console.WriteLine(result.GetProperty("cropVarietyIds")[0].ToString());
-        ///     Console.WriteLine(result.GetProperty("cropId").ToString());
-        ///     Console.WriteLine(result.GetProperty("avgYieldValue").ToString());
-        ///     Console.WriteLine(result.GetProperty("avgYieldUnit").ToString());
-        ///     Console.WriteLine(result.GetProperty("avgSeedPopulationValue").ToString());
-        ///     Console.WriteLine(result.GetProperty("avgSeedPopulationUnit").ToString());
-        ///     Console.WriteLine(result.GetProperty("plantingDateTime").ToString());
+        ///     Console.WriteLine(result.GetProperty("prescriptionMapId").ToString());
+        ///     Console.WriteLine(result.GetProperty("productCode").ToString());
+        ///     Console.WriteLine(result.GetProperty("productName").ToString());
+        ///     Console.WriteLine(result.GetProperty("type").ToString());
+        ///     Console.WriteLine(result.GetProperty("measures").GetProperty("<test>").GetProperty("unit").ToString());
+        ///     Console.WriteLine(result.GetProperty("measures").GetProperty("<test>").GetProperty("value").ToString());
         ///     Console.WriteLine(result.GetProperty("id").ToString());
         ///     Console.WriteLine(result.GetProperty("eTag").ToString());
         ///     Console.WriteLine(result.GetProperty("status").ToString());
@@ -1307,21 +1160,14 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Response Body:
         /// 
-        /// Schema for <c>SeasonalFieldListResponseValue</c>:
+        /// Schema for <c>PrescriptionListResponseValue</c>:
         /// <code>{
         ///   farmerId: string, # Optional. Farmer Id.
-        ///   primaryBoundaryId: string, # Optional. Primary boundary id.
-        ///   boundaryIds: [string], # Optional. Boundary Ids.
-        ///   farmId: string, # Optional. Id of the associated Farm.
-        ///   fieldId: string, # Optional. Id of the associated Field.
-        ///   seasonId: string, # Optional. Id of the season it belongs to.
-        ///   cropVarietyIds: [string], # Optional. CropVariety ids.
-        ///   cropId: string, # Optional. Id of the crop it belongs to.
-        ///   avgYieldValue: number, # Optional. Average yield value of the seasonal field.
-        ///   avgYieldUnit: string, # Optional. Unit of the average yield value attribute.
-        ///   avgSeedPopulationValue: number, # Optional. Average seed population value of the seasonal field.
-        ///   avgSeedPopulationUnit: string, # Optional. Unit of average seed population value attribute.
-        ///   plantingDateTime: string (ISO 8601 Format), # Optional. Planting datetime, sample format: yyyy-MM-ddTHH:mm:ssZ.
+        ///   prescriptionMapId: string, # Optional. Prescription map Id.
+        ///   productCode: string, # Optional. Product Code.
+        ///   productName: string, # Optional. Product name.
+        ///   type: string, # Optional. Prescription type.
+        ///   measures: Dictionary&lt;string, Measure&gt;, # Optional. Measures.
         ///   id: string, # Optional. Unique resource ID.
         ///   eTag: string, # Optional. The ETag value to implement optimistic concurrency.
         ///   status: string, # Optional. Status of the resource.
@@ -1339,12 +1185,12 @@ namespace Azure.Verticals.AgriFood.Farming
         /// </code>
         /// 
         /// </remarks>
-        public virtual Pageable<BinaryData> GetSeasonalFields(IEnumerable<string> farmIds = null, IEnumerable<string> fieldIds = null, IEnumerable<string> seasonIds = null, IEnumerable<string> cropVarietyIds = null, IEnumerable<string> cropIds = null, double? minAvgYieldValue = null, double? maxAvgYieldValue = null, string avgYieldUnit = null, double? minAvgSeedPopulationValue = null, double? maxAvgSeedPopulationValue = null, string avgSeedPopulationUnit = null, DateTimeOffset? minPlantingDateTime = null, DateTimeOffset? maxPlantingDateTime = null, IEnumerable<string> ids = null, IEnumerable<string> names = null, IEnumerable<string> propertyFilters = null, IEnumerable<string> statuses = null, DateTimeOffset? minCreatedDateTime = null, DateTimeOffset? maxCreatedDateTime = null, DateTimeOffset? minLastModifiedDateTime = null, DateTimeOffset? maxLastModifiedDateTime = null, int? maxPageSize = null, string skipToken = null, RequestContext context = null)
+        public virtual Pageable<BinaryData> GetPrescriptions(IEnumerable<string> prescriptionMapIds = null, IEnumerable<string> types = null, IEnumerable<string> productCodes = null, IEnumerable<string> productNames = null, IEnumerable<string> sources = null, IEnumerable<string> ids = null, IEnumerable<string> names = null, IEnumerable<string> propertyFilters = null, IEnumerable<string> statuses = null, DateTimeOffset? minCreatedDateTime = null, DateTimeOffset? maxCreatedDateTime = null, DateTimeOffset? minLastModifiedDateTime = null, DateTimeOffset? maxLastModifiedDateTime = null, int? maxPageSize = null, string skipToken = null, RequestContext context = null)
         {
-            return GetSeasonalFieldsImplementation("SeasonalFieldsClient.GetSeasonalFields", farmIds, fieldIds, seasonIds, cropVarietyIds, cropIds, minAvgYieldValue, maxAvgYieldValue, avgYieldUnit, minAvgSeedPopulationValue, maxAvgSeedPopulationValue, avgSeedPopulationUnit, minPlantingDateTime, maxPlantingDateTime, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
+            return GetPrescriptionsImplementation("PrescriptionsClient.GetPrescriptions", prescriptionMapIds, types, productCodes, productNames, sources, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
         }
 
-        private Pageable<BinaryData> GetSeasonalFieldsImplementation(string diagnosticsScopeName, IEnumerable<string> farmIds, IEnumerable<string> fieldIds, IEnumerable<string> seasonIds, IEnumerable<string> cropVarietyIds, IEnumerable<string> cropIds, double? minAvgYieldValue, double? maxAvgYieldValue, string avgYieldUnit, double? minAvgSeedPopulationValue, double? maxAvgSeedPopulationValue, string avgSeedPopulationUnit, DateTimeOffset? minPlantingDateTime, DateTimeOffset? maxPlantingDateTime, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
+        private Pageable<BinaryData> GetPrescriptionsImplementation(string diagnosticsScopeName, IEnumerable<string> prescriptionMapIds, IEnumerable<string> types, IEnumerable<string> productCodes, IEnumerable<string> productNames, IEnumerable<string> sources, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
         {
             return PageableHelpers.CreatePageable(CreateEnumerable, ClientDiagnostics, diagnosticsScopeName);
             IEnumerable<Page<BinaryData>> CreateEnumerable(string nextLink, int? pageSizeHint)
@@ -1352,8 +1198,8 @@ namespace Azure.Verticals.AgriFood.Farming
                 do
                 {
                     var message = string.IsNullOrEmpty(nextLink)
-                        ? CreateGetSeasonalFieldsRequest(farmIds, fieldIds, seasonIds, cropVarietyIds, cropIds, minAvgYieldValue, maxAvgYieldValue, avgYieldUnit, minAvgSeedPopulationValue, maxAvgSeedPopulationValue, avgSeedPopulationUnit, minPlantingDateTime, maxPlantingDateTime, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context)
-                        : CreateGetSeasonalFieldsNextPageRequest(nextLink, farmIds, fieldIds, seasonIds, cropVarietyIds, cropIds, minAvgYieldValue, maxAvgYieldValue, avgYieldUnit, minAvgSeedPopulationValue, maxAvgSeedPopulationValue, avgSeedPopulationUnit, minPlantingDateTime, maxPlantingDateTime, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
+                        ? CreateGetPrescriptionsRequest(prescriptionMapIds, types, productCodes, productNames, sources, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context)
+                        : CreateGetPrescriptionsNextPageRequest(nextLink, prescriptionMapIds, types, productCodes, productNames, sources, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
                     var page = LowLevelPageableHelpers.ProcessMessage(_pipeline, message, context, "value", "nextLink");
                     nextLink = page.ContinuationToken;
                     yield return page;
@@ -1361,13 +1207,13 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Create a cascade delete job for specified seasonal field. </summary>
+        /// <summary> Create a cascade delete job for specified prescription. </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="jobId"> Job ID supplied by end user. </param>
         /// <param name="farmerId"> ID of the associated farmer. </param>
-        /// <param name="seasonalFieldId"> ID of the seasonalField to be deleted. </param>
+        /// <param name="prescriptionId"> ID of the prescription to be deleted. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="jobId"/>, <paramref name="farmerId"/> or <paramref name="seasonalFieldId"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="jobId"/>, <paramref name="farmerId"/> or <paramref name="prescriptionId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="jobId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The <see cref="Operation{T}"/> from the service that will contain a <see cref="BinaryData"/> object once the asynchronous operation on the service has completed. Details of the body schema for the operation's final value are in the Remarks section below. </returns>
@@ -1375,9 +1221,9 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call CreateCascadeDeleteJobAsync with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new SeasonalFieldsClient(credential);
+        /// var client = new PrescriptionsClient(credential);
         /// 
-        /// var operation = await client.CreateCascadeDeleteJobAsync(WaitUntil.Completed, "<jobId>", "<farmerId>", "<seasonalFieldId>");
+        /// var operation = await client.CreateCascadeDeleteJobAsync(WaitUntil.Completed, "<jobId>", "<farmerId>", "<prescriptionId>");
         /// 
         /// BinaryData data = await operation.WaitForCompletionAsync();
         /// JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
@@ -1417,18 +1263,18 @@ namespace Azure.Verticals.AgriFood.Farming
         /// </code>
         /// 
         /// </remarks>
-        public virtual async Task<Operation<BinaryData>> CreateCascadeDeleteJobAsync(WaitUntil waitUntil, string jobId, string farmerId, string seasonalFieldId, RequestContext context = null)
+        public virtual async Task<Operation<BinaryData>> CreateCascadeDeleteJobAsync(WaitUntil waitUntil, string jobId, string farmerId, string prescriptionId, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(jobId, nameof(jobId));
             Argument.AssertNotNull(farmerId, nameof(farmerId));
-            Argument.AssertNotNull(seasonalFieldId, nameof(seasonalFieldId));
+            Argument.AssertNotNull(prescriptionId, nameof(prescriptionId));
 
-            using var scope = ClientDiagnostics.CreateScope("SeasonalFieldsClient.CreateCascadeDeleteJob");
+            using var scope = ClientDiagnostics.CreateScope("PrescriptionsClient.CreateCascadeDeleteJob");
             scope.Start();
             try
             {
-                using HttpMessage message = CreateCreateCascadeDeleteJobRequest(jobId, farmerId, seasonalFieldId, context);
-                return await ProtocolOperationHelpers.ProcessMessageAsync(_pipeline, message, ClientDiagnostics, "SeasonalFieldsClient.CreateCascadeDeleteJob", OperationFinalStateVia.Location, context, waitUntil).ConfigureAwait(false);
+                using HttpMessage message = CreateCreateCascadeDeleteJobRequest(jobId, farmerId, prescriptionId, context);
+                return await ProtocolOperationHelpers.ProcessMessageAsync(_pipeline, message, ClientDiagnostics, "PrescriptionsClient.CreateCascadeDeleteJob", OperationFinalStateVia.Location, context, waitUntil).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -1437,13 +1283,13 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Create a cascade delete job for specified seasonal field. </summary>
+        /// <summary> Create a cascade delete job for specified prescription. </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="jobId"> Job ID supplied by end user. </param>
         /// <param name="farmerId"> ID of the associated farmer. </param>
-        /// <param name="seasonalFieldId"> ID of the seasonalField to be deleted. </param>
+        /// <param name="prescriptionId"> ID of the prescription to be deleted. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="jobId"/>, <paramref name="farmerId"/> or <paramref name="seasonalFieldId"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="jobId"/>, <paramref name="farmerId"/> or <paramref name="prescriptionId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="jobId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The <see cref="Operation{T}"/> from the service that will contain a <see cref="BinaryData"/> object once the asynchronous operation on the service has completed. Details of the body schema for the operation's final value are in the Remarks section below. </returns>
@@ -1451,9 +1297,9 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call CreateCascadeDeleteJob with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new SeasonalFieldsClient(credential);
+        /// var client = new PrescriptionsClient(credential);
         /// 
-        /// var operation = client.CreateCascadeDeleteJob(WaitUntil.Completed, "<jobId>", "<farmerId>", "<seasonalFieldId>");
+        /// var operation = client.CreateCascadeDeleteJob(WaitUntil.Completed, "<jobId>", "<farmerId>", "<prescriptionId>");
         /// 
         /// BinaryData data = operation.WaitForCompletion();
         /// JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
@@ -1493,18 +1339,18 @@ namespace Azure.Verticals.AgriFood.Farming
         /// </code>
         /// 
         /// </remarks>
-        public virtual Operation<BinaryData> CreateCascadeDeleteJob(WaitUntil waitUntil, string jobId, string farmerId, string seasonalFieldId, RequestContext context = null)
+        public virtual Operation<BinaryData> CreateCascadeDeleteJob(WaitUntil waitUntil, string jobId, string farmerId, string prescriptionId, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(jobId, nameof(jobId));
             Argument.AssertNotNull(farmerId, nameof(farmerId));
-            Argument.AssertNotNull(seasonalFieldId, nameof(seasonalFieldId));
+            Argument.AssertNotNull(prescriptionId, nameof(prescriptionId));
 
-            using var scope = ClientDiagnostics.CreateScope("SeasonalFieldsClient.CreateCascadeDeleteJob");
+            using var scope = ClientDiagnostics.CreateScope("PrescriptionsClient.CreateCascadeDeleteJob");
             scope.Start();
             try
             {
-                using HttpMessage message = CreateCreateCascadeDeleteJobRequest(jobId, farmerId, seasonalFieldId, context);
-                return ProtocolOperationHelpers.ProcessMessage(_pipeline, message, ClientDiagnostics, "SeasonalFieldsClient.CreateCascadeDeleteJob", OperationFinalStateVia.Location, context, waitUntil);
+                using HttpMessage message = CreateCreateCascadeDeleteJobRequest(jobId, farmerId, prescriptionId, context);
+                return ProtocolOperationHelpers.ProcessMessage(_pipeline, message, ClientDiagnostics, "PrescriptionsClient.CreateCascadeDeleteJob", OperationFinalStateVia.Location, context, waitUntil);
             }
             catch (Exception e)
             {
@@ -1513,7 +1359,7 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        internal HttpMessage CreateGetSeasonalFieldsByFarmerIdRequest(string farmerId, IEnumerable<string> farmIds, IEnumerable<string> fieldIds, IEnumerable<string> seasonIds, IEnumerable<string> cropVarietyIds, IEnumerable<string> cropIds, double? minAvgYieldValue, double? maxAvgYieldValue, string avgYieldUnit, double? minAvgSeedPopulationValue, double? maxAvgSeedPopulationValue, string avgSeedPopulationUnit, DateTimeOffset? minPlantingDateTime, DateTimeOffset? maxPlantingDateTime, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
+        internal HttpMessage CreateGetPrescriptionsByFarmerIdRequest(string farmerId, IEnumerable<string> prescriptionMapIds, IEnumerable<string> types, IEnumerable<string> productCodes, IEnumerable<string> productNames, IEnumerable<string> sources, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
         {
             var message = _pipeline.CreateMessage(context, ResponseClassifier200);
             var request = message.Request;
@@ -1522,73 +1368,41 @@ namespace Azure.Verticals.AgriFood.Farming
             uri.Reset(_endpoint);
             uri.AppendPath("/farmers/", false);
             uri.AppendPath(farmerId, true);
-            uri.AppendPath("/seasonal-fields", false);
-            if (farmIds != null)
+            uri.AppendPath("/prescriptions", false);
+            if (prescriptionMapIds != null)
             {
-                foreach (var param in farmIds)
+                foreach (var param in prescriptionMapIds)
                 {
-                    uri.AppendQuery("farmIds", param, true);
+                    uri.AppendQuery("prescriptionMapIds", param, true);
                 }
             }
-            if (fieldIds != null)
+            if (types != null)
             {
-                foreach (var param in fieldIds)
+                foreach (var param in types)
                 {
-                    uri.AppendQuery("fieldIds", param, true);
+                    uri.AppendQuery("types", param, true);
                 }
             }
-            if (seasonIds != null)
+            if (productCodes != null)
             {
-                foreach (var param in seasonIds)
+                foreach (var param in productCodes)
                 {
-                    uri.AppendQuery("seasonIds", param, true);
+                    uri.AppendQuery("productCodes", param, true);
                 }
             }
-            if (cropVarietyIds != null)
+            if (productNames != null)
             {
-                foreach (var param in cropVarietyIds)
+                foreach (var param in productNames)
                 {
-                    uri.AppendQuery("cropVarietyIds", param, true);
+                    uri.AppendQuery("productNames", param, true);
                 }
             }
-            if (cropIds != null)
+            if (sources != null)
             {
-                foreach (var param in cropIds)
+                foreach (var param in sources)
                 {
-                    uri.AppendQuery("cropIds", param, true);
+                    uri.AppendQuery("sources", param, true);
                 }
-            }
-            if (minAvgYieldValue != null)
-            {
-                uri.AppendQuery("minAvgYieldValue", minAvgYieldValue.Value, true);
-            }
-            if (maxAvgYieldValue != null)
-            {
-                uri.AppendQuery("maxAvgYieldValue", maxAvgYieldValue.Value, true);
-            }
-            if (avgYieldUnit != null)
-            {
-                uri.AppendQuery("avgYieldUnit", avgYieldUnit, true);
-            }
-            if (minAvgSeedPopulationValue != null)
-            {
-                uri.AppendQuery("minAvgSeedPopulationValue", minAvgSeedPopulationValue.Value, true);
-            }
-            if (maxAvgSeedPopulationValue != null)
-            {
-                uri.AppendQuery("maxAvgSeedPopulationValue", maxAvgSeedPopulationValue.Value, true);
-            }
-            if (avgSeedPopulationUnit != null)
-            {
-                uri.AppendQuery("avgSeedPopulationUnit", avgSeedPopulationUnit, true);
-            }
-            if (minPlantingDateTime != null)
-            {
-                uri.AppendQuery("minPlantingDateTime", minPlantingDateTime.Value, "O", true);
-            }
-            if (maxPlantingDateTime != null)
-            {
-                uri.AppendQuery("maxPlantingDateTime", maxPlantingDateTime.Value, "O", true);
             }
             if (ids != null)
             {
@@ -1648,7 +1462,7 @@ namespace Azure.Verticals.AgriFood.Farming
             return message;
         }
 
-        internal HttpMessage CreateGetSeasonalFieldRequest(string farmerId, string seasonalFieldId, RequestContext context)
+        internal HttpMessage CreateGetPrescriptionRequest(string farmerId, string prescriptionId, RequestContext context)
         {
             var message = _pipeline.CreateMessage(context, ResponseClassifier200);
             var request = message.Request;
@@ -1657,15 +1471,15 @@ namespace Azure.Verticals.AgriFood.Farming
             uri.Reset(_endpoint);
             uri.AppendPath("/farmers/", false);
             uri.AppendPath(farmerId, true);
-            uri.AppendPath("/seasonal-fields/", false);
-            uri.AppendPath(seasonalFieldId, true);
+            uri.AppendPath("/prescriptions/", false);
+            uri.AppendPath(prescriptionId, true);
             uri.AppendQuery("api-version", _apiVersion, true);
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");
             return message;
         }
 
-        internal HttpMessage CreateCreateOrUpdateRequest(string farmerId, string seasonalFieldId, RequestContent content, RequestContext context)
+        internal HttpMessage CreateCreateOrUpdateRequest(string farmerId, string prescriptionId, RequestContent content, RequestContext context)
         {
             var message = _pipeline.CreateMessage(context, ResponseClassifier200201);
             var request = message.Request;
@@ -1674,8 +1488,8 @@ namespace Azure.Verticals.AgriFood.Farming
             uri.Reset(_endpoint);
             uri.AppendPath("/farmers/", false);
             uri.AppendPath(farmerId, true);
-            uri.AppendPath("/seasonal-fields/", false);
-            uri.AppendPath(seasonalFieldId, true);
+            uri.AppendPath("/prescriptions/", false);
+            uri.AppendPath(prescriptionId, true);
             uri.AppendQuery("api-version", _apiVersion, true);
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");
@@ -1684,7 +1498,7 @@ namespace Azure.Verticals.AgriFood.Farming
             return message;
         }
 
-        internal HttpMessage CreateDeleteRequest(string farmerId, string seasonalFieldId, RequestContext context)
+        internal HttpMessage CreateDeleteRequest(string farmerId, string prescriptionId, RequestContext context)
         {
             var message = _pipeline.CreateMessage(context, ResponseClassifier204);
             var request = message.Request;
@@ -1693,88 +1507,56 @@ namespace Azure.Verticals.AgriFood.Farming
             uri.Reset(_endpoint);
             uri.AppendPath("/farmers/", false);
             uri.AppendPath(farmerId, true);
-            uri.AppendPath("/seasonal-fields/", false);
-            uri.AppendPath(seasonalFieldId, true);
+            uri.AppendPath("/prescriptions/", false);
+            uri.AppendPath(prescriptionId, true);
             uri.AppendQuery("api-version", _apiVersion, true);
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");
             return message;
         }
 
-        internal HttpMessage CreateGetSeasonalFieldsRequest(IEnumerable<string> farmIds, IEnumerable<string> fieldIds, IEnumerable<string> seasonIds, IEnumerable<string> cropVarietyIds, IEnumerable<string> cropIds, double? minAvgYieldValue, double? maxAvgYieldValue, string avgYieldUnit, double? minAvgSeedPopulationValue, double? maxAvgSeedPopulationValue, string avgSeedPopulationUnit, DateTimeOffset? minPlantingDateTime, DateTimeOffset? maxPlantingDateTime, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
+        internal HttpMessage CreateGetPrescriptionsRequest(IEnumerable<string> prescriptionMapIds, IEnumerable<string> types, IEnumerable<string> productCodes, IEnumerable<string> productNames, IEnumerable<string> sources, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
         {
             var message = _pipeline.CreateMessage(context, ResponseClassifier200);
             var request = message.Request;
             request.Method = RequestMethod.Get;
             var uri = new RawRequestUriBuilder();
             uri.Reset(_endpoint);
-            uri.AppendPath("/seasonal-fields", false);
-            if (farmIds != null)
+            uri.AppendPath("/prescriptions", false);
+            if (prescriptionMapIds != null)
             {
-                foreach (var param in farmIds)
+                foreach (var param in prescriptionMapIds)
                 {
-                    uri.AppendQuery("farmIds", param, true);
+                    uri.AppendQuery("prescriptionMapIds", param, true);
                 }
             }
-            if (fieldIds != null)
+            if (types != null)
             {
-                foreach (var param in fieldIds)
+                foreach (var param in types)
                 {
-                    uri.AppendQuery("fieldIds", param, true);
+                    uri.AppendQuery("types", param, true);
                 }
             }
-            if (seasonIds != null)
+            if (productCodes != null)
             {
-                foreach (var param in seasonIds)
+                foreach (var param in productCodes)
                 {
-                    uri.AppendQuery("seasonIds", param, true);
+                    uri.AppendQuery("productCodes", param, true);
                 }
             }
-            if (cropVarietyIds != null)
+            if (productNames != null)
             {
-                foreach (var param in cropVarietyIds)
+                foreach (var param in productNames)
                 {
-                    uri.AppendQuery("cropVarietyIds", param, true);
+                    uri.AppendQuery("productNames", param, true);
                 }
             }
-            if (cropIds != null)
+            if (sources != null)
             {
-                foreach (var param in cropIds)
+                foreach (var param in sources)
                 {
-                    uri.AppendQuery("cropIds", param, true);
+                    uri.AppendQuery("sources", param, true);
                 }
-            }
-            if (minAvgYieldValue != null)
-            {
-                uri.AppendQuery("minAvgYieldValue", minAvgYieldValue.Value, true);
-            }
-            if (maxAvgYieldValue != null)
-            {
-                uri.AppendQuery("maxAvgYieldValue", maxAvgYieldValue.Value, true);
-            }
-            if (avgYieldUnit != null)
-            {
-                uri.AppendQuery("avgYieldUnit", avgYieldUnit, true);
-            }
-            if (minAvgSeedPopulationValue != null)
-            {
-                uri.AppendQuery("minAvgSeedPopulationValue", minAvgSeedPopulationValue.Value, true);
-            }
-            if (maxAvgSeedPopulationValue != null)
-            {
-                uri.AppendQuery("maxAvgSeedPopulationValue", maxAvgSeedPopulationValue.Value, true);
-            }
-            if (avgSeedPopulationUnit != null)
-            {
-                uri.AppendQuery("avgSeedPopulationUnit", avgSeedPopulationUnit, true);
-            }
-            if (minPlantingDateTime != null)
-            {
-                uri.AppendQuery("minPlantingDateTime", minPlantingDateTime.Value, "O", true);
-            }
-            if (maxPlantingDateTime != null)
-            {
-                uri.AppendQuery("maxPlantingDateTime", maxPlantingDateTime.Value, "O", true);
             }
             if (ids != null)
             {
@@ -1828,23 +1610,6 @@ namespace Azure.Verticals.AgriFood.Farming
             {
                 uri.AppendQuery("$skipToken", skipToken, true);
             }
-            uri.AppendQuery("api-version", _apiVersion, true);
-            request.Uri = uri;
-            request.Headers.Add("Accept", "application/json");
-            return message;
-        }
-
-        internal HttpMessage CreateCreateCascadeDeleteJobRequest(string jobId, string farmerId, string seasonalFieldId, RequestContext context)
-        {
-            var message = _pipeline.CreateMessage(context, ResponseClassifier202);
-            var request = message.Request;
-            request.Method = RequestMethod.Put;
-            var uri = new RawRequestUriBuilder();
-            uri.Reset(_endpoint);
-            uri.AppendPath("/seasonal-fields/cascade-delete/", false);
-            uri.AppendPath(jobId, true);
-            uri.AppendQuery("farmerId", farmerId, true);
-            uri.AppendQuery("seasonalFieldId", seasonalFieldId, true);
             uri.AppendQuery("api-version", _apiVersion, true);
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");
@@ -1858,7 +1623,7 @@ namespace Azure.Verticals.AgriFood.Farming
             request.Method = RequestMethod.Get;
             var uri = new RawRequestUriBuilder();
             uri.Reset(_endpoint);
-            uri.AppendPath("/seasonal-fields/cascade-delete/", false);
+            uri.AppendPath("/prescriptions/cascade-delete/", false);
             uri.AppendPath(jobId, true);
             uri.AppendQuery("api-version", _apiVersion, true);
             request.Uri = uri;
@@ -1866,7 +1631,24 @@ namespace Azure.Verticals.AgriFood.Farming
             return message;
         }
 
-        internal HttpMessage CreateGetSeasonalFieldsByFarmerIdNextPageRequest(string nextLink, string farmerId, IEnumerable<string> farmIds, IEnumerable<string> fieldIds, IEnumerable<string> seasonIds, IEnumerable<string> cropVarietyIds, IEnumerable<string> cropIds, double? minAvgYieldValue, double? maxAvgYieldValue, string avgYieldUnit, double? minAvgSeedPopulationValue, double? maxAvgSeedPopulationValue, string avgSeedPopulationUnit, DateTimeOffset? minPlantingDateTime, DateTimeOffset? maxPlantingDateTime, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
+        internal HttpMessage CreateCreateCascadeDeleteJobRequest(string jobId, string farmerId, string prescriptionId, RequestContext context)
+        {
+            var message = _pipeline.CreateMessage(context, ResponseClassifier202);
+            var request = message.Request;
+            request.Method = RequestMethod.Put;
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/prescriptions/cascade-delete/", false);
+            uri.AppendPath(jobId, true);
+            uri.AppendQuery("farmerId", farmerId, true);
+            uri.AppendQuery("prescriptionId", prescriptionId, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            request.Uri = uri;
+            request.Headers.Add("Accept", "application/json");
+            return message;
+        }
+
+        internal HttpMessage CreateGetPrescriptionsByFarmerIdNextPageRequest(string nextLink, string farmerId, IEnumerable<string> prescriptionMapIds, IEnumerable<string> types, IEnumerable<string> productCodes, IEnumerable<string> productNames, IEnumerable<string> sources, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
         {
             var message = _pipeline.CreateMessage(context, ResponseClassifier200);
             var request = message.Request;
@@ -1879,7 +1661,7 @@ namespace Azure.Verticals.AgriFood.Farming
             return message;
         }
 
-        internal HttpMessage CreateGetSeasonalFieldsNextPageRequest(string nextLink, IEnumerable<string> farmIds, IEnumerable<string> fieldIds, IEnumerable<string> seasonIds, IEnumerable<string> cropVarietyIds, IEnumerable<string> cropIds, double? minAvgYieldValue, double? maxAvgYieldValue, string avgYieldUnit, double? minAvgSeedPopulationValue, double? maxAvgSeedPopulationValue, string avgSeedPopulationUnit, DateTimeOffset? minPlantingDateTime, DateTimeOffset? maxPlantingDateTime, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
+        internal HttpMessage CreateGetPrescriptionsNextPageRequest(string nextLink, IEnumerable<string> prescriptionMapIds, IEnumerable<string> types, IEnumerable<string> productCodes, IEnumerable<string> productNames, IEnumerable<string> sources, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
         {
             var message = _pipeline.CreateMessage(context, ResponseClassifier200);
             var request = message.Request;

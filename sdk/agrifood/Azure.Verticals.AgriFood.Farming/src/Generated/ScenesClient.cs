@@ -41,19 +41,19 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <param name="endpoint"> The endpoint of your FarmBeats resource (protocol and hostname, for example: https://{resourceName}.farmbeats.azure.net). </param>
         /// <param name="credential"> A credential used to authenticate to an Azure Service. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="endpoint"/> or <paramref name="credential"/> is null. </exception>
-        public ScenesClient(Uri endpoint, TokenCredential credential) : this(endpoint, credential, new FarmBeatsClientOptions())
+        public ScenesClient(TokenCredential credential, Uri endpoint) : this(credential, endpoint, new FarmBeatsClientOptions())
         {
         }
 
         /// <summary> Initializes a new instance of ScenesClient. </summary>
-        /// <param name="endpoint"> The endpoint of your FarmBeats resource (protocol and hostname, for example: https://{resourceName}.farmbeats.azure.net). </param>
         /// <param name="credential"> A credential used to authenticate to an Azure Service. </param>
+        /// <param name="endpoint"> server parameter. </param>
         /// <param name="options"> The options for configuring the client. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="endpoint"/> or <paramref name="credential"/> is null. </exception>
-        public ScenesClient(Uri endpoint, TokenCredential credential, FarmBeatsClientOptions options)
+        /// <exception cref="ArgumentNullException"> <paramref name="credential"/> or <paramref name="endpoint"/> is null. </exception>
+        public ScenesClient(TokenCredential credential, Uri endpoint, FarmBeatsClientOptions options)
         {
-            Argument.AssertNotNull(endpoint, nameof(endpoint));
             Argument.AssertNotNull(credential, nameof(credential));
+            Argument.AssertNotNull(endpoint, nameof(endpoint));
             options ??= new FarmBeatsClientOptions();
 
             ClientDiagnostics = new ClientDiagnostics(options, true);
@@ -63,8 +63,88 @@ namespace Azure.Verticals.AgriFood.Farming
             _apiVersion = options.Version;
         }
 
+        /// <summary> Downloads and returns file Stream as response for the given input filePath. </summary>
+        /// <param name="filePath"> cloud storage path of scene file. </param>
+        /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="filePath"/> is null. </exception>
+        /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
+        /// <returns> The response returned from the service. </returns>
+        /// <example>
+        /// This sample shows how to call DownloadAsync with required parameters and parse the result.
+        /// <code><![CDATA[
+        /// var credential = new DefaultAzureCredential();
+        /// var client = new ScenesClient(credential);
+        /// 
+        /// Response response = await client.DownloadAsync("<filePath>");
+        /// if (response.ContentStream != null)
+        /// {
+        ///     using(Stream outFileStream = File.OpenWrite("<filePath>")
+        ///     {
+        ///         response.ContentStream.CopyTo(outFileStream);
+        ///     }
+        /// }
+        /// ]]></code>
+        /// </example>
+        public virtual async Task<Response> DownloadAsync(string filePath, RequestContext context = null)
+        {
+            Argument.AssertNotNull(filePath, nameof(filePath));
+
+            using var scope = ClientDiagnostics.CreateScope("ScenesClient.Download");
+            scope.Start();
+            try
+            {
+                using HttpMessage message = CreateDownloadRequest(filePath, context);
+                return await _pipeline.ProcessMessageAsync(message, context).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary> Downloads and returns file Stream as response for the given input filePath. </summary>
+        /// <param name="filePath"> cloud storage path of scene file. </param>
+        /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="filePath"/> is null. </exception>
+        /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
+        /// <returns> The response returned from the service. </returns>
+        /// <example>
+        /// This sample shows how to call Download with required parameters and parse the result.
+        /// <code><![CDATA[
+        /// var credential = new DefaultAzureCredential();
+        /// var client = new ScenesClient(credential);
+        /// 
+        /// Response response = client.Download("<filePath>");
+        /// if (response.ContentStream != null)
+        /// {
+        ///     using(Stream outFileStream = File.OpenWrite("<filePath>")
+        ///     {
+        ///         response.ContentStream.CopyTo(outFileStream);
+        ///     }
+        /// }
+        /// ]]></code>
+        /// </example>
+        public virtual Response Download(string filePath, RequestContext context = null)
+        {
+            Argument.AssertNotNull(filePath, nameof(filePath));
+
+            using var scope = ClientDiagnostics.CreateScope("ScenesClient.Download");
+            scope.Start();
+            try
+            {
+                using HttpMessage message = CreateDownloadRequest(filePath, context);
+                return _pipeline.ProcessMessage(message, context);
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
         /// <summary> Get a satellite data ingestion job. </summary>
-        /// <param name="jobId"> ID of the job. </param>
+        /// <param name="jobId"> Id of the job. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="jobId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="jobId"/> is an empty string, and was expected to be non-empty. </exception>
@@ -74,8 +154,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call GetSatelliteDataIngestionJobDetailsAsync with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new ScenesClient(endpoint, credential);
+        /// var client = new ScenesClient(credential);
         /// 
         /// Response response = await client.GetSatelliteDataIngestionJobDetailsAsync("<jobId>");
         /// 
@@ -109,12 +188,12 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Schema for <c>SatelliteDataIngestionJob</c>:
         /// <code>{
-        ///   farmerId: string, # Required. Farmer ID.
+        ///   farmerId: string, # Required. Farmer Id.
         ///   boundaryId: string, # Required. The id of the boundary object for which satellite data is being fetched.
         ///   startDateTime: string (ISO 8601 Format), # Required. Start Date.
         ///   endDateTime: string (ISO 8601 Format), # Required. End Date.
-        ///   provider: &quot;Microsoft&quot;, # Optional. Provider of satellite data.
-        ///   source: &quot;Sentinel_2_L2A&quot;, # Optional. Source of satellite data.
+        ///   provider: &quot;Microsoft&quot;, # Optional. Provider of satellite data. Available Value: Microsoft.
+        ///   source: &quot;Sentinel_2_L2A&quot;, # Optional. Source of satellite data. Available Value: Sentinel_2_L2A.
         ///   data: {
         ///     imageNames: [string], # Optional. List of ImageNames.
         ///     imageFormats: [string], # Optional. List of ImageFormats. Available value: TIF.
@@ -131,10 +210,11 @@ namespace Azure.Verticals.AgriFood.Farming
         ///   endTime: string (ISO 8601 Format), # Optional. Job end time when available. Sample format: yyyy-MM-ddTHH:mm:ssZ.
         ///   name: string, # Optional. Name to identify resource.
         ///   description: string, # Optional. Textual description of the resource.
-        ///   properties: Dictionary&lt;string, AnyObject&gt;, # Optional. A collection of key value pairs that belongs to the resource.
+        ///   properties: Dictionary&lt;string, any&gt;, # Optional. A collection of key value pairs that belongs to the resource.
         /// Each pair must not have a key greater than 50 characters
         /// and must not have a value greater than 150 characters.
-        /// Note: A maximum of 25 key value pairs can be provided for a resource and only string and numeral values are supported.
+        /// Note: A maximum of 25 key value pairs can be provided for a resource and only string,
+        /// numeral and datetime (yyyy-MM-ddTHH:mm:ssZ) values are supported.
         /// }
         /// </code>
         /// 
@@ -158,7 +238,7 @@ namespace Azure.Verticals.AgriFood.Farming
         }
 
         /// <summary> Get a satellite data ingestion job. </summary>
-        /// <param name="jobId"> ID of the job. </param>
+        /// <param name="jobId"> Id of the job. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="jobId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="jobId"/> is an empty string, and was expected to be non-empty. </exception>
@@ -168,8 +248,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call GetSatelliteDataIngestionJobDetails with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new ScenesClient(endpoint, credential);
+        /// var client = new ScenesClient(credential);
         /// 
         /// Response response = client.GetSatelliteDataIngestionJobDetails("<jobId>");
         /// 
@@ -203,12 +282,12 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Schema for <c>SatelliteDataIngestionJob</c>:
         /// <code>{
-        ///   farmerId: string, # Required. Farmer ID.
+        ///   farmerId: string, # Required. Farmer Id.
         ///   boundaryId: string, # Required. The id of the boundary object for which satellite data is being fetched.
         ///   startDateTime: string (ISO 8601 Format), # Required. Start Date.
         ///   endDateTime: string (ISO 8601 Format), # Required. End Date.
-        ///   provider: &quot;Microsoft&quot;, # Optional. Provider of satellite data.
-        ///   source: &quot;Sentinel_2_L2A&quot;, # Optional. Source of satellite data.
+        ///   provider: &quot;Microsoft&quot;, # Optional. Provider of satellite data. Available Value: Microsoft.
+        ///   source: &quot;Sentinel_2_L2A&quot;, # Optional. Source of satellite data. Available Value: Sentinel_2_L2A.
         ///   data: {
         ///     imageNames: [string], # Optional. List of ImageNames.
         ///     imageFormats: [string], # Optional. List of ImageFormats. Available value: TIF.
@@ -225,10 +304,11 @@ namespace Azure.Verticals.AgriFood.Farming
         ///   endTime: string (ISO 8601 Format), # Optional. Job end time when available. Sample format: yyyy-MM-ddTHH:mm:ssZ.
         ///   name: string, # Optional. Name to identify resource.
         ///   description: string, # Optional. Textual description of the resource.
-        ///   properties: Dictionary&lt;string, AnyObject&gt;, # Optional. A collection of key value pairs that belongs to the resource.
+        ///   properties: Dictionary&lt;string, any&gt;, # Optional. A collection of key value pairs that belongs to the resource.
         /// Each pair must not have a key greater than 50 characters
         /// and must not have a value greater than 150 characters.
-        /// Note: A maximum of 25 key value pairs can be provided for a resource and only string and numeral values are supported.
+        /// Note: A maximum of 25 key value pairs can be provided for a resource and only string,
+        /// numeral and datetime (yyyy-MM-ddTHH:mm:ssZ) values are supported.
         /// }
         /// </code>
         /// 
@@ -242,88 +322,6 @@ namespace Azure.Verticals.AgriFood.Farming
             try
             {
                 using HttpMessage message = CreateGetSatelliteDataIngestionJobDetailsRequest(jobId, context);
-                return _pipeline.ProcessMessage(message, context);
-            }
-            catch (Exception e)
-            {
-                scope.Failed(e);
-                throw;
-            }
-        }
-
-        /// <summary> Downloads and returns file stream as response for the given input filePath. </summary>
-        /// <param name="filePath"> cloud storage path of scene file. </param>
-        /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="filePath"/> is null. </exception>
-        /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The response returned from the service. </returns>
-        /// <example>
-        /// This sample shows how to call DownloadAsync with required parameters and parse the result.
-        /// <code><![CDATA[
-        /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new ScenesClient(endpoint, credential);
-        /// 
-        /// Response response = await client.DownloadAsync("<filePath>");
-        /// if (response.ContentStream != null)
-        /// {
-        ///     using(Stream outFileStream = File.OpenWrite("<filePath>")
-        ///     {
-        ///         response.ContentStream.CopyTo(outFileStream);
-        ///     }
-        /// }
-        /// ]]></code>
-        /// </example>
-        public virtual async Task<Response> DownloadAsync(string filePath, RequestContext context = null)
-        {
-            Argument.AssertNotNull(filePath, nameof(filePath));
-
-            using var scope = ClientDiagnostics.CreateScope("ScenesClient.Download");
-            scope.Start();
-            try
-            {
-                using HttpMessage message = CreateDownloadRequest(filePath, context);
-                return await _pipeline.ProcessMessageAsync(message, context).ConfigureAwait(false);
-            }
-            catch (Exception e)
-            {
-                scope.Failed(e);
-                throw;
-            }
-        }
-
-        /// <summary> Downloads and returns file stream as response for the given input filePath. </summary>
-        /// <param name="filePath"> cloud storage path of scene file. </param>
-        /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="filePath"/> is null. </exception>
-        /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The response returned from the service. </returns>
-        /// <example>
-        /// This sample shows how to call Download with required parameters and parse the result.
-        /// <code><![CDATA[
-        /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new ScenesClient(endpoint, credential);
-        /// 
-        /// Response response = client.Download("<filePath>");
-        /// if (response.ContentStream != null)
-        /// {
-        ///     using(Stream outFileStream = File.OpenWrite("<filePath>")
-        ///     {
-        ///         response.ContentStream.CopyTo(outFileStream);
-        ///     }
-        /// }
-        /// ]]></code>
-        /// </example>
-        public virtual Response Download(string filePath, RequestContext context = null)
-        {
-            Argument.AssertNotNull(filePath, nameof(filePath));
-
-            using var scope = ClientDiagnostics.CreateScope("ScenesClient.Download");
-            scope.Start();
-            try
-            {
-                using HttpMessage message = CreateDownloadRequest(filePath, context);
                 return _pipeline.ProcessMessage(message, context);
             }
             catch (Exception e)
@@ -358,8 +356,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call GetScenesAsync with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new ScenesClient(endpoint, credential);
+        /// var client = new ScenesClient(credential);
         /// 
         /// await foreach (var data in client.GetScenesAsync("<provider>", "<farmerId>", "<boundaryId>"))
         /// {
@@ -370,8 +367,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call GetScenesAsync with all parameters, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new ScenesClient(endpoint, credential);
+        /// var client = new ScenesClient(credential);
         /// 
         /// await foreach (var data in client.GetScenesAsync("<provider>", "<farmerId>", "<boundaryId>", "<source>", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1234, 1234, new String[]{"<imageNames>"}, new Double[]{1234}, new String[]{"<imageFormats>"}, 1234, "<skipToken>"))
         /// {
@@ -408,11 +404,11 @@ namespace Azure.Verticals.AgriFood.Farming
         ///     {
         ///       fileLink: string, # Optional. Link of the image file.
         ///       name: string, # Required. Name of the image file.
-        ///       imageFormat: &quot;TIF&quot;, # Optional. Supported image formats for scene resource.
+        ///       imageFormat: &quot;TIF&quot;, # Optional. ImageFormat. Available value: TIF.
         ///       resolution: number, # Optional. Resolution of image file in meters.
         ///     }
         ///   ], # Optional. Collection of image files.
-        ///   imageFormat: &quot;TIF&quot;, # Optional. Supported image formats for scene resource.
+        ///   imageFormat: &quot;TIF&quot;, # Optional. ImageFormat. Available value: TIF.
         ///   cloudCoverPercentage: number, # Optional. Cloud cover percentage of the scene.
         ///   darkPixelPercentage: number, # Optional. Dark pixel percentage of the scene.
         ///   ndviMedianValue: number, # Optional. Median of NDVI of the scene.
@@ -475,8 +471,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call GetScenes with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new ScenesClient(endpoint, credential);
+        /// var client = new ScenesClient(credential);
         /// 
         /// foreach (var data in client.GetScenes("<provider>", "<farmerId>", "<boundaryId>"))
         /// {
@@ -487,8 +482,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call GetScenes with all parameters, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new ScenesClient(endpoint, credential);
+        /// var client = new ScenesClient(credential);
         /// 
         /// foreach (var data in client.GetScenes("<provider>", "<farmerId>", "<boundaryId>", "<source>", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1234, 1234, new String[]{"<imageNames>"}, new Double[]{1234}, new String[]{"<imageFormats>"}, 1234, "<skipToken>"))
         /// {
@@ -525,11 +519,11 @@ namespace Azure.Verticals.AgriFood.Farming
         ///     {
         ///       fileLink: string, # Optional. Link of the image file.
         ///       name: string, # Required. Name of the image file.
-        ///       imageFormat: &quot;TIF&quot;, # Optional. Supported image formats for scene resource.
+        ///       imageFormat: &quot;TIF&quot;, # Optional. ImageFormat. Available value: TIF.
         ///       resolution: number, # Optional. Resolution of image file in meters.
         ///     }
         ///   ], # Optional. Collection of image files.
-        ///   imageFormat: &quot;TIF&quot;, # Optional. Supported image formats for scene resource.
+        ///   imageFormat: &quot;TIF&quot;, # Optional. ImageFormat. Available value: TIF.
         ///   cloudCoverPercentage: number, # Optional. Cloud cover percentage of the scene.
         ///   darkPixelPercentage: number, # Optional. Dark pixel percentage of the scene.
         ///   ndviMedianValue: number, # Optional. Median of NDVI of the scene.
@@ -572,7 +566,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <param name="jobId"> JobId provided by user. </param>
         /// <param name="content"> The content to send as the body of the request. Details of the request body schema are in the Remarks section below. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="jobId"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="jobId"/> or <paramref name="content"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="jobId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The <see cref="Operation{T}"/> from the service that will contain a <see cref="BinaryData"/> object once the asynchronous operation on the service has completed. Details of the body schema for the operation's final value are in the Remarks section below. </returns>
@@ -580,8 +574,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call CreateSatelliteDataIngestionJobAsync with required parameters and request content, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new ScenesClient(endpoint, credential);
+        /// var client = new ScenesClient(credential);
         /// 
         /// var data = new {
         ///     farmerId = "<farmerId>",
@@ -602,8 +595,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call CreateSatelliteDataIngestionJobAsync with all parameters and request content, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new ScenesClient(endpoint, credential);
+        /// var client = new ScenesClient(credential);
         /// 
         /// var data = new {
         ///     farmerId = "<farmerId>",
@@ -663,12 +655,12 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Schema for <c>SatelliteDataIngestionJob</c>:
         /// <code>{
-        ///   farmerId: string, # Required. Farmer ID.
+        ///   farmerId: string, # Required. Farmer Id.
         ///   boundaryId: string, # Required. The id of the boundary object for which satellite data is being fetched.
         ///   startDateTime: string (ISO 8601 Format), # Required. Start Date.
         ///   endDateTime: string (ISO 8601 Format), # Required. End Date.
-        ///   provider: &quot;Microsoft&quot;, # Optional. Provider of satellite data.
-        ///   source: &quot;Sentinel_2_L2A&quot;, # Optional. Source of satellite data.
+        ///   provider: &quot;Microsoft&quot;, # Optional. Provider of satellite data. Available Value: Microsoft.
+        ///   source: &quot;Sentinel_2_L2A&quot;, # Optional. Source of satellite data. Available Value: Sentinel_2_L2A.
         ///   data: {
         ///     imageNames: [string], # Optional. List of ImageNames.
         ///     imageFormats: [string], # Optional. List of ImageFormats. Available value: TIF.
@@ -685,10 +677,11 @@ namespace Azure.Verticals.AgriFood.Farming
         ///   endTime: string (ISO 8601 Format), # Optional. Job end time when available. Sample format: yyyy-MM-ddTHH:mm:ssZ.
         ///   name: string, # Optional. Name to identify resource.
         ///   description: string, # Optional. Textual description of the resource.
-        ///   properties: Dictionary&lt;string, AnyObject&gt;, # Optional. A collection of key value pairs that belongs to the resource.
+        ///   properties: Dictionary&lt;string, any&gt;, # Optional. A collection of key value pairs that belongs to the resource.
         /// Each pair must not have a key greater than 50 characters
         /// and must not have a value greater than 150 characters.
-        /// Note: A maximum of 25 key value pairs can be provided for a resource and only string and numeral values are supported.
+        /// Note: A maximum of 25 key value pairs can be provided for a resource and only string,
+        /// numeral and datetime (yyyy-MM-ddTHH:mm:ssZ) values are supported.
         /// }
         /// </code>
         /// 
@@ -696,12 +689,12 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Schema for <c>SatelliteDataIngestionJob</c>:
         /// <code>{
-        ///   farmerId: string, # Required. Farmer ID.
+        ///   farmerId: string, # Required. Farmer Id.
         ///   boundaryId: string, # Required. The id of the boundary object for which satellite data is being fetched.
         ///   startDateTime: string (ISO 8601 Format), # Required. Start Date.
         ///   endDateTime: string (ISO 8601 Format), # Required. End Date.
-        ///   provider: &quot;Microsoft&quot;, # Optional. Provider of satellite data.
-        ///   source: &quot;Sentinel_2_L2A&quot;, # Optional. Source of satellite data.
+        ///   provider: &quot;Microsoft&quot;, # Optional. Provider of satellite data. Available Value: Microsoft.
+        ///   source: &quot;Sentinel_2_L2A&quot;, # Optional. Source of satellite data. Available Value: Sentinel_2_L2A.
         ///   data: {
         ///     imageNames: [string], # Optional. List of ImageNames.
         ///     imageFormats: [string], # Optional. List of ImageFormats. Available value: TIF.
@@ -718,10 +711,11 @@ namespace Azure.Verticals.AgriFood.Farming
         ///   endTime: string (ISO 8601 Format), # Optional. Job end time when available. Sample format: yyyy-MM-ddTHH:mm:ssZ.
         ///   name: string, # Optional. Name to identify resource.
         ///   description: string, # Optional. Textual description of the resource.
-        ///   properties: Dictionary&lt;string, AnyObject&gt;, # Optional. A collection of key value pairs that belongs to the resource.
+        ///   properties: Dictionary&lt;string, any&gt;, # Optional. A collection of key value pairs that belongs to the resource.
         /// Each pair must not have a key greater than 50 characters
         /// and must not have a value greater than 150 characters.
-        /// Note: A maximum of 25 key value pairs can be provided for a resource and only string and numeral values are supported.
+        /// Note: A maximum of 25 key value pairs can be provided for a resource and only string,
+        /// numeral and datetime (yyyy-MM-ddTHH:mm:ssZ) values are supported.
         /// }
         /// </code>
         /// 
@@ -729,6 +723,7 @@ namespace Azure.Verticals.AgriFood.Farming
         public virtual async Task<Operation<BinaryData>> CreateSatelliteDataIngestionJobAsync(WaitUntil waitUntil, string jobId, RequestContent content, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(jobId, nameof(jobId));
+            Argument.AssertNotNull(content, nameof(content));
 
             using var scope = ClientDiagnostics.CreateScope("ScenesClient.CreateSatelliteDataIngestionJob");
             scope.Start();
@@ -749,7 +744,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <param name="jobId"> JobId provided by user. </param>
         /// <param name="content"> The content to send as the body of the request. Details of the request body schema are in the Remarks section below. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="jobId"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="jobId"/> or <paramref name="content"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="jobId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The <see cref="Operation{T}"/> from the service that will contain a <see cref="BinaryData"/> object once the asynchronous operation on the service has completed. Details of the body schema for the operation's final value are in the Remarks section below. </returns>
@@ -757,8 +752,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call CreateSatelliteDataIngestionJob with required parameters and request content, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new ScenesClient(endpoint, credential);
+        /// var client = new ScenesClient(credential);
         /// 
         /// var data = new {
         ///     farmerId = "<farmerId>",
@@ -779,8 +773,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call CreateSatelliteDataIngestionJob with all parameters and request content, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var endpoint = new Uri("<https://my-service.azure.com>");
-        /// var client = new ScenesClient(endpoint, credential);
+        /// var client = new ScenesClient(credential);
         /// 
         /// var data = new {
         ///     farmerId = "<farmerId>",
@@ -840,12 +833,12 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Schema for <c>SatelliteDataIngestionJob</c>:
         /// <code>{
-        ///   farmerId: string, # Required. Farmer ID.
+        ///   farmerId: string, # Required. Farmer Id.
         ///   boundaryId: string, # Required. The id of the boundary object for which satellite data is being fetched.
         ///   startDateTime: string (ISO 8601 Format), # Required. Start Date.
         ///   endDateTime: string (ISO 8601 Format), # Required. End Date.
-        ///   provider: &quot;Microsoft&quot;, # Optional. Provider of satellite data.
-        ///   source: &quot;Sentinel_2_L2A&quot;, # Optional. Source of satellite data.
+        ///   provider: &quot;Microsoft&quot;, # Optional. Provider of satellite data. Available Value: Microsoft.
+        ///   source: &quot;Sentinel_2_L2A&quot;, # Optional. Source of satellite data. Available Value: Sentinel_2_L2A.
         ///   data: {
         ///     imageNames: [string], # Optional. List of ImageNames.
         ///     imageFormats: [string], # Optional. List of ImageFormats. Available value: TIF.
@@ -862,10 +855,11 @@ namespace Azure.Verticals.AgriFood.Farming
         ///   endTime: string (ISO 8601 Format), # Optional. Job end time when available. Sample format: yyyy-MM-ddTHH:mm:ssZ.
         ///   name: string, # Optional. Name to identify resource.
         ///   description: string, # Optional. Textual description of the resource.
-        ///   properties: Dictionary&lt;string, AnyObject&gt;, # Optional. A collection of key value pairs that belongs to the resource.
+        ///   properties: Dictionary&lt;string, any&gt;, # Optional. A collection of key value pairs that belongs to the resource.
         /// Each pair must not have a key greater than 50 characters
         /// and must not have a value greater than 150 characters.
-        /// Note: A maximum of 25 key value pairs can be provided for a resource and only string and numeral values are supported.
+        /// Note: A maximum of 25 key value pairs can be provided for a resource and only string,
+        /// numeral and datetime (yyyy-MM-ddTHH:mm:ssZ) values are supported.
         /// }
         /// </code>
         /// 
@@ -873,12 +867,12 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Schema for <c>SatelliteDataIngestionJob</c>:
         /// <code>{
-        ///   farmerId: string, # Required. Farmer ID.
+        ///   farmerId: string, # Required. Farmer Id.
         ///   boundaryId: string, # Required. The id of the boundary object for which satellite data is being fetched.
         ///   startDateTime: string (ISO 8601 Format), # Required. Start Date.
         ///   endDateTime: string (ISO 8601 Format), # Required. End Date.
-        ///   provider: &quot;Microsoft&quot;, # Optional. Provider of satellite data.
-        ///   source: &quot;Sentinel_2_L2A&quot;, # Optional. Source of satellite data.
+        ///   provider: &quot;Microsoft&quot;, # Optional. Provider of satellite data. Available Value: Microsoft.
+        ///   source: &quot;Sentinel_2_L2A&quot;, # Optional. Source of satellite data. Available Value: Sentinel_2_L2A.
         ///   data: {
         ///     imageNames: [string], # Optional. List of ImageNames.
         ///     imageFormats: [string], # Optional. List of ImageFormats. Available value: TIF.
@@ -895,10 +889,11 @@ namespace Azure.Verticals.AgriFood.Farming
         ///   endTime: string (ISO 8601 Format), # Optional. Job end time when available. Sample format: yyyy-MM-ddTHH:mm:ssZ.
         ///   name: string, # Optional. Name to identify resource.
         ///   description: string, # Optional. Textual description of the resource.
-        ///   properties: Dictionary&lt;string, AnyObject&gt;, # Optional. A collection of key value pairs that belongs to the resource.
+        ///   properties: Dictionary&lt;string, any&gt;, # Optional. A collection of key value pairs that belongs to the resource.
         /// Each pair must not have a key greater than 50 characters
         /// and must not have a value greater than 150 characters.
-        /// Note: A maximum of 25 key value pairs can be provided for a resource and only string and numeral values are supported.
+        /// Note: A maximum of 25 key value pairs can be provided for a resource and only string,
+        /// numeral and datetime (yyyy-MM-ddTHH:mm:ssZ) values are supported.
         /// }
         /// </code>
         /// 
@@ -906,6 +901,7 @@ namespace Azure.Verticals.AgriFood.Farming
         public virtual Operation<BinaryData> CreateSatelliteDataIngestionJob(WaitUntil waitUntil, string jobId, RequestContent content, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(jobId, nameof(jobId));
+            Argument.AssertNotNull(content, nameof(content));
 
             using var scope = ClientDiagnostics.CreateScope("ScenesClient.CreateSatelliteDataIngestionJob");
             scope.Start();
@@ -987,6 +983,21 @@ namespace Azure.Verticals.AgriFood.Farming
             return message;
         }
 
+        internal HttpMessage CreateDownloadRequest(string filePath, RequestContext context)
+        {
+            var message = _pipeline.CreateMessage(context, ResponseClassifier200);
+            var request = message.Request;
+            request.Method = RequestMethod.Get;
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/scenes/downloadFiles", false);
+            uri.AppendQuery("filePath", filePath, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            request.Uri = uri;
+            request.Headers.Add("Accept", "application/json, application/octet-stream");
+            return message;
+        }
+
         internal HttpMessage CreateCreateSatelliteDataIngestionJobRequest(string jobId, RequestContent content, RequestContext context)
         {
             var message = _pipeline.CreateMessage(context, ResponseClassifier202);
@@ -1016,21 +1027,6 @@ namespace Azure.Verticals.AgriFood.Farming
             uri.AppendQuery("api-version", _apiVersion, true);
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");
-            return message;
-        }
-
-        internal HttpMessage CreateDownloadRequest(string filePath, RequestContext context)
-        {
-            var message = _pipeline.CreateMessage(context, ResponseClassifier200);
-            var request = message.Request;
-            request.Method = RequestMethod.Get;
-            var uri = new RawRequestUriBuilder();
-            uri.Reset(_endpoint);
-            uri.AppendPath("/scenes/downloadFiles", false);
-            uri.AppendQuery("filePath", filePath, true);
-            uri.AppendQuery("api-version", _apiVersion, true);
-            request.Uri = uri;
-            request.Headers.Add("Accept", "application/octet-stream, application/json");
             return message;
         }
 
