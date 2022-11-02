@@ -16,9 +16,9 @@ using Azure.Core.Pipeline;
 
 namespace Azure.Verticals.AgriFood.Farming
 {
-    // Data plane generated sub-client. The Fields sub-client.
-    /// <summary> The Fields sub-client. </summary>
-    public partial class Fields
+    // Data plane generated sub-client. The Zones sub-client.
+    /// <summary> The Zones sub-client. </summary>
+    public partial class Zones
     {
         private static readonly string[] AuthorizationScopes = new string[] { "https://farmbeats.azure.net/.default" };
         private readonly TokenCredential _tokenCredential;
@@ -32,18 +32,18 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <summary> The HTTP pipeline for sending and receiving REST requests and responses. </summary>
         public virtual HttpPipeline Pipeline => _pipeline;
 
-        /// <summary> Initializes a new instance of Fields for mocking. </summary>
-        protected Fields()
+        /// <summary> Initializes a new instance of Zones for mocking. </summary>
+        protected Zones()
         {
         }
 
-        /// <summary> Initializes a new instance of Fields. </summary>
+        /// <summary> Initializes a new instance of Zones. </summary>
         /// <param name="clientDiagnostics"> The handler for diagnostic messaging in the client. </param>
         /// <param name="pipeline"> The HTTP pipeline for sending and receiving REST requests and responses. </param>
         /// <param name="tokenCredential"> The token credential to copy. </param>
         /// <param name="endpoint"> server parameter. </param>
         /// <param name="apiVersion"> Api Version. </param>
-        internal Fields(ClientDiagnostics clientDiagnostics, HttpPipeline pipeline, TokenCredential tokenCredential, Uri endpoint, string apiVersion)
+        internal Zones(ClientDiagnostics clientDiagnostics, HttpPipeline pipeline, TokenCredential tokenCredential, Uri endpoint, string apiVersion)
         {
             ClientDiagnostics = clientDiagnostics;
             _pipeline = pipeline;
@@ -52,27 +52,26 @@ namespace Azure.Verticals.AgriFood.Farming
             _apiVersion = apiVersion;
         }
 
-        /// <summary> Gets a specified field resource under a particular farmer. </summary>
+        /// <summary> Gets a specified zone resource under a particular farmer. </summary>
         /// <param name="farmerId"> Id of the associated farmer. </param>
-        /// <param name="fieldId"> Id of the field. </param>
+        /// <param name="zoneId"> Id of the zone. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/> or <paramref name="fieldId"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="fieldId"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/> or <paramref name="zoneId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="zoneId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
         /// <example>
-        /// This sample shows how to call GetFieldAsync with required parameters and parse the result.
+        /// This sample shows how to call GetZoneAsync with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmBeatsClient(credential).GetFieldsClient(<2021-07-31-preview>);
+        /// var client = new FarmBeatsClient(credential).GetZonesClient(<2021-07-31-preview>);
         /// 
-        /// Response response = await client.GetFieldAsync("<farmerId>", "<fieldId>");
+        /// Response response = await client.GetZoneAsync("<farmerId>", "<zoneId>");
         /// 
         /// JsonElement result = JsonDocument.Parse(response.ContentStream).RootElement;
-        /// Console.WriteLine(result.GetProperty("farmId").ToString());
         /// Console.WriteLine(result.GetProperty("farmerId").ToString());
-        /// Console.WriteLine(result.GetProperty("primaryBoundaryId").ToString());
-        /// Console.WriteLine(result.GetProperty("boundaryIds")[0].ToString());
+        /// Console.WriteLine(result.GetProperty("type").ToString());
+        /// Console.WriteLine(result.GetProperty("managementZoneId").ToString());
         /// Console.WriteLine(result.GetProperty("id").ToString());
         /// Console.WriteLine(result.GetProperty("eTag").ToString());
         /// Console.WriteLine(result.GetProperty("status").ToString());
@@ -89,12 +88,11 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Response Body:
         /// 
-        /// Schema for <c>Field</c>:
+        /// Schema for <c>Zone</c>:
         /// <code>{
-        ///   farmId: string, # Optional. Id of the associated Farm.
-        ///   farmerId: string, # Optional. Farmer Id.
-        ///   primaryBoundaryId: string, # Optional. Primary boundary id.
-        ///   boundaryIds: [string], # Optional. Boundary Ids.
+        ///   farmerId: string, # Optional. Farmer Id associated with the Zone.
+        ///   type: string, # Optional. Type of the Zone.
+        ///   managementZoneId: string, # Optional. Management Zone Id associated with the Zone.
         ///   id: string, # Optional. Unique resource ID.
         ///   eTag: string, # Optional. The ETag value to implement optimistic concurrency.
         ///   status: string, # Optional. Status of the resource.
@@ -112,16 +110,16 @@ namespace Azure.Verticals.AgriFood.Farming
         /// </code>
         /// 
         /// </remarks>
-        public virtual async Task<Response> GetFieldAsync(string farmerId, string fieldId, RequestContext context = null)
+        public virtual async Task<Response> GetZoneAsync(string farmerId, string zoneId, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(farmerId, nameof(farmerId));
-            Argument.AssertNotNullOrEmpty(fieldId, nameof(fieldId));
+            Argument.AssertNotNullOrEmpty(zoneId, nameof(zoneId));
 
-            using var scope = ClientDiagnostics.CreateScope("Fields.GetField");
+            using var scope = ClientDiagnostics.CreateScope("Zones.GetZone");
             scope.Start();
             try
             {
-                using HttpMessage message = CreateGetFieldRequest(farmerId, fieldId, context);
+                using HttpMessage message = CreateGetZoneRequest(farmerId, zoneId, context);
                 return await _pipeline.ProcessMessageAsync(message, context).ConfigureAwait(false);
             }
             catch (Exception e)
@@ -131,27 +129,26 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Gets a specified field resource under a particular farmer. </summary>
+        /// <summary> Gets a specified zone resource under a particular farmer. </summary>
         /// <param name="farmerId"> Id of the associated farmer. </param>
-        /// <param name="fieldId"> Id of the field. </param>
+        /// <param name="zoneId"> Id of the zone. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/> or <paramref name="fieldId"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="fieldId"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/> or <paramref name="zoneId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="zoneId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
         /// <example>
-        /// This sample shows how to call GetField with required parameters and parse the result.
+        /// This sample shows how to call GetZone with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmBeatsClient(credential).GetFieldsClient(<2021-07-31-preview>);
+        /// var client = new FarmBeatsClient(credential).GetZonesClient(<2021-07-31-preview>);
         /// 
-        /// Response response = client.GetField("<farmerId>", "<fieldId>");
+        /// Response response = client.GetZone("<farmerId>", "<zoneId>");
         /// 
         /// JsonElement result = JsonDocument.Parse(response.ContentStream).RootElement;
-        /// Console.WriteLine(result.GetProperty("farmId").ToString());
         /// Console.WriteLine(result.GetProperty("farmerId").ToString());
-        /// Console.WriteLine(result.GetProperty("primaryBoundaryId").ToString());
-        /// Console.WriteLine(result.GetProperty("boundaryIds")[0].ToString());
+        /// Console.WriteLine(result.GetProperty("type").ToString());
+        /// Console.WriteLine(result.GetProperty("managementZoneId").ToString());
         /// Console.WriteLine(result.GetProperty("id").ToString());
         /// Console.WriteLine(result.GetProperty("eTag").ToString());
         /// Console.WriteLine(result.GetProperty("status").ToString());
@@ -168,12 +165,11 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Response Body:
         /// 
-        /// Schema for <c>Field</c>:
+        /// Schema for <c>Zone</c>:
         /// <code>{
-        ///   farmId: string, # Optional. Id of the associated Farm.
-        ///   farmerId: string, # Optional. Farmer Id.
-        ///   primaryBoundaryId: string, # Optional. Primary boundary id.
-        ///   boundaryIds: [string], # Optional. Boundary Ids.
+        ///   farmerId: string, # Optional. Farmer Id associated with the Zone.
+        ///   type: string, # Optional. Type of the Zone.
+        ///   managementZoneId: string, # Optional. Management Zone Id associated with the Zone.
         ///   id: string, # Optional. Unique resource ID.
         ///   eTag: string, # Optional. The ETag value to implement optimistic concurrency.
         ///   status: string, # Optional. Status of the resource.
@@ -191,16 +187,16 @@ namespace Azure.Verticals.AgriFood.Farming
         /// </code>
         /// 
         /// </remarks>
-        public virtual Response GetField(string farmerId, string fieldId, RequestContext context = null)
+        public virtual Response GetZone(string farmerId, string zoneId, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(farmerId, nameof(farmerId));
-            Argument.AssertNotNullOrEmpty(fieldId, nameof(fieldId));
+            Argument.AssertNotNullOrEmpty(zoneId, nameof(zoneId));
 
-            using var scope = ClientDiagnostics.CreateScope("Fields.GetField");
+            using var scope = ClientDiagnostics.CreateScope("Zones.GetZone");
             scope.Start();
             try
             {
-                using HttpMessage message = CreateGetFieldRequest(farmerId, fieldId, context);
+                using HttpMessage message = CreateGetZoneRequest(farmerId, zoneId, context);
                 return _pipeline.ProcessMessage(message, context);
             }
             catch (Exception e)
@@ -210,24 +206,24 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Creates or Updates a field resource under a particular farmer. </summary>
-        /// <param name="farmerId"> Id of the associated farmer resource. </param>
-        /// <param name="fieldId"> Id of the field resource. </param>
+        /// <summary> Creates or updates a Zone resource. </summary>
+        /// <param name="farmerId"> Id of the farmer resource. </param>
+        /// <param name="zoneId"> Id of the zone resource. </param>
         /// <param name="content"> The content to send as the body of the request. Details of the request body schema are in the Remarks section below. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/>, <paramref name="fieldId"/> or <paramref name="content"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="fieldId"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/>, <paramref name="zoneId"/> or <paramref name="content"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="zoneId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
         /// <example>
         /// This sample shows how to call CreateOrUpdateAsync with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmBeatsClient(credential).GetFieldsClient(<2021-07-31-preview>);
+        /// var client = new FarmBeatsClient(credential).GetZonesClient(<2021-07-31-preview>);
         /// 
         /// var data = new {};
         /// 
-        /// Response response = await client.CreateOrUpdateAsync("<farmerId>", "<fieldId>", RequestContent.Create(data));
+        /// Response response = await client.CreateOrUpdateAsync("<farmerId>", "<zoneId>", RequestContent.Create(data));
         /// 
         /// JsonElement result = JsonDocument.Parse(response.ContentStream).RootElement;
         /// Console.WriteLine(result.ToString());
@@ -235,10 +231,11 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call CreateOrUpdateAsync with all parameters and request content, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmBeatsClient(credential).GetFieldsClient(<2021-07-31-preview>);
+        /// var client = new FarmBeatsClient(credential).GetZonesClient(<2021-07-31-preview>);
         /// 
         /// var data = new {
-        ///     farmId = "<farmId>",
+        ///     type = "<type>",
+        ///     managementZoneId = "<managementZoneId>",
         ///     status = "<status>",
         ///     source = "<source>",
         ///     name = "<name>",
@@ -248,13 +245,12 @@ namespace Azure.Verticals.AgriFood.Farming
         ///     },
         /// };
         /// 
-        /// Response response = await client.CreateOrUpdateAsync("<farmerId>", "<fieldId>", RequestContent.Create(data));
+        /// Response response = await client.CreateOrUpdateAsync("<farmerId>", "<zoneId>", RequestContent.Create(data));
         /// 
         /// JsonElement result = JsonDocument.Parse(response.ContentStream).RootElement;
-        /// Console.WriteLine(result.GetProperty("farmId").ToString());
         /// Console.WriteLine(result.GetProperty("farmerId").ToString());
-        /// Console.WriteLine(result.GetProperty("primaryBoundaryId").ToString());
-        /// Console.WriteLine(result.GetProperty("boundaryIds")[0].ToString());
+        /// Console.WriteLine(result.GetProperty("type").ToString());
+        /// Console.WriteLine(result.GetProperty("managementZoneId").ToString());
         /// Console.WriteLine(result.GetProperty("id").ToString());
         /// Console.WriteLine(result.GetProperty("eTag").ToString());
         /// Console.WriteLine(result.GetProperty("status").ToString());
@@ -271,12 +267,11 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Request Body:
         /// 
-        /// Schema for <c>Field</c>:
+        /// Schema for <c>Zone</c>:
         /// <code>{
-        ///   farmId: string, # Optional. Id of the associated Farm.
-        ///   farmerId: string, # Optional. Farmer Id.
-        ///   primaryBoundaryId: string, # Optional. Primary boundary id.
-        ///   boundaryIds: [string], # Optional. Boundary Ids.
+        ///   farmerId: string, # Optional. Farmer Id associated with the Zone.
+        ///   type: string, # Optional. Type of the Zone.
+        ///   managementZoneId: string, # Optional. Management Zone Id associated with the Zone.
         ///   id: string, # Optional. Unique resource ID.
         ///   eTag: string, # Optional. The ETag value to implement optimistic concurrency.
         ///   status: string, # Optional. Status of the resource.
@@ -295,12 +290,11 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Response Body:
         /// 
-        /// Schema for <c>Field</c>:
+        /// Schema for <c>Zone</c>:
         /// <code>{
-        ///   farmId: string, # Optional. Id of the associated Farm.
-        ///   farmerId: string, # Optional. Farmer Id.
-        ///   primaryBoundaryId: string, # Optional. Primary boundary id.
-        ///   boundaryIds: [string], # Optional. Boundary Ids.
+        ///   farmerId: string, # Optional. Farmer Id associated with the Zone.
+        ///   type: string, # Optional. Type of the Zone.
+        ///   managementZoneId: string, # Optional. Management Zone Id associated with the Zone.
         ///   id: string, # Optional. Unique resource ID.
         ///   eTag: string, # Optional. The ETag value to implement optimistic concurrency.
         ///   status: string, # Optional. Status of the resource.
@@ -318,17 +312,17 @@ namespace Azure.Verticals.AgriFood.Farming
         /// </code>
         /// 
         /// </remarks>
-        public virtual async Task<Response> CreateOrUpdateAsync(string farmerId, string fieldId, RequestContent content, RequestContext context = null)
+        public virtual async Task<Response> CreateOrUpdateAsync(string farmerId, string zoneId, RequestContent content, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(farmerId, nameof(farmerId));
-            Argument.AssertNotNullOrEmpty(fieldId, nameof(fieldId));
+            Argument.AssertNotNullOrEmpty(zoneId, nameof(zoneId));
             Argument.AssertNotNull(content, nameof(content));
 
-            using var scope = ClientDiagnostics.CreateScope("Fields.CreateOrUpdate");
+            using var scope = ClientDiagnostics.CreateScope("Zones.CreateOrUpdate");
             scope.Start();
             try
             {
-                using HttpMessage message = CreateCreateOrUpdateRequest(farmerId, fieldId, content, context);
+                using HttpMessage message = CreateCreateOrUpdateRequest(farmerId, zoneId, content, context);
                 return await _pipeline.ProcessMessageAsync(message, context).ConfigureAwait(false);
             }
             catch (Exception e)
@@ -338,24 +332,24 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Creates or Updates a field resource under a particular farmer. </summary>
-        /// <param name="farmerId"> Id of the associated farmer resource. </param>
-        /// <param name="fieldId"> Id of the field resource. </param>
+        /// <summary> Creates or updates a Zone resource. </summary>
+        /// <param name="farmerId"> Id of the farmer resource. </param>
+        /// <param name="zoneId"> Id of the zone resource. </param>
         /// <param name="content"> The content to send as the body of the request. Details of the request body schema are in the Remarks section below. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/>, <paramref name="fieldId"/> or <paramref name="content"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="fieldId"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/>, <paramref name="zoneId"/> or <paramref name="content"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="zoneId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
         /// <example>
         /// This sample shows how to call CreateOrUpdate with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmBeatsClient(credential).GetFieldsClient(<2021-07-31-preview>);
+        /// var client = new FarmBeatsClient(credential).GetZonesClient(<2021-07-31-preview>);
         /// 
         /// var data = new {};
         /// 
-        /// Response response = client.CreateOrUpdate("<farmerId>", "<fieldId>", RequestContent.Create(data));
+        /// Response response = client.CreateOrUpdate("<farmerId>", "<zoneId>", RequestContent.Create(data));
         /// 
         /// JsonElement result = JsonDocument.Parse(response.ContentStream).RootElement;
         /// Console.WriteLine(result.ToString());
@@ -363,10 +357,11 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call CreateOrUpdate with all parameters and request content, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmBeatsClient(credential).GetFieldsClient(<2021-07-31-preview>);
+        /// var client = new FarmBeatsClient(credential).GetZonesClient(<2021-07-31-preview>);
         /// 
         /// var data = new {
-        ///     farmId = "<farmId>",
+        ///     type = "<type>",
+        ///     managementZoneId = "<managementZoneId>",
         ///     status = "<status>",
         ///     source = "<source>",
         ///     name = "<name>",
@@ -376,13 +371,12 @@ namespace Azure.Verticals.AgriFood.Farming
         ///     },
         /// };
         /// 
-        /// Response response = client.CreateOrUpdate("<farmerId>", "<fieldId>", RequestContent.Create(data));
+        /// Response response = client.CreateOrUpdate("<farmerId>", "<zoneId>", RequestContent.Create(data));
         /// 
         /// JsonElement result = JsonDocument.Parse(response.ContentStream).RootElement;
-        /// Console.WriteLine(result.GetProperty("farmId").ToString());
         /// Console.WriteLine(result.GetProperty("farmerId").ToString());
-        /// Console.WriteLine(result.GetProperty("primaryBoundaryId").ToString());
-        /// Console.WriteLine(result.GetProperty("boundaryIds")[0].ToString());
+        /// Console.WriteLine(result.GetProperty("type").ToString());
+        /// Console.WriteLine(result.GetProperty("managementZoneId").ToString());
         /// Console.WriteLine(result.GetProperty("id").ToString());
         /// Console.WriteLine(result.GetProperty("eTag").ToString());
         /// Console.WriteLine(result.GetProperty("status").ToString());
@@ -399,12 +393,11 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Request Body:
         /// 
-        /// Schema for <c>Field</c>:
+        /// Schema for <c>Zone</c>:
         /// <code>{
-        ///   farmId: string, # Optional. Id of the associated Farm.
-        ///   farmerId: string, # Optional. Farmer Id.
-        ///   primaryBoundaryId: string, # Optional. Primary boundary id.
-        ///   boundaryIds: [string], # Optional. Boundary Ids.
+        ///   farmerId: string, # Optional. Farmer Id associated with the Zone.
+        ///   type: string, # Optional. Type of the Zone.
+        ///   managementZoneId: string, # Optional. Management Zone Id associated with the Zone.
         ///   id: string, # Optional. Unique resource ID.
         ///   eTag: string, # Optional. The ETag value to implement optimistic concurrency.
         ///   status: string, # Optional. Status of the resource.
@@ -423,12 +416,11 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Response Body:
         /// 
-        /// Schema for <c>Field</c>:
+        /// Schema for <c>Zone</c>:
         /// <code>{
-        ///   farmId: string, # Optional. Id of the associated Farm.
-        ///   farmerId: string, # Optional. Farmer Id.
-        ///   primaryBoundaryId: string, # Optional. Primary boundary id.
-        ///   boundaryIds: [string], # Optional. Boundary Ids.
+        ///   farmerId: string, # Optional. Farmer Id associated with the Zone.
+        ///   type: string, # Optional. Type of the Zone.
+        ///   managementZoneId: string, # Optional. Management Zone Id associated with the Zone.
         ///   id: string, # Optional. Unique resource ID.
         ///   eTag: string, # Optional. The ETag value to implement optimistic concurrency.
         ///   status: string, # Optional. Status of the resource.
@@ -446,17 +438,17 @@ namespace Azure.Verticals.AgriFood.Farming
         /// </code>
         /// 
         /// </remarks>
-        public virtual Response CreateOrUpdate(string farmerId, string fieldId, RequestContent content, RequestContext context = null)
+        public virtual Response CreateOrUpdate(string farmerId, string zoneId, RequestContent content, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(farmerId, nameof(farmerId));
-            Argument.AssertNotNullOrEmpty(fieldId, nameof(fieldId));
+            Argument.AssertNotNullOrEmpty(zoneId, nameof(zoneId));
             Argument.AssertNotNull(content, nameof(content));
 
-            using var scope = ClientDiagnostics.CreateScope("Fields.CreateOrUpdate");
+            using var scope = ClientDiagnostics.CreateScope("Zones.CreateOrUpdate");
             scope.Start();
             try
             {
-                using HttpMessage message = CreateCreateOrUpdateRequest(farmerId, fieldId, content, context);
+                using HttpMessage message = CreateCreateOrUpdateRequest(farmerId, zoneId, content, context);
                 return _pipeline.ProcessMessage(message, context);
             }
             catch (Exception e)
@@ -466,34 +458,34 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Deletes a specified field resource under a particular farmer. </summary>
+        /// <summary> Deletes a specified zone resource under a particular farmer. </summary>
         /// <param name="farmerId"> Id of the farmer. </param>
-        /// <param name="fieldId"> Id of the field. </param>
+        /// <param name="zoneId"> Id of the zone. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/> or <paramref name="fieldId"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="fieldId"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/> or <paramref name="zoneId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="zoneId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The response returned from the service. </returns>
         /// <example>
         /// This sample shows how to call DeleteAsync with required parameters.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmBeatsClient(credential).GetFieldsClient(<2021-07-31-preview>);
+        /// var client = new FarmBeatsClient(credential).GetZonesClient(<2021-07-31-preview>);
         /// 
-        /// Response response = await client.DeleteAsync("<farmerId>", "<fieldId>");
+        /// Response response = await client.DeleteAsync("<farmerId>", "<zoneId>");
         /// Console.WriteLine(response.Status);
         /// ]]></code>
         /// </example>
-        public virtual async Task<Response> DeleteAsync(string farmerId, string fieldId, RequestContext context = null)
+        public virtual async Task<Response> DeleteAsync(string farmerId, string zoneId, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(farmerId, nameof(farmerId));
-            Argument.AssertNotNullOrEmpty(fieldId, nameof(fieldId));
+            Argument.AssertNotNullOrEmpty(zoneId, nameof(zoneId));
 
-            using var scope = ClientDiagnostics.CreateScope("Fields.Delete");
+            using var scope = ClientDiagnostics.CreateScope("Zones.Delete");
             scope.Start();
             try
             {
-                using HttpMessage message = CreateDeleteRequest(farmerId, fieldId, context);
+                using HttpMessage message = CreateDeleteRequest(farmerId, zoneId, context);
                 return await _pipeline.ProcessMessageAsync(message, context).ConfigureAwait(false);
             }
             catch (Exception e)
@@ -503,34 +495,34 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Deletes a specified field resource under a particular farmer. </summary>
+        /// <summary> Deletes a specified zone resource under a particular farmer. </summary>
         /// <param name="farmerId"> Id of the farmer. </param>
-        /// <param name="fieldId"> Id of the field. </param>
+        /// <param name="zoneId"> Id of the zone. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/> or <paramref name="fieldId"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="fieldId"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="farmerId"/> or <paramref name="zoneId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="farmerId"/> or <paramref name="zoneId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The response returned from the service. </returns>
         /// <example>
         /// This sample shows how to call Delete with required parameters.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmBeatsClient(credential).GetFieldsClient(<2021-07-31-preview>);
+        /// var client = new FarmBeatsClient(credential).GetZonesClient(<2021-07-31-preview>);
         /// 
-        /// Response response = client.Delete("<farmerId>", "<fieldId>");
+        /// Response response = client.Delete("<farmerId>", "<zoneId>");
         /// Console.WriteLine(response.Status);
         /// ]]></code>
         /// </example>
-        public virtual Response Delete(string farmerId, string fieldId, RequestContext context = null)
+        public virtual Response Delete(string farmerId, string zoneId, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(farmerId, nameof(farmerId));
-            Argument.AssertNotNullOrEmpty(fieldId, nameof(fieldId));
+            Argument.AssertNotNullOrEmpty(zoneId, nameof(zoneId));
 
-            using var scope = ClientDiagnostics.CreateScope("Fields.Delete");
+            using var scope = ClientDiagnostics.CreateScope("Zones.Delete");
             scope.Start();
             try
             {
-                using HttpMessage message = CreateDeleteRequest(farmerId, fieldId, context);
+                using HttpMessage message = CreateDeleteRequest(farmerId, zoneId, context);
                 return _pipeline.ProcessMessage(message, context);
             }
             catch (Exception e)
@@ -540,7 +532,7 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Get a cascade delete job for specified field. </summary>
+        /// <summary> Get a cascade delete job for specified job id. </summary>
         /// <param name="jobId"> Id of the job. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="jobId"/> is null. </exception>
@@ -551,7 +543,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call GetCascadeDeleteJobDetailsAsync with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmBeatsClient(credential).GetFieldsClient(<2021-07-31-preview>);
+        /// var client = new FarmBeatsClient(credential).GetZonesClient(<2021-07-31-preview>);
         /// 
         /// Response response = await client.GetCascadeDeleteJobDetailsAsync("<jobId>");
         /// 
@@ -596,7 +588,7 @@ namespace Azure.Verticals.AgriFood.Farming
         {
             Argument.AssertNotNullOrEmpty(jobId, nameof(jobId));
 
-            using var scope = ClientDiagnostics.CreateScope("Fields.GetCascadeDeleteJobDetails");
+            using var scope = ClientDiagnostics.CreateScope("Zones.GetCascadeDeleteJobDetails");
             scope.Start();
             try
             {
@@ -610,7 +602,7 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Get a cascade delete job for specified field. </summary>
+        /// <summary> Get a cascade delete job for specified job id. </summary>
         /// <param name="jobId"> Id of the job. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="jobId"/> is null. </exception>
@@ -621,7 +613,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call GetCascadeDeleteJobDetails with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmBeatsClient(credential).GetFieldsClient(<2021-07-31-preview>);
+        /// var client = new FarmBeatsClient(credential).GetZonesClient(<2021-07-31-preview>);
         /// 
         /// Response response = client.GetCascadeDeleteJobDetails("<jobId>");
         /// 
@@ -666,7 +658,7 @@ namespace Azure.Verticals.AgriFood.Farming
         {
             Argument.AssertNotNullOrEmpty(jobId, nameof(jobId));
 
-            using var scope = ClientDiagnostics.CreateScope("Fields.GetCascadeDeleteJobDetails");
+            using var scope = ClientDiagnostics.CreateScope("Zones.GetCascadeDeleteJobDetails");
             scope.Start();
             try
             {
@@ -680,10 +672,12 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Returns a paginated list of field resources under a particular farmer. </summary>
+        /// <summary> Returns a paginated list of zone resources under a particular farmer. </summary>
         /// <param name="farmerId"> Id of the associated farmer. </param>
-        /// <param name="farmIds"> Farm Ids of the resource. </param>
-        /// <param name="fieldIds"> Ids of the resource. </param>
+        /// <param name="types"> Types of the Zones. </param>
+        /// <param name="managementZoneIds"> ManagementZoneIds of the Zones. </param>
+        /// <param name="sources"> Sources of the Zones. </param>
+        /// <param name="ids"> Ids of the resource. </param>
         /// <param name="names"> Names of the resource. </param>
         /// <param name="propertyFilters">
         /// Filters on key-value pairs within the Properties object.
@@ -705,29 +699,28 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The <see cref="AsyncPageable{T}"/> from the service containing a list of <see cref="BinaryData"/> objects. Details of the body schema for each item in the collection are in the Remarks section below. </returns>
         /// <example>
-        /// This sample shows how to call GetFieldsByFarmerIdAsync with required parameters and parse the result.
+        /// This sample shows how to call GetZonesByFarmerIdAsync with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmBeatsClient(credential).GetFieldsClient(<2021-07-31-preview>);
+        /// var client = new FarmBeatsClient(credential).GetZonesClient(<2021-07-31-preview>);
         /// 
-        /// await foreach (var data in client.GetFieldsByFarmerIdAsync("<farmerId>"))
+        /// await foreach (var data in client.GetZonesByFarmerIdAsync("<farmerId>"))
         /// {
         ///     JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
         ///     Console.WriteLine(result.ToString());
         /// }
         /// ]]></code>
-        /// This sample shows how to call GetFieldsByFarmerIdAsync with all parameters, and how to parse the result.
+        /// This sample shows how to call GetZonesByFarmerIdAsync with all parameters, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmBeatsClient(credential).GetFieldsClient(<2021-07-31-preview>);
+        /// var client = new FarmBeatsClient(credential).GetZonesClient(<2021-07-31-preview>);
         /// 
-        /// await foreach (var data in client.GetFieldsByFarmerIdAsync("<farmerId>", new String[]{"<farmIds>"}, new String[]{"<fieldIds>"}, new String[]{"<names>"}, new String[]{"<propertyFilters>"}, new String[]{"<statuses>"}, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1234, "<skipToken>"))
+        /// await foreach (var data in client.GetZonesByFarmerIdAsync("<farmerId>", new String[]{"<types>"}, new String[]{"<managementZoneIds>"}, new String[]{"<sources>"}, new String[]{"<ids>"}, new String[]{"<names>"}, new String[]{"<propertyFilters>"}, new String[]{"<statuses>"}, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1234, "<skipToken>"))
         /// {
         ///     JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
-        ///     Console.WriteLine(result.GetProperty("farmId").ToString());
         ///     Console.WriteLine(result.GetProperty("farmerId").ToString());
-        ///     Console.WriteLine(result.GetProperty("primaryBoundaryId").ToString());
-        ///     Console.WriteLine(result.GetProperty("boundaryIds")[0].ToString());
+        ///     Console.WriteLine(result.GetProperty("type").ToString());
+        ///     Console.WriteLine(result.GetProperty("managementZoneId").ToString());
         ///     Console.WriteLine(result.GetProperty("id").ToString());
         ///     Console.WriteLine(result.GetProperty("eTag").ToString());
         ///     Console.WriteLine(result.GetProperty("status").ToString());
@@ -745,12 +738,11 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Response Body:
         /// 
-        /// Schema for <c>FieldListResponseValue</c>:
+        /// Schema for <c>ZoneListResponseValue</c>:
         /// <code>{
-        ///   farmId: string, # Optional. Id of the associated Farm.
-        ///   farmerId: string, # Optional. Farmer Id.
-        ///   primaryBoundaryId: string, # Optional. Primary boundary id.
-        ///   boundaryIds: [string], # Optional. Boundary Ids.
+        ///   farmerId: string, # Optional. Farmer Id associated with the Zone.
+        ///   type: string, # Optional. Type of the Zone.
+        ///   managementZoneId: string, # Optional. Management Zone Id associated with the Zone.
         ///   id: string, # Optional. Unique resource ID.
         ///   eTag: string, # Optional. The ETag value to implement optimistic concurrency.
         ///   status: string, # Optional. Status of the resource.
@@ -768,14 +760,14 @@ namespace Azure.Verticals.AgriFood.Farming
         /// </code>
         /// 
         /// </remarks>
-        public virtual AsyncPageable<BinaryData> GetFieldsByFarmerIdAsync(string farmerId, IEnumerable<string> farmIds = null, IEnumerable<string> fieldIds = null, IEnumerable<string> names = null, IEnumerable<string> propertyFilters = null, IEnumerable<string> statuses = null, DateTimeOffset? minCreatedDateTime = null, DateTimeOffset? maxCreatedDateTime = null, DateTimeOffset? minLastModifiedDateTime = null, DateTimeOffset? maxLastModifiedDateTime = null, int? maxPageSize = null, string skipToken = null, RequestContext context = null)
+        public virtual AsyncPageable<BinaryData> GetZonesByFarmerIdAsync(string farmerId, IEnumerable<string> types = null, IEnumerable<string> managementZoneIds = null, IEnumerable<string> sources = null, IEnumerable<string> ids = null, IEnumerable<string> names = null, IEnumerable<string> propertyFilters = null, IEnumerable<string> statuses = null, DateTimeOffset? minCreatedDateTime = null, DateTimeOffset? maxCreatedDateTime = null, DateTimeOffset? minLastModifiedDateTime = null, DateTimeOffset? maxLastModifiedDateTime = null, int? maxPageSize = null, string skipToken = null, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(farmerId, nameof(farmerId));
 
-            return GetFieldsByFarmerIdImplementationAsync("Fields.GetFieldsByFarmerId", farmerId, farmIds, fieldIds, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
+            return GetZonesByFarmerIdImplementationAsync("Zones.GetZonesByFarmerId", farmerId, types, managementZoneIds, sources, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
         }
 
-        private AsyncPageable<BinaryData> GetFieldsByFarmerIdImplementationAsync(string diagnosticsScopeName, string farmerId, IEnumerable<string> farmIds, IEnumerable<string> fieldIds, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
+        private AsyncPageable<BinaryData> GetZonesByFarmerIdImplementationAsync(string diagnosticsScopeName, string farmerId, IEnumerable<string> types, IEnumerable<string> managementZoneIds, IEnumerable<string> sources, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
         {
             return PageableHelpers.CreateAsyncPageable(CreateEnumerableAsync, ClientDiagnostics, diagnosticsScopeName);
             async IAsyncEnumerable<Page<BinaryData>> CreateEnumerableAsync(string nextLink, int? pageSizeHint, [EnumeratorCancellation] CancellationToken cancellationToken = default)
@@ -783,8 +775,8 @@ namespace Azure.Verticals.AgriFood.Farming
                 do
                 {
                     var message = string.IsNullOrEmpty(nextLink)
-                        ? CreateGetFieldsByFarmerIdRequest(farmerId, farmIds, fieldIds, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context)
-                        : CreateGetFieldsByFarmerIdNextPageRequest(nextLink, farmerId, farmIds, fieldIds, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
+                        ? CreateGetZonesByFarmerIdRequest(farmerId, types, managementZoneIds, sources, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context)
+                        : CreateGetZonesByFarmerIdNextPageRequest(nextLink, farmerId, types, managementZoneIds, sources, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
                     var page = await LowLevelPageableHelpers.ProcessMessageAsync(_pipeline, message, context, "value", "nextLink", cancellationToken).ConfigureAwait(false);
                     nextLink = page.ContinuationToken;
                     yield return page;
@@ -792,10 +784,12 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Returns a paginated list of field resources under a particular farmer. </summary>
+        /// <summary> Returns a paginated list of zone resources under a particular farmer. </summary>
         /// <param name="farmerId"> Id of the associated farmer. </param>
-        /// <param name="farmIds"> Farm Ids of the resource. </param>
-        /// <param name="fieldIds"> Ids of the resource. </param>
+        /// <param name="types"> Types of the Zones. </param>
+        /// <param name="managementZoneIds"> ManagementZoneIds of the Zones. </param>
+        /// <param name="sources"> Sources of the Zones. </param>
+        /// <param name="ids"> Ids of the resource. </param>
         /// <param name="names"> Names of the resource. </param>
         /// <param name="propertyFilters">
         /// Filters on key-value pairs within the Properties object.
@@ -817,29 +811,28 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The <see cref="Pageable{T}"/> from the service containing a list of <see cref="BinaryData"/> objects. Details of the body schema for each item in the collection are in the Remarks section below. </returns>
         /// <example>
-        /// This sample shows how to call GetFieldsByFarmerId with required parameters and parse the result.
+        /// This sample shows how to call GetZonesByFarmerId with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmBeatsClient(credential).GetFieldsClient(<2021-07-31-preview>);
+        /// var client = new FarmBeatsClient(credential).GetZonesClient(<2021-07-31-preview>);
         /// 
-        /// foreach (var data in client.GetFieldsByFarmerId("<farmerId>"))
+        /// foreach (var data in client.GetZonesByFarmerId("<farmerId>"))
         /// {
         ///     JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
         ///     Console.WriteLine(result.ToString());
         /// }
         /// ]]></code>
-        /// This sample shows how to call GetFieldsByFarmerId with all parameters, and how to parse the result.
+        /// This sample shows how to call GetZonesByFarmerId with all parameters, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmBeatsClient(credential).GetFieldsClient(<2021-07-31-preview>);
+        /// var client = new FarmBeatsClient(credential).GetZonesClient(<2021-07-31-preview>);
         /// 
-        /// foreach (var data in client.GetFieldsByFarmerId("<farmerId>", new String[]{"<farmIds>"}, new String[]{"<fieldIds>"}, new String[]{"<names>"}, new String[]{"<propertyFilters>"}, new String[]{"<statuses>"}, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1234, "<skipToken>"))
+        /// foreach (var data in client.GetZonesByFarmerId("<farmerId>", new String[]{"<types>"}, new String[]{"<managementZoneIds>"}, new String[]{"<sources>"}, new String[]{"<ids>"}, new String[]{"<names>"}, new String[]{"<propertyFilters>"}, new String[]{"<statuses>"}, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1234, "<skipToken>"))
         /// {
         ///     JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
-        ///     Console.WriteLine(result.GetProperty("farmId").ToString());
         ///     Console.WriteLine(result.GetProperty("farmerId").ToString());
-        ///     Console.WriteLine(result.GetProperty("primaryBoundaryId").ToString());
-        ///     Console.WriteLine(result.GetProperty("boundaryIds")[0].ToString());
+        ///     Console.WriteLine(result.GetProperty("type").ToString());
+        ///     Console.WriteLine(result.GetProperty("managementZoneId").ToString());
         ///     Console.WriteLine(result.GetProperty("id").ToString());
         ///     Console.WriteLine(result.GetProperty("eTag").ToString());
         ///     Console.WriteLine(result.GetProperty("status").ToString());
@@ -857,12 +850,11 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Response Body:
         /// 
-        /// Schema for <c>FieldListResponseValue</c>:
+        /// Schema for <c>ZoneListResponseValue</c>:
         /// <code>{
-        ///   farmId: string, # Optional. Id of the associated Farm.
-        ///   farmerId: string, # Optional. Farmer Id.
-        ///   primaryBoundaryId: string, # Optional. Primary boundary id.
-        ///   boundaryIds: [string], # Optional. Boundary Ids.
+        ///   farmerId: string, # Optional. Farmer Id associated with the Zone.
+        ///   type: string, # Optional. Type of the Zone.
+        ///   managementZoneId: string, # Optional. Management Zone Id associated with the Zone.
         ///   id: string, # Optional. Unique resource ID.
         ///   eTag: string, # Optional. The ETag value to implement optimistic concurrency.
         ///   status: string, # Optional. Status of the resource.
@@ -880,14 +872,14 @@ namespace Azure.Verticals.AgriFood.Farming
         /// </code>
         /// 
         /// </remarks>
-        public virtual Pageable<BinaryData> GetFieldsByFarmerId(string farmerId, IEnumerable<string> farmIds = null, IEnumerable<string> fieldIds = null, IEnumerable<string> names = null, IEnumerable<string> propertyFilters = null, IEnumerable<string> statuses = null, DateTimeOffset? minCreatedDateTime = null, DateTimeOffset? maxCreatedDateTime = null, DateTimeOffset? minLastModifiedDateTime = null, DateTimeOffset? maxLastModifiedDateTime = null, int? maxPageSize = null, string skipToken = null, RequestContext context = null)
+        public virtual Pageable<BinaryData> GetZonesByFarmerId(string farmerId, IEnumerable<string> types = null, IEnumerable<string> managementZoneIds = null, IEnumerable<string> sources = null, IEnumerable<string> ids = null, IEnumerable<string> names = null, IEnumerable<string> propertyFilters = null, IEnumerable<string> statuses = null, DateTimeOffset? minCreatedDateTime = null, DateTimeOffset? maxCreatedDateTime = null, DateTimeOffset? minLastModifiedDateTime = null, DateTimeOffset? maxLastModifiedDateTime = null, int? maxPageSize = null, string skipToken = null, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(farmerId, nameof(farmerId));
 
-            return GetFieldsByFarmerIdImplementation("Fields.GetFieldsByFarmerId", farmerId, farmIds, fieldIds, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
+            return GetZonesByFarmerIdImplementation("Zones.GetZonesByFarmerId", farmerId, types, managementZoneIds, sources, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
         }
 
-        private Pageable<BinaryData> GetFieldsByFarmerIdImplementation(string diagnosticsScopeName, string farmerId, IEnumerable<string> farmIds, IEnumerable<string> fieldIds, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
+        private Pageable<BinaryData> GetZonesByFarmerIdImplementation(string diagnosticsScopeName, string farmerId, IEnumerable<string> types, IEnumerable<string> managementZoneIds, IEnumerable<string> sources, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
         {
             return PageableHelpers.CreatePageable(CreateEnumerable, ClientDiagnostics, diagnosticsScopeName);
             IEnumerable<Page<BinaryData>> CreateEnumerable(string nextLink, int? pageSizeHint)
@@ -895,8 +887,8 @@ namespace Azure.Verticals.AgriFood.Farming
                 do
                 {
                     var message = string.IsNullOrEmpty(nextLink)
-                        ? CreateGetFieldsByFarmerIdRequest(farmerId, farmIds, fieldIds, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context)
-                        : CreateGetFieldsByFarmerIdNextPageRequest(nextLink, farmerId, farmIds, fieldIds, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
+                        ? CreateGetZonesByFarmerIdRequest(farmerId, types, managementZoneIds, sources, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context)
+                        : CreateGetZonesByFarmerIdNextPageRequest(nextLink, farmerId, types, managementZoneIds, sources, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
                     var page = LowLevelPageableHelpers.ProcessMessage(_pipeline, message, context, "value", "nextLink");
                     nextLink = page.ContinuationToken;
                     yield return page;
@@ -904,9 +896,11 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Returns a paginated list of field resources across all farmers. </summary>
-        /// <param name="farmIds"> Farm Ids of the resource. </param>
-        /// <param name="fieldIds"> Ids of the resource. </param>
+        /// <summary> Returns a paginated list of zone resources across all farmers. </summary>
+        /// <param name="types"> Types of the Zones. </param>
+        /// <param name="managementZoneIds"> ManagementZoneIds of the Zones. </param>
+        /// <param name="sources"> Sources of the Zones. </param>
+        /// <param name="ids"> Ids of the resource. </param>
         /// <param name="names"> Names of the resource. </param>
         /// <param name="propertyFilters">
         /// Filters on key-value pairs within the Properties object.
@@ -926,29 +920,28 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The <see cref="AsyncPageable{T}"/> from the service containing a list of <see cref="BinaryData"/> objects. Details of the body schema for each item in the collection are in the Remarks section below. </returns>
         /// <example>
-        /// This sample shows how to call GetFieldsAsync and parse the result.
+        /// This sample shows how to call GetZonesAsync and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmBeatsClient(credential).GetFieldsClient(<2021-07-31-preview>);
+        /// var client = new FarmBeatsClient(credential).GetZonesClient(<2021-07-31-preview>);
         /// 
-        /// await foreach (var data in client.GetFieldsAsync())
+        /// await foreach (var data in client.GetZonesAsync())
         /// {
         ///     JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
         ///     Console.WriteLine(result.ToString());
         /// }
         /// ]]></code>
-        /// This sample shows how to call GetFieldsAsync with all parameters, and how to parse the result.
+        /// This sample shows how to call GetZonesAsync with all parameters, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmBeatsClient(credential).GetFieldsClient(<2021-07-31-preview>);
+        /// var client = new FarmBeatsClient(credential).GetZonesClient(<2021-07-31-preview>);
         /// 
-        /// await foreach (var data in client.GetFieldsAsync(new String[]{"<farmIds>"}, new String[]{"<fieldIds>"}, new String[]{"<names>"}, new String[]{"<propertyFilters>"}, new String[]{"<statuses>"}, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1234, "<skipToken>"))
+        /// await foreach (var data in client.GetZonesAsync(new String[]{"<types>"}, new String[]{"<managementZoneIds>"}, new String[]{"<sources>"}, new String[]{"<ids>"}, new String[]{"<names>"}, new String[]{"<propertyFilters>"}, new String[]{"<statuses>"}, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1234, "<skipToken>"))
         /// {
         ///     JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
-        ///     Console.WriteLine(result.GetProperty("farmId").ToString());
         ///     Console.WriteLine(result.GetProperty("farmerId").ToString());
-        ///     Console.WriteLine(result.GetProperty("primaryBoundaryId").ToString());
-        ///     Console.WriteLine(result.GetProperty("boundaryIds")[0].ToString());
+        ///     Console.WriteLine(result.GetProperty("type").ToString());
+        ///     Console.WriteLine(result.GetProperty("managementZoneId").ToString());
         ///     Console.WriteLine(result.GetProperty("id").ToString());
         ///     Console.WriteLine(result.GetProperty("eTag").ToString());
         ///     Console.WriteLine(result.GetProperty("status").ToString());
@@ -966,12 +959,11 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Response Body:
         /// 
-        /// Schema for <c>FieldListResponseValue</c>:
+        /// Schema for <c>ZoneListResponseValue</c>:
         /// <code>{
-        ///   farmId: string, # Optional. Id of the associated Farm.
-        ///   farmerId: string, # Optional. Farmer Id.
-        ///   primaryBoundaryId: string, # Optional. Primary boundary id.
-        ///   boundaryIds: [string], # Optional. Boundary Ids.
+        ///   farmerId: string, # Optional. Farmer Id associated with the Zone.
+        ///   type: string, # Optional. Type of the Zone.
+        ///   managementZoneId: string, # Optional. Management Zone Id associated with the Zone.
         ///   id: string, # Optional. Unique resource ID.
         ///   eTag: string, # Optional. The ETag value to implement optimistic concurrency.
         ///   status: string, # Optional. Status of the resource.
@@ -989,12 +981,12 @@ namespace Azure.Verticals.AgriFood.Farming
         /// </code>
         /// 
         /// </remarks>
-        public virtual AsyncPageable<BinaryData> GetFieldsAsync(IEnumerable<string> farmIds = null, IEnumerable<string> fieldIds = null, IEnumerable<string> names = null, IEnumerable<string> propertyFilters = null, IEnumerable<string> statuses = null, DateTimeOffset? minCreatedDateTime = null, DateTimeOffset? maxCreatedDateTime = null, DateTimeOffset? minLastModifiedDateTime = null, DateTimeOffset? maxLastModifiedDateTime = null, int? maxPageSize = null, string skipToken = null, RequestContext context = null)
+        public virtual AsyncPageable<BinaryData> GetZonesAsync(IEnumerable<string> types = null, IEnumerable<string> managementZoneIds = null, IEnumerable<string> sources = null, IEnumerable<string> ids = null, IEnumerable<string> names = null, IEnumerable<string> propertyFilters = null, IEnumerable<string> statuses = null, DateTimeOffset? minCreatedDateTime = null, DateTimeOffset? maxCreatedDateTime = null, DateTimeOffset? minLastModifiedDateTime = null, DateTimeOffset? maxLastModifiedDateTime = null, int? maxPageSize = null, string skipToken = null, RequestContext context = null)
         {
-            return GetFieldsImplementationAsync("Fields.GetFields", farmIds, fieldIds, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
+            return GetZonesImplementationAsync("Zones.GetZones", types, managementZoneIds, sources, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
         }
 
-        private AsyncPageable<BinaryData> GetFieldsImplementationAsync(string diagnosticsScopeName, IEnumerable<string> farmIds, IEnumerable<string> fieldIds, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
+        private AsyncPageable<BinaryData> GetZonesImplementationAsync(string diagnosticsScopeName, IEnumerable<string> types, IEnumerable<string> managementZoneIds, IEnumerable<string> sources, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
         {
             return PageableHelpers.CreateAsyncPageable(CreateEnumerableAsync, ClientDiagnostics, diagnosticsScopeName);
             async IAsyncEnumerable<Page<BinaryData>> CreateEnumerableAsync(string nextLink, int? pageSizeHint, [EnumeratorCancellation] CancellationToken cancellationToken = default)
@@ -1002,8 +994,8 @@ namespace Azure.Verticals.AgriFood.Farming
                 do
                 {
                     var message = string.IsNullOrEmpty(nextLink)
-                        ? CreateGetFieldsRequest(farmIds, fieldIds, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context)
-                        : CreateGetFieldsNextPageRequest(nextLink, farmIds, fieldIds, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
+                        ? CreateGetZonesRequest(types, managementZoneIds, sources, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context)
+                        : CreateGetZonesNextPageRequest(nextLink, types, managementZoneIds, sources, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
                     var page = await LowLevelPageableHelpers.ProcessMessageAsync(_pipeline, message, context, "value", "nextLink", cancellationToken).ConfigureAwait(false);
                     nextLink = page.ContinuationToken;
                     yield return page;
@@ -1011,9 +1003,11 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Returns a paginated list of field resources across all farmers. </summary>
-        /// <param name="farmIds"> Farm Ids of the resource. </param>
-        /// <param name="fieldIds"> Ids of the resource. </param>
+        /// <summary> Returns a paginated list of zone resources across all farmers. </summary>
+        /// <param name="types"> Types of the Zones. </param>
+        /// <param name="managementZoneIds"> ManagementZoneIds of the Zones. </param>
+        /// <param name="sources"> Sources of the Zones. </param>
+        /// <param name="ids"> Ids of the resource. </param>
         /// <param name="names"> Names of the resource. </param>
         /// <param name="propertyFilters">
         /// Filters on key-value pairs within the Properties object.
@@ -1033,29 +1027,28 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The <see cref="Pageable{T}"/> from the service containing a list of <see cref="BinaryData"/> objects. Details of the body schema for each item in the collection are in the Remarks section below. </returns>
         /// <example>
-        /// This sample shows how to call GetFields and parse the result.
+        /// This sample shows how to call GetZones and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmBeatsClient(credential).GetFieldsClient(<2021-07-31-preview>);
+        /// var client = new FarmBeatsClient(credential).GetZonesClient(<2021-07-31-preview>);
         /// 
-        /// foreach (var data in client.GetFields())
+        /// foreach (var data in client.GetZones())
         /// {
         ///     JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
         ///     Console.WriteLine(result.ToString());
         /// }
         /// ]]></code>
-        /// This sample shows how to call GetFields with all parameters, and how to parse the result.
+        /// This sample shows how to call GetZones with all parameters, and how to parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmBeatsClient(credential).GetFieldsClient(<2021-07-31-preview>);
+        /// var client = new FarmBeatsClient(credential).GetZonesClient(<2021-07-31-preview>);
         /// 
-        /// foreach (var data in client.GetFields(new String[]{"<farmIds>"}, new String[]{"<fieldIds>"}, new String[]{"<names>"}, new String[]{"<propertyFilters>"}, new String[]{"<statuses>"}, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1234, "<skipToken>"))
+        /// foreach (var data in client.GetZones(new String[]{"<types>"}, new String[]{"<managementZoneIds>"}, new String[]{"<sources>"}, new String[]{"<ids>"}, new String[]{"<names>"}, new String[]{"<propertyFilters>"}, new String[]{"<statuses>"}, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1234, "<skipToken>"))
         /// {
         ///     JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
-        ///     Console.WriteLine(result.GetProperty("farmId").ToString());
         ///     Console.WriteLine(result.GetProperty("farmerId").ToString());
-        ///     Console.WriteLine(result.GetProperty("primaryBoundaryId").ToString());
-        ///     Console.WriteLine(result.GetProperty("boundaryIds")[0].ToString());
+        ///     Console.WriteLine(result.GetProperty("type").ToString());
+        ///     Console.WriteLine(result.GetProperty("managementZoneId").ToString());
         ///     Console.WriteLine(result.GetProperty("id").ToString());
         ///     Console.WriteLine(result.GetProperty("eTag").ToString());
         ///     Console.WriteLine(result.GetProperty("status").ToString());
@@ -1073,12 +1066,11 @@ namespace Azure.Verticals.AgriFood.Farming
         /// 
         /// Response Body:
         /// 
-        /// Schema for <c>FieldListResponseValue</c>:
+        /// Schema for <c>ZoneListResponseValue</c>:
         /// <code>{
-        ///   farmId: string, # Optional. Id of the associated Farm.
-        ///   farmerId: string, # Optional. Farmer Id.
-        ///   primaryBoundaryId: string, # Optional. Primary boundary id.
-        ///   boundaryIds: [string], # Optional. Boundary Ids.
+        ///   farmerId: string, # Optional. Farmer Id associated with the Zone.
+        ///   type: string, # Optional. Type of the Zone.
+        ///   managementZoneId: string, # Optional. Management Zone Id associated with the Zone.
         ///   id: string, # Optional. Unique resource ID.
         ///   eTag: string, # Optional. The ETag value to implement optimistic concurrency.
         ///   status: string, # Optional. Status of the resource.
@@ -1096,12 +1088,12 @@ namespace Azure.Verticals.AgriFood.Farming
         /// </code>
         /// 
         /// </remarks>
-        public virtual Pageable<BinaryData> GetFields(IEnumerable<string> farmIds = null, IEnumerable<string> fieldIds = null, IEnumerable<string> names = null, IEnumerable<string> propertyFilters = null, IEnumerable<string> statuses = null, DateTimeOffset? minCreatedDateTime = null, DateTimeOffset? maxCreatedDateTime = null, DateTimeOffset? minLastModifiedDateTime = null, DateTimeOffset? maxLastModifiedDateTime = null, int? maxPageSize = null, string skipToken = null, RequestContext context = null)
+        public virtual Pageable<BinaryData> GetZones(IEnumerable<string> types = null, IEnumerable<string> managementZoneIds = null, IEnumerable<string> sources = null, IEnumerable<string> ids = null, IEnumerable<string> names = null, IEnumerable<string> propertyFilters = null, IEnumerable<string> statuses = null, DateTimeOffset? minCreatedDateTime = null, DateTimeOffset? maxCreatedDateTime = null, DateTimeOffset? minLastModifiedDateTime = null, DateTimeOffset? maxLastModifiedDateTime = null, int? maxPageSize = null, string skipToken = null, RequestContext context = null)
         {
-            return GetFieldsImplementation("Fields.GetFields", farmIds, fieldIds, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
+            return GetZonesImplementation("Zones.GetZones", types, managementZoneIds, sources, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
         }
 
-        private Pageable<BinaryData> GetFieldsImplementation(string diagnosticsScopeName, IEnumerable<string> farmIds, IEnumerable<string> fieldIds, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
+        private Pageable<BinaryData> GetZonesImplementation(string diagnosticsScopeName, IEnumerable<string> types, IEnumerable<string> managementZoneIds, IEnumerable<string> sources, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
         {
             return PageableHelpers.CreatePageable(CreateEnumerable, ClientDiagnostics, diagnosticsScopeName);
             IEnumerable<Page<BinaryData>> CreateEnumerable(string nextLink, int? pageSizeHint)
@@ -1109,8 +1101,8 @@ namespace Azure.Verticals.AgriFood.Farming
                 do
                 {
                     var message = string.IsNullOrEmpty(nextLink)
-                        ? CreateGetFieldsRequest(farmIds, fieldIds, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context)
-                        : CreateGetFieldsNextPageRequest(nextLink, farmIds, fieldIds, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
+                        ? CreateGetZonesRequest(types, managementZoneIds, sources, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context)
+                        : CreateGetZonesNextPageRequest(nextLink, types, managementZoneIds, sources, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
                     var page = LowLevelPageableHelpers.ProcessMessage(_pipeline, message, context, "value", "nextLink");
                     nextLink = page.ContinuationToken;
                     yield return page;
@@ -1118,13 +1110,13 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Create a cascade delete job for specified field. </summary>
+        /// <summary> Create a cascade delete job for specified zone. </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="jobId"> Job ID supplied by end user. </param>
         /// <param name="farmerId"> ID of the associated farmer. </param>
-        /// <param name="fieldId"> ID of the field to be deleted. </param>
+        /// <param name="zoneId"> ID of the zone to be deleted. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="jobId"/>, <paramref name="farmerId"/> or <paramref name="fieldId"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="jobId"/>, <paramref name="farmerId"/> or <paramref name="zoneId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="jobId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The <see cref="Operation{T}"/> from the service that will contain a <see cref="BinaryData"/> object once the asynchronous operation on the service has completed. Details of the body schema for the operation's final value are in the Remarks section below. </returns>
@@ -1132,9 +1124,9 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call CreateCascadeDeleteJobAsync with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmBeatsClient(credential).GetFieldsClient(<2021-07-31-preview>);
+        /// var client = new FarmBeatsClient(credential).GetZonesClient(<2021-07-31-preview>);
         /// 
-        /// var operation = await client.CreateCascadeDeleteJobAsync(WaitUntil.Completed, "<jobId>", "<farmerId>", "<fieldId>");
+        /// var operation = await client.CreateCascadeDeleteJobAsync(WaitUntil.Completed, "<jobId>", "<farmerId>", "<zoneId>");
         /// 
         /// BinaryData data = await operation.WaitForCompletionAsync();
         /// JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
@@ -1174,18 +1166,18 @@ namespace Azure.Verticals.AgriFood.Farming
         /// </code>
         /// 
         /// </remarks>
-        public virtual async Task<Operation<BinaryData>> CreateCascadeDeleteJobAsync(WaitUntil waitUntil, string jobId, string farmerId, string fieldId, RequestContext context = null)
+        public virtual async Task<Operation<BinaryData>> CreateCascadeDeleteJobAsync(WaitUntil waitUntil, string jobId, string farmerId, string zoneId, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(jobId, nameof(jobId));
             Argument.AssertNotNull(farmerId, nameof(farmerId));
-            Argument.AssertNotNull(fieldId, nameof(fieldId));
+            Argument.AssertNotNull(zoneId, nameof(zoneId));
 
-            using var scope = ClientDiagnostics.CreateScope("Fields.CreateCascadeDeleteJob");
+            using var scope = ClientDiagnostics.CreateScope("Zones.CreateCascadeDeleteJob");
             scope.Start();
             try
             {
-                using HttpMessage message = CreateCreateCascadeDeleteJobRequest(jobId, farmerId, fieldId, context);
-                return await ProtocolOperationHelpers.ProcessMessageAsync(_pipeline, message, ClientDiagnostics, "Fields.CreateCascadeDeleteJob", OperationFinalStateVia.Location, context, waitUntil).ConfigureAwait(false);
+                using HttpMessage message = CreateCreateCascadeDeleteJobRequest(jobId, farmerId, zoneId, context);
+                return await ProtocolOperationHelpers.ProcessMessageAsync(_pipeline, message, ClientDiagnostics, "Zones.CreateCascadeDeleteJob", OperationFinalStateVia.Location, context, waitUntil).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -1194,13 +1186,13 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> Create a cascade delete job for specified field. </summary>
+        /// <summary> Create a cascade delete job for specified zone. </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="jobId"> Job ID supplied by end user. </param>
         /// <param name="farmerId"> ID of the associated farmer. </param>
-        /// <param name="fieldId"> ID of the field to be deleted. </param>
+        /// <param name="zoneId"> ID of the zone to be deleted. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="jobId"/>, <paramref name="farmerId"/> or <paramref name="fieldId"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="jobId"/>, <paramref name="farmerId"/> or <paramref name="zoneId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="jobId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The <see cref="Operation{T}"/> from the service that will contain a <see cref="BinaryData"/> object once the asynchronous operation on the service has completed. Details of the body schema for the operation's final value are in the Remarks section below. </returns>
@@ -1208,9 +1200,9 @@ namespace Azure.Verticals.AgriFood.Farming
         /// This sample shows how to call CreateCascadeDeleteJob with required parameters and parse the result.
         /// <code><![CDATA[
         /// var credential = new DefaultAzureCredential();
-        /// var client = new FarmBeatsClient(credential).GetFieldsClient(<2021-07-31-preview>);
+        /// var client = new FarmBeatsClient(credential).GetZonesClient(<2021-07-31-preview>);
         /// 
-        /// var operation = client.CreateCascadeDeleteJob(WaitUntil.Completed, "<jobId>", "<farmerId>", "<fieldId>");
+        /// var operation = client.CreateCascadeDeleteJob(WaitUntil.Completed, "<jobId>", "<farmerId>", "<zoneId>");
         /// 
         /// BinaryData data = operation.WaitForCompletion();
         /// JsonElement result = JsonDocument.Parse(data.ToStream()).RootElement;
@@ -1250,18 +1242,18 @@ namespace Azure.Verticals.AgriFood.Farming
         /// </code>
         /// 
         /// </remarks>
-        public virtual Operation<BinaryData> CreateCascadeDeleteJob(WaitUntil waitUntil, string jobId, string farmerId, string fieldId, RequestContext context = null)
+        public virtual Operation<BinaryData> CreateCascadeDeleteJob(WaitUntil waitUntil, string jobId, string farmerId, string zoneId, RequestContext context = null)
         {
             Argument.AssertNotNullOrEmpty(jobId, nameof(jobId));
             Argument.AssertNotNull(farmerId, nameof(farmerId));
-            Argument.AssertNotNull(fieldId, nameof(fieldId));
+            Argument.AssertNotNull(zoneId, nameof(zoneId));
 
-            using var scope = ClientDiagnostics.CreateScope("Fields.CreateCascadeDeleteJob");
+            using var scope = ClientDiagnostics.CreateScope("Zones.CreateCascadeDeleteJob");
             scope.Start();
             try
             {
-                using HttpMessage message = CreateCreateCascadeDeleteJobRequest(jobId, farmerId, fieldId, context);
-                return ProtocolOperationHelpers.ProcessMessage(_pipeline, message, ClientDiagnostics, "Fields.CreateCascadeDeleteJob", OperationFinalStateVia.Location, context, waitUntil);
+                using HttpMessage message = CreateCreateCascadeDeleteJobRequest(jobId, farmerId, zoneId, context);
+                return ProtocolOperationHelpers.ProcessMessage(_pipeline, message, ClientDiagnostics, "Zones.CreateCascadeDeleteJob", OperationFinalStateVia.Location, context, waitUntil);
             }
             catch (Exception e)
             {
@@ -1270,7 +1262,7 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        internal HttpMessage CreateGetFieldsByFarmerIdRequest(string farmerId, IEnumerable<string> farmIds, IEnumerable<string> fieldIds, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
+        internal HttpMessage CreateGetZonesByFarmerIdRequest(string farmerId, IEnumerable<string> types, IEnumerable<string> managementZoneIds, IEnumerable<string> sources, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
         {
             var message = _pipeline.CreateMessage(context, ResponseClassifier200);
             var request = message.Request;
@@ -1279,17 +1271,31 @@ namespace Azure.Verticals.AgriFood.Farming
             uri.Reset(_endpoint);
             uri.AppendPath("/farmers/", false);
             uri.AppendPath(farmerId, true);
-            uri.AppendPath("/fields", false);
-            if (farmIds != null)
+            uri.AppendPath("/zones", false);
+            if (types != null)
             {
-                foreach (var param in farmIds)
+                foreach (var param in types)
                 {
-                    uri.AppendQuery("farmIds", param, true);
+                    uri.AppendQuery("types", param, true);
                 }
             }
-            if (fieldIds != null)
+            if (managementZoneIds != null)
             {
-                foreach (var param in fieldIds)
+                foreach (var param in managementZoneIds)
+                {
+                    uri.AppendQuery("managementZoneIds", param, true);
+                }
+            }
+            if (sources != null)
+            {
+                foreach (var param in sources)
+                {
+                    uri.AppendQuery("sources", param, true);
+                }
+            }
+            if (ids != null)
+            {
+                foreach (var param in ids)
                 {
                     uri.AppendQuery("ids", param, true);
                 }
@@ -1345,7 +1351,7 @@ namespace Azure.Verticals.AgriFood.Farming
             return message;
         }
 
-        internal HttpMessage CreateGetFieldRequest(string farmerId, string fieldId, RequestContext context)
+        internal HttpMessage CreateGetZoneRequest(string farmerId, string zoneId, RequestContext context)
         {
             var message = _pipeline.CreateMessage(context, ResponseClassifier200);
             var request = message.Request;
@@ -1354,15 +1360,15 @@ namespace Azure.Verticals.AgriFood.Farming
             uri.Reset(_endpoint);
             uri.AppendPath("/farmers/", false);
             uri.AppendPath(farmerId, true);
-            uri.AppendPath("/fields/", false);
-            uri.AppendPath(fieldId, true);
+            uri.AppendPath("/zones/", false);
+            uri.AppendPath(zoneId, true);
             uri.AppendQuery("api-version", _apiVersion, true);
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");
             return message;
         }
 
-        internal HttpMessage CreateCreateOrUpdateRequest(string farmerId, string fieldId, RequestContent content, RequestContext context)
+        internal HttpMessage CreateCreateOrUpdateRequest(string farmerId, string zoneId, RequestContent content, RequestContext context)
         {
             var message = _pipeline.CreateMessage(context, ResponseClassifier200201);
             var request = message.Request;
@@ -1371,8 +1377,8 @@ namespace Azure.Verticals.AgriFood.Farming
             uri.Reset(_endpoint);
             uri.AppendPath("/farmers/", false);
             uri.AppendPath(farmerId, true);
-            uri.AppendPath("/fields/", false);
-            uri.AppendPath(fieldId, true);
+            uri.AppendPath("/zones/", false);
+            uri.AppendPath(zoneId, true);
             uri.AppendQuery("api-version", _apiVersion, true);
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");
@@ -1381,7 +1387,7 @@ namespace Azure.Verticals.AgriFood.Farming
             return message;
         }
 
-        internal HttpMessage CreateDeleteRequest(string farmerId, string fieldId, RequestContext context)
+        internal HttpMessage CreateDeleteRequest(string farmerId, string zoneId, RequestContext context)
         {
             var message = _pipeline.CreateMessage(context, ResponseClassifier204);
             var request = message.Request;
@@ -1390,32 +1396,46 @@ namespace Azure.Verticals.AgriFood.Farming
             uri.Reset(_endpoint);
             uri.AppendPath("/farmers/", false);
             uri.AppendPath(farmerId, true);
-            uri.AppendPath("/fields/", false);
-            uri.AppendPath(fieldId, true);
+            uri.AppendPath("/zones/", false);
+            uri.AppendPath(zoneId, true);
             uri.AppendQuery("api-version", _apiVersion, true);
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");
             return message;
         }
 
-        internal HttpMessage CreateGetFieldsRequest(IEnumerable<string> farmIds, IEnumerable<string> fieldIds, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
+        internal HttpMessage CreateGetZonesRequest(IEnumerable<string> types, IEnumerable<string> managementZoneIds, IEnumerable<string> sources, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
         {
             var message = _pipeline.CreateMessage(context, ResponseClassifier200);
             var request = message.Request;
             request.Method = RequestMethod.Get;
             var uri = new RawRequestUriBuilder();
             uri.Reset(_endpoint);
-            uri.AppendPath("/fields", false);
-            if (farmIds != null)
+            uri.AppendPath("/zones", false);
+            if (types != null)
             {
-                foreach (var param in farmIds)
+                foreach (var param in types)
                 {
-                    uri.AppendQuery("farmIds", param, true);
+                    uri.AppendQuery("types", param, true);
                 }
             }
-            if (fieldIds != null)
+            if (managementZoneIds != null)
             {
-                foreach (var param in fieldIds)
+                foreach (var param in managementZoneIds)
+                {
+                    uri.AppendQuery("managementZoneIds", param, true);
+                }
+            }
+            if (sources != null)
+            {
+                foreach (var param in sources)
+                {
+                    uri.AppendQuery("sources", param, true);
+                }
+            }
+            if (ids != null)
+            {
+                foreach (var param in ids)
                 {
                     uri.AppendQuery("ids", param, true);
                 }
@@ -1465,23 +1485,6 @@ namespace Azure.Verticals.AgriFood.Farming
             {
                 uri.AppendQuery("$skipToken", skipToken, true);
             }
-            uri.AppendQuery("api-version", _apiVersion, true);
-            request.Uri = uri;
-            request.Headers.Add("Accept", "application/json");
-            return message;
-        }
-
-        internal HttpMessage CreateCreateCascadeDeleteJobRequest(string jobId, string farmerId, string fieldId, RequestContext context)
-        {
-            var message = _pipeline.CreateMessage(context, ResponseClassifier202);
-            var request = message.Request;
-            request.Method = RequestMethod.Put;
-            var uri = new RawRequestUriBuilder();
-            uri.Reset(_endpoint);
-            uri.AppendPath("/fields/cascade-delete/", false);
-            uri.AppendPath(jobId, true);
-            uri.AppendQuery("farmerId", farmerId, true);
-            uri.AppendQuery("fieldId", fieldId, true);
             uri.AppendQuery("api-version", _apiVersion, true);
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");
@@ -1495,7 +1498,7 @@ namespace Azure.Verticals.AgriFood.Farming
             request.Method = RequestMethod.Get;
             var uri = new RawRequestUriBuilder();
             uri.Reset(_endpoint);
-            uri.AppendPath("/fields/cascade-delete/", false);
+            uri.AppendPath("/zones/cascade-delete/", false);
             uri.AppendPath(jobId, true);
             uri.AppendQuery("api-version", _apiVersion, true);
             request.Uri = uri;
@@ -1503,7 +1506,24 @@ namespace Azure.Verticals.AgriFood.Farming
             return message;
         }
 
-        internal HttpMessage CreateGetFieldsByFarmerIdNextPageRequest(string nextLink, string farmerId, IEnumerable<string> farmIds, IEnumerable<string> fieldIds, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
+        internal HttpMessage CreateCreateCascadeDeleteJobRequest(string jobId, string farmerId, string zoneId, RequestContext context)
+        {
+            var message = _pipeline.CreateMessage(context, ResponseClassifier202);
+            var request = message.Request;
+            request.Method = RequestMethod.Put;
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/zones/cascade-delete/", false);
+            uri.AppendPath(jobId, true);
+            uri.AppendQuery("farmerId", farmerId, true);
+            uri.AppendQuery("zoneId", zoneId, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            request.Uri = uri;
+            request.Headers.Add("Accept", "application/json");
+            return message;
+        }
+
+        internal HttpMessage CreateGetZonesByFarmerIdNextPageRequest(string nextLink, string farmerId, IEnumerable<string> types, IEnumerable<string> managementZoneIds, IEnumerable<string> sources, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
         {
             var message = _pipeline.CreateMessage(context, ResponseClassifier200);
             var request = message.Request;
@@ -1516,7 +1536,7 @@ namespace Azure.Verticals.AgriFood.Farming
             return message;
         }
 
-        internal HttpMessage CreateGetFieldsNextPageRequest(string nextLink, IEnumerable<string> farmIds, IEnumerable<string> fieldIds, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
+        internal HttpMessage CreateGetZonesNextPageRequest(string nextLink, IEnumerable<string> types, IEnumerable<string> managementZoneIds, IEnumerable<string> sources, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
         {
             var message = _pipeline.CreateMessage(context, ResponseClassifier200);
             var request = message.Request;
